@@ -608,11 +608,18 @@ export default function EgnytePlanMatrix() {
   // ── AI Value Generation ──
   const [valuePoints, setValuePoints] = useState(null);
   const [valueLoading, setValueLoading] = useState(false);
-  const valueKey = `${fromPlan}→${toPlan}`;
+  const [valueError, setValueError] = useState(null);
   const valueCache = React.useRef({});
 
+  // Reset value points when plans change
   React.useEffect(() => {
-    if (!isUp || !fp || !tp) { setValuePoints(null); return; }
+    setValuePoints(null);
+    setValueError(null);
+  }, [fromPlan, toPlan]);
+
+  const generateValue = () => {
+    if (!isUp || !fp || !tp) return;
+    const valueKey = `${fromPlan}→${toPlan}`;
     if (valueCache.current[valueKey]) { setValuePoints(valueCache.current[valueKey]); return; }
 
     const gained = FEATURE_SECTIONS.flatMap(s => s.features).filter(f => {
@@ -622,12 +629,13 @@ export default function EgnytePlanMatrix() {
 
     setValueLoading(true);
     setValuePoints(null);
+    setValueError(null);
 
-    fetch("https://api.anthropic.com/v1/messages", {
+    fetch("/api/value", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-6",
         max_tokens: 1000,
         messages: [{
           role: "user",
@@ -649,13 +657,13 @@ Respond ONLY with a JSON array of 3 strings. No preamble, no markdown, no explan
         const text = data.content.filter(b => b.type === "text").map(b => b.text).join("");
         const clean = text.replace(/```json|```/g, "").trim();
         const points = JSON.parse(clean);
-        valueCache.current[valueKey] = points;
+        valueCache.current[`${fromPlan}→${toPlan}`] = points;
         setValuePoints(points);
-      } catch(e) { setValuePoints(null); }
+      } catch(e) { setValueError("Could not parse response. Try again."); }
     })
-    .catch(() => setValuePoints(null))
+    .catch(() => setValueError("Request failed. Check your API key in Vercel environment variables."))
     .finally(() => setValueLoading(false));
-  }, [fromPlan, toPlan, isUp]);
+  };
 
   const LEGEND = [
     { node:<div style={{width:18,height:18,borderRadius:"50%",background:E.teal,display:"flex",alignItems:"center",justifyContent:"center"}}><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke={E.navy} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></div>, label:"Included" },
@@ -781,18 +789,20 @@ Respond ONLY with a JSON array of 3 strings. No preamble, no markdown, no explan
 
                 {/* Value section */}
                 <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"20px 24px", marginBottom:20 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
-                    <div style={{ width:2.5, height:14, borderRadius:2, background:E.teal }}/>
-                    <span style={{ fontSize:10, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Value</span>
-                    <span style={{ fontSize:10, color:E.textMut, marginLeft:2 }}>— {fp.name} → {tp.name}</span>
-                  </div>
-                  {valueLoading && (
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: (valuePoints || valueLoading || valueError) ? 16 : 0 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                      <div style={{ width:16, height:16, borderRadius:"50%", border:`2px solid ${E.teal}`, borderTopColor:"transparent", animation:"spin 0.8s linear infinite" }}/>
-                      <span style={{ fontSize:12, color:E.textMut }}>Generating value summary…</span>
+                      <div style={{ width:2.5, height:14, borderRadius:2, background:E.teal }}/>
+                      <span style={{ fontSize:10, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Value</span>
+                      <span style={{ fontSize:10, color:E.textMut }}>— {fp.name} → {tp.name}</span>
                     </div>
-                  )}
-                  {!valueLoading && valuePoints && (
+                    <button onClick={generateValue} disabled={valueLoading}
+                      style={{ display:"flex", alignItems:"center", gap:7, padding:"7px 16px", borderRadius:7, border:`1px solid ${E.teal}55`, background: valueLoading ? "rgba(11,197,186,0.05)" : "rgba(11,197,186,0.1)", color: valueLoading ? E.textMut : E.teal, fontSize:12, fontWeight:600, cursor: valueLoading ? "not-allowed" : "pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s" }}>
+                      {valueLoading
+                        ? <><div style={{ width:12, height:12, borderRadius:"50%", border:`2px solid ${E.teal}55`, borderTopColor:E.teal, animation:"spin 0.8s linear infinite" }}/> Generating…</>
+                        : <>{valuePoints ? "↻ Regenerate" : "✦ Generate Value Summary"}</>}
+                    </button>
+                  </div>
+                  {valuePoints && (
                     <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
                       {valuePoints.map((pt, i) => (
                         <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start" }}>
@@ -804,8 +814,8 @@ Respond ONLY with a JSON array of 3 strings. No preamble, no markdown, no explan
                       ))}
                     </div>
                   )}
-                  {!valueLoading && !valuePoints && (
-                    <p style={{ fontSize:12, color:E.textMut }}>Select an upgrade path to generate value summary.</p>
+                  {valueError && (
+                    <p style={{ fontSize:12, color:E.yellow, marginTop:8 }}>⚠ {valueError}</p>
                   )}
                 </div>
 
