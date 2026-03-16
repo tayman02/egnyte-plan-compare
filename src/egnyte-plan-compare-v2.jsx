@@ -607,28 +607,49 @@ export default function EgnytePlanMatrix() {
 
   // ── AI Value Generation ──
   const [valuePoints, setValuePoints] = useState(null);
+  const [emailDraft, setEmailDraft] = useState(null);
   const [valueLoading, setValueLoading] = useState(false);
   const [valueError, setValueError] = useState(null);
+  const [emailCopied, setEmailCopied] = useState(false);
   const valueCache = React.useRef({});
 
-  // Reset value points when plans change
+  // Reset when plans change
   React.useEffect(() => {
     setValuePoints(null);
+    setEmailDraft(null);
     setValueError(null);
+    setEmailCopied(false);
   }, [fromPlan, toPlan]);
+
+  const copyEmail = () => {
+    if (!emailDraft) return;
+    navigator.clipboard.writeText(emailDraft).then(() => {
+      setEmailCopied(true);
+      setTimeout(() => setEmailCopied(false), 2500);
+    });
+  };
 
   const generateValue = () => {
     if (!isUp || !fp || !tp) return;
     const valueKey = `${fromPlan}→${toPlan}`;
-    if (valueCache.current[valueKey]) { setValuePoints(valueCache.current[valueKey]); return; }
+    if (valueCache.current[valueKey]) {
+      setValuePoints(valueCache.current[valueKey].points);
+      setEmailDraft(valueCache.current[valueKey].email);
+      return;
+    }
 
     const gained = FEATURE_SECTIONS.flatMap(s => s.features).filter(f => {
       const fv = fp.features[f.id]; const tv = tp.features[f.id];
       return (tv === true || tv === "addon-included") && !fv;
     }).map(f => f.label);
 
+    const costLine = dMsp != null
+      ? `The MSP cost uplift is +$${dMsp.toFixed(2)}/user/month (MSRP +$${dMsrp}/user/month).`
+      : `Pricing is available through the Egnyte partner team.`;
+
     setValueLoading(true);
     setValuePoints(null);
+    setEmailDraft(null);
     setValueError(null);
 
     fetch("/api/value", {
@@ -636,18 +657,25 @@ export default function EgnytePlanMatrix() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 1000,
+        max_tokens: 1500,
         messages: [{
           role: "user",
-          content: `You are a sales enablement writer for Egnyte, a content security and collaboration platform. A customer is upgrading from the "${fp.name}" plan to the "${tp.name}" plan.
+          content: `You are a sales enablement writer for Egnyte, a content security and collaboration platform. A partner account manager is preparing an upgrade conversation with a customer moving from "${fp.name}" to "${tp.name}".
 
-Net-new features they will gain:
+Net-new capabilities the customer will gain:
 ${gained.map(f => `- ${f}`).join("\n")}
 
-Write exactly 3 short value statements (1-2 sentences each) that explain the business value of this upgrade. Focus on outcomes, not feature names. Be specific and concrete. Think about the type of business or IT team that would care about these features.
+${costLine}
 
-Respond ONLY with a JSON array of 3 strings. No preamble, no markdown, no explanation. Example format:
-["Value point one.", "Value point two.", "Value point three."]`
+Return ONLY a JSON object with exactly these two keys — no preamble, no markdown, no extra text:
+{
+  "points": ["value point 1", "value point 2", "value point 3"],
+  "email": "full email text here"
+}
+
+For "points": 3 short outcome-focused value statements (1-2 sentences each). Focus on business outcomes, not feature names.
+
+For "email": A concise upgrade outreach email a PAM would send to their customer contact. Use a friendly but professional tone. Include: a short opener, 2-3 sentences on what they'll gain and why it matters, a soft call to action to discuss further. Do NOT use placeholder brackets like [Name] — write it ready to send with generic but warm language. Plain text only, no HTML, no bullet symbols.`
         }]
       })
     })
@@ -656,9 +684,10 @@ Respond ONLY with a JSON array of 3 strings. No preamble, no markdown, no explan
       try {
         const text = data.content.filter(b => b.type === "text").map(b => b.text).join("");
         const clean = text.replace(/```json|```/g, "").trim();
-        const points = JSON.parse(clean);
-        valueCache.current[`${fromPlan}→${toPlan}`] = points;
-        setValuePoints(points);
+        const parsed = JSON.parse(clean);
+        valueCache.current[valueKey] = parsed;
+        setValuePoints(parsed.points);
+        setEmailDraft(parsed.email);
       } catch(e) { setValueError("Could not parse response. Try again."); }
     })
     .catch(() => setValueError("Request failed. Check your API key in Vercel environment variables."))
@@ -766,8 +795,8 @@ Respond ONLY with a JSON array of 3 strings. No preamble, no markdown, no explan
                     <div style={{ fontSize:38, fontWeight:800, color:E.purple, letterSpacing:"-0.04em", lineHeight:1, marginBottom:8 }}>{netNew}</div>
                     <div style={{ fontSize:12, color:E.textMut, fontWeight:500 }}>capabilities unlocked by upgrading to {tp?.name}</div>
                   </div>
-                  <div style={{ background: dMsp!=null ? "rgba(11,197,186,0.08)" : "rgba(118,162,188,0.06)", border:`1px solid ${dMsp!=null ? "rgba(11,197,186,0.2)" : "rgba(118,162,188,0.1)"}`, borderRadius:12, padding:"22px 24px" }}>
-                    <div style={{ fontSize:10, fontWeight:700, color: dMsp!=null ? "rgba(11,197,186,0.8)" : "rgba(118,162,188,0.6)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>Cost Uplift</div>
+                  <div style={{ background: dMsp!=null ? "rgba(11,197,186,0.08)" : dMsrp!=null ? "rgba(3,123,189,0.08)" : "rgba(118,162,188,0.06)", border:`1px solid ${dMsp!=null ? "rgba(11,197,186,0.2)" : dMsrp!=null ? "rgba(3,123,189,0.2)" : "rgba(118,162,188,0.1)"}`, borderRadius:12, padding:"22px 24px" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color: dMsp!=null ? "rgba(11,197,186,0.8)" : dMsrp!=null ? "rgba(3,123,189,0.8)" : "rgba(118,162,188,0.6)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>Cost Uplift</div>
                     {dMsp!=null ? (
                       <div style={{ display:"flex", alignItems:"flex-end", gap:20 }}>
                         <div>
@@ -780,10 +809,17 @@ Respond ONLY with a JSON array of 3 strings. No preamble, no markdown, no explan
                           <div style={{ fontSize:38, fontWeight:800, color:`${E.teal}88`, letterSpacing:"-0.04em", lineHeight:1 }}>{`+${fmt(dMsrp)}`}</div>
                         </div>
                       </div>
+                    ) : dMsrp!=null ? (
+                      <div>
+                        <div style={{ fontSize:10, fontWeight:600, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4 }}>MSRP</div>
+                        <div style={{ fontSize:38, fontWeight:800, color:E.blue, letterSpacing:"-0.04em", lineHeight:1 }}>{`+${fmt(dMsrp)}`}</div>
+                      </div>
                     ) : (
                       <div style={{ fontSize:38, fontWeight:800, color:E.textSub, letterSpacing:"-0.04em", lineHeight:1 }}>—</div>
                     )}
-                    <div style={{ fontSize:12, color:E.textMut, fontWeight:500, marginTop:8 }}>{dMsp!=null ? "per user / month" : "contact Egnyte for pricing"}</div>
+                    <div style={{ fontSize:12, color:E.textMut, fontWeight:500, marginTop:8 }}>
+                      {dMsp!=null ? "per user / month" : dMsrp!=null ? "MSRP per user / month · MSP: contact Egnyte" : "contact Egnyte for pricing"}
+                    </div>
                   </div>
                 </div>
 
@@ -802,8 +838,10 @@ Respond ONLY with a JSON array of 3 strings. No preamble, no markdown, no explan
                         : <>{valuePoints ? "↻ Regenerate" : "✦ Generate Value Summary"}</>}
                     </button>
                   </div>
+
+                  {/* Value points */}
                   {valuePoints && (
-                    <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                    <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom: emailDraft ? 24 : 0 }}>
                       {valuePoints.map((pt, i) => (
                         <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start" }}>
                           <div style={{ width:22, height:22, borderRadius:6, background:"rgba(11,197,186,0.12)", border:`1px solid rgba(11,197,186,0.25)`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>
@@ -814,6 +852,26 @@ Respond ONLY with a JSON array of 3 strings. No preamble, no markdown, no explan
                       ))}
                     </div>
                   )}
+
+                  {/* Email draft */}
+                  {emailDraft && (
+                    <div style={{ borderTop:`1px solid ${E.border}`, paddingTop:20 }}>
+                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                          <div style={{ width:2.5, height:14, borderRadius:2, background:E.blue2 }}/>
+                          <span style={{ fontSize:10, fontWeight:700, color:E.blue2, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Outreach Email</span>
+                        </div>
+                        <button onClick={copyEmail}
+                          style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 14px", borderRadius:7, border:`1px solid ${emailCopied ? E.teal+"88" : E.blue2+"55"}`, background: emailCopied ? "rgba(11,197,186,0.12)" : "rgba(61,113,234,0.1)", color: emailCopied ? E.teal : E.blue2, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.2s" }}>
+                          {emailCopied ? "✓ Copied!" : "⎘ Copy Email"}
+                        </button>
+                      </div>
+                      <div style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:8, padding:"16px 18px" }}>
+                        <pre style={{ fontSize:12, color:E.textSub, lineHeight:1.8, margin:0, fontFamily:"'Inter',sans-serif", whiteSpace:"pre-wrap", wordBreak:"break-word" }}>{emailDraft}</pre>
+                      </div>
+                    </div>
+                  )}
+
                   {valueError && (
                     <p style={{ fontSize:12, color:E.yellow, marginTop:8 }}>⚠ {valueError}</p>
                   )}
