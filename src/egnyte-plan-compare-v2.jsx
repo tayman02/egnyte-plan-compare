@@ -510,12 +510,15 @@ const FeatureRow = ({ feat, value, compareValue }) => {
       display:"grid", gridTemplateColumns:"1fr 26px 120px 120px",
       padding:"10px 16px", alignItems:"center",
       borderBottom:`1px solid ${E.borderSub}`,
-      background: isGain ? "rgba(11,197,186,0.05)" : "transparent",
+      borderLeft: isGain ? `3px solid ${E.teal}` : "3px solid transparent",
+      background: isGain ? "rgba(11,197,186,0.08)" : "transparent",
       transition:"background 0.15s",
     }}>
       <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-        {isGain && <div style={{ width:3, height:3, borderRadius:"50%", background:E.teal, flexShrink:0 }}/>}
-        <span style={{ fontSize:13, color: isGain ? E.text : E.textSub, fontWeight: isGain ? 500 : 400, lineHeight:1.4 }}>{feat.label}</span>
+        {isGain && (
+          <span style={{ flexShrink:0, fontSize:9, fontWeight:700, letterSpacing:"0.07em", color:E.navy, background:E.teal, borderRadius:3, padding:"2px 5px", lineHeight:1 }}>NEW</span>
+        )}
+        <span style={{ fontSize:13, color: isGain ? E.text : E.textSub, fontWeight: isGain ? 600 : 400, lineHeight:1.4 }}>{feat.label}</span>
       </div>
       <div style={{ display:"flex", justifyContent:"center" }}><HelpLink url={feat.helpUrl} /></div>
       <StatusCell value={compareValue} />
