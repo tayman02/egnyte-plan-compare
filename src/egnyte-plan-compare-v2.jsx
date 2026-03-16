@@ -607,25 +607,26 @@ export default function EgnytePlanMatrix() {
 
   // ── AI Value Generation ──
   const [valuePoints, setValuePoints] = useState(null);
-  const [emailDraft, setEmailDraft] = useState(null);
+  const [emailDetailed, setEmailDetailed] = useState(null);
+  const [emailPunchy, setEmailPunchy] = useState(null);
   const [valueLoading, setValueLoading] = useState(false);
   const [valueError, setValueError] = useState(null);
-  const [emailCopied, setEmailCopied] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(null); // "detailed" | "punchy" | null
   const valueCache = React.useRef({});
 
   // Reset when plans change
   React.useEffect(() => {
     setValuePoints(null);
-    setEmailDraft(null);
+    setEmailDetailed(null);
+    setEmailPunchy(null);
     setValueError(null);
-    setEmailCopied(false);
+    setCopiedEmail(null);
   }, [fromPlan, toPlan]);
 
-  const copyEmail = () => {
-    if (!emailDraft) return;
-    navigator.clipboard.writeText(emailDraft).then(() => {
-      setEmailCopied(true);
-      setTimeout(() => setEmailCopied(false), 2500);
+  const copyEmail = (type, text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedEmail(type);
+      setTimeout(() => setCopiedEmail(null), 2500);
     });
   };
 
@@ -633,8 +634,10 @@ export default function EgnytePlanMatrix() {
     if (!isUp || !fp || !tp) return;
     const valueKey = `${fromPlan}→${toPlan}`;
     if (valueCache.current[valueKey]) {
-      setValuePoints(valueCache.current[valueKey].points);
-      setEmailDraft(valueCache.current[valueKey].email);
+      const c = valueCache.current[valueKey];
+      setValuePoints(c.points);
+      setEmailDetailed(c.emailDetailed);
+      setEmailPunchy(c.emailPunchy);
       return;
     }
 
@@ -649,7 +652,8 @@ export default function EgnytePlanMatrix() {
 
     setValueLoading(true);
     setValuePoints(null);
-    setEmailDraft(null);
+    setEmailDetailed(null);
+    setEmailPunchy(null);
     setValueError(null);
 
     fetch("/api/value", {
@@ -657,7 +661,7 @@ export default function EgnytePlanMatrix() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 1500,
+        max_tokens: 2000,
         messages: [{
           role: "user",
           content: `You are a sales enablement writer for Egnyte, a content security and collaboration platform. A partner account manager is preparing an upgrade conversation with a customer moving from "${fp.name}" to "${tp.name}".
@@ -667,15 +671,25 @@ ${gained.map(f => `- ${f}`).join("\n")}
 
 ${costLine}
 
-Return ONLY a JSON object with exactly these two keys — no preamble, no markdown, no extra text:
+Return ONLY a valid JSON object with exactly these three keys. No preamble, no markdown fences, no extra text whatsoever:
 {
   "points": ["value point 1", "value point 2", "value point 3"],
-  "email": "full email text here"
+  "emailDetailed": "full detailed email text",
+  "emailPunchy": "short punchy email text"
 }
 
-For "points": 3 short outcome-focused value statements (1-2 sentences each). Focus on business outcomes, not feature names.
+Rules that apply to ALL outputs:
+- Never use "--" or "---" anywhere
+- Never use placeholder brackets like [Name] or [Company]
+- Write ready-to-send language using warm, generic openers like "Hi there" or "Hope you are doing well"
+- Do not reference AI, automation, or scripting in any way
+- Use plain text only, no HTML, no bullet symbols, no markdown
 
-For "email": A concise upgrade outreach email a PAM would send to their customer contact. Use a friendly but professional tone. Include: a short opener, 2-3 sentences on what they'll gain and why it matters, a soft call to action to discuss further. Do NOT use placeholder brackets like [Name] — write it ready to send with generic but warm language. Plain text only, no HTML, no bullet symbols.`
+For "points": 3 outcome-focused value statements (1-2 sentences each). Weave in the specific capabilities gained. Focus on what the business can now do or prevent, not feature names.
+
+For "emailDetailed": A professional but conversational upgrade outreach email. Structure: warm opener, 2-3 sentences grounded in the value points above explaining what they gain and why it matters for their business, a soft close inviting a conversation. 4-6 sentences total. No fluff. The value reasoning should be clear and direct.
+
+For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most compelling outcome from the upgrade. One clear reason why now. One low-pressure ask. Everyday language, no jargon. Should feel like something a real person dashed off quickly.`
         }]
       })
     })
@@ -687,7 +701,8 @@ For "email": A concise upgrade outreach email a PAM would send to their customer
         const parsed = JSON.parse(clean);
         valueCache.current[valueKey] = parsed;
         setValuePoints(parsed.points);
-        setEmailDraft(parsed.email);
+        setEmailDetailed(parsed.emailDetailed);
+        setEmailPunchy(parsed.emailPunchy);
       } catch(e) { setValueError("Could not parse response. Try again."); }
     })
     .catch(() => setValueError("Request failed. Check your API key in Vercel environment variables."))
@@ -841,7 +856,7 @@ For "email": A concise upgrade outreach email a PAM would send to their customer
 
                   {/* Value points */}
                   {valuePoints && (
-                    <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom: emailDraft ? 24 : 0 }}>
+                    <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom: emailDetailed ? 4 : 0 }}>
                       {valuePoints.map((pt, i) => (
                         <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start" }}>
                           <div style={{ width:22, height:22, borderRadius:6, background:"rgba(11,197,186,0.12)", border:`1px solid rgba(11,197,186,0.25)`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>
@@ -853,21 +868,40 @@ For "email": A concise upgrade outreach email a PAM would send to their customer
                     </div>
                   )}
 
-                  {/* Email draft */}
-                  {emailDraft && (
-                    <div style={{ borderTop:`1px solid ${E.border}`, paddingTop:20 }}>
-                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
-                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                          <div style={{ width:2.5, height:14, borderRadius:2, background:E.blue2 }}/>
-                          <span style={{ fontSize:10, fontWeight:700, color:E.blue2, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Outreach Email</span>
-                        </div>
-                        <button onClick={copyEmail}
-                          style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 14px", borderRadius:7, border:`1px solid ${emailCopied ? E.teal+"88" : E.blue2+"55"}`, background: emailCopied ? "rgba(11,197,186,0.12)" : "rgba(61,113,234,0.1)", color: emailCopied ? E.teal : E.blue2, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.2s" }}>
-                          {emailCopied ? "✓ Copied!" : "⎘ Copy Email"}
-                        </button>
+                  {/* Email drafts */}
+                  {(emailDetailed || emailPunchy) && (
+                    <div style={{ borderTop:`1px solid ${E.border}`, paddingTop:20, marginTop: valuePoints ? 20 : 0 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16 }}>
+                        <div style={{ width:2.5, height:14, borderRadius:2, background:E.blue2 }}/>
+                        <span style={{ fontSize:10, fontWeight:700, color:E.blue2, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Outreach Emails</span>
                       </div>
-                      <div style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:8, padding:"16px 18px" }}>
-                        <pre style={{ fontSize:12, color:E.textSub, lineHeight:1.8, margin:0, fontFamily:"'Inter',sans-serif", whiteSpace:"pre-wrap", wordBreak:"break-word" }}>{emailDraft}</pre>
+                      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+                        {/* Detailed email */}
+                        {emailDetailed && (
+                          <div style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:10, padding:"16px 18px", display:"flex", flexDirection:"column", gap:12 }}>
+                            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                              <span style={{ fontSize:10, fontWeight:700, color:E.textMut, textTransform:"uppercase", letterSpacing:"0.1em" }}>Detailed</span>
+                              <button onClick={() => copyEmail("detailed", emailDetailed)}
+                                style={{ display:"flex", alignItems:"center", gap:5, padding:"4px 12px", borderRadius:6, border:`1px solid ${copiedEmail==="detailed" ? E.teal+"88" : E.blue2+"55"}`, background: copiedEmail==="detailed" ? "rgba(11,197,186,0.12)" : "rgba(61,113,234,0.1)", color: copiedEmail==="detailed" ? E.teal : E.blue2, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.2s" }}>
+                                {copiedEmail==="detailed" ? "✓ Copied!" : "⎘ Copy"}
+                              </button>
+                            </div>
+                            <pre style={{ fontSize:12, color:E.textSub, lineHeight:1.85, margin:0, fontFamily:"'Inter',sans-serif", whiteSpace:"pre-wrap", wordBreak:"break-word" }}>{emailDetailed}</pre>
+                          </div>
+                        )}
+                        {/* Punchy email */}
+                        {emailPunchy && (
+                          <div style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:10, padding:"16px 18px", display:"flex", flexDirection:"column", gap:12 }}>
+                            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                              <span style={{ fontSize:10, fontWeight:700, color:E.textMut, textTransform:"uppercase", letterSpacing:"0.1em" }}>Short & Direct</span>
+                              <button onClick={() => copyEmail("punchy", emailPunchy)}
+                                style={{ display:"flex", alignItems:"center", gap:5, padding:"4px 12px", borderRadius:6, border:`1px solid ${copiedEmail==="punchy" ? E.teal+"88" : E.blue2+"55"}`, background: copiedEmail==="punchy" ? "rgba(11,197,186,0.12)" : "rgba(61,113,234,0.1)", color: copiedEmail==="punchy" ? E.teal : E.blue2, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.2s" }}>
+                                {copiedEmail==="punchy" ? "✓ Copied!" : "⎘ Copy"}
+                              </button>
+                            </div>
+                            <pre style={{ fontSize:12, color:E.textSub, lineHeight:1.85, margin:0, fontFamily:"'Inter',sans-serif", whiteSpace:"pre-wrap", wordBreak:"break-word" }}>{emailPunchy}</pre>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
