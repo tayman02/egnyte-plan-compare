@@ -292,17 +292,16 @@ const PLANS = [
       // Core Platform
       encryption: true, storage_per_user: "200 GB", upload_limit: "100 GB", domains: "1",
       max_users: "100",
-      sso: "optional",       // $ on pricing page — paid upgrade
-      mfa: true, external_collab: true, granular_perms: true, compliant_storage: true,
+      sso: false, mfa: true, external_collab: true, granular_perms: true, compliant_storage: true,
       audit: false, edge_caching: true, role_admin: false, device_controls: false,
       data_residency: false, encryption_keys: false, link_throttling: false, migration_tools: false,
-      // Intelligence — only single doc Q&A included; AI Copilot/Search/Workflows are $ (paid upgrades)
-      single_doc_qa: true, copilot: "optional", ai_search: "optional", ai_workflows: "optional",
+      // Intelligence — only single doc Q&A included; no add-ons available
+      single_doc_qa: true, copilot: false, ai_search: false, ai_workflows: false,
       text_search: true, ocr_search: false, ai_classification: false, trainable_classifiers: false,
-      // Collaboration
+      // Collaboration — no add-ons available on Starter
       comments_tasks: true, file_locking: true, metadata: true, desktop_apps: true,
       mobile_apps: true, external_accounts: true, link_sharing: true, viewer_permission: false,
-      email_sharing: false, pdf_handler: "optional", esignature: "optional",
+      email_sharing: false, pdf_handler: false, esignature: false,
       watermarking: false, content_safeguards: false,
       standard_workflows: true, advanced_workflows: false, advanced_video: false,
       file_versioning: true, advanced_snapshot: false, snapshot_90: false,
@@ -317,6 +316,10 @@ const PLANS = [
       google_workspace: true, m365: true, dlp: false, app_integrations: true,
       // No add-ons available on Starter
       project_hub: false, doc_portal: false,
+    },
+  },
+  {
+    id: "ifs",
     name: "IFS",
     family: "Gen 4 MSP",
     gen: "Gen 4",
