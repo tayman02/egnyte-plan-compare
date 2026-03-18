@@ -315,16 +315,12 @@ const PLANS = [
       auto_remediation: false, legal_hold: false, rot_data: false,
       // Integrations
       google_workspace: true, m365: true, dlp: false, app_integrations: true,
-      // Add-ons
-      project_hub: "optional", doc_portal: "optional",
-    },
-  },
-  {
-    id: "ifs",
+      // No add-ons available on Starter
+      project_hub: false, doc_portal: false,
     name: "IFS",
     family: "Gen 4 MSP",
     gen: "Gen 4",
-    summary: "Everything in Starter, plus email-validated sharing, advanced workflows, ransomware detection, and content lifecycle.",
+    summary: "Everything in Starter, plus email-validated sharing, PDF markup, e-signature, advanced workflows, ransomware detection, and content lifecycle.",
     pricing: { msrp: 33, msp: 26.4 },
     features: {
       // Core Platform
@@ -340,7 +336,7 @@ const PLANS = [
       // Collaboration
       comments_tasks: true, file_locking: true, metadata: true, desktop_apps: true,
       mobile_apps: true, external_accounts: true, link_sharing: true, viewer_permission: true,
-      email_sharing: true, pdf_handler: "optional", esignature: "optional",
+      email_sharing: true, pdf_handler: true, esignature: true,
       watermarking: false, content_safeguards: false,
       standard_workflows: true, advanced_workflows: true, advanced_video: true,
       file_versioning: true,
@@ -1005,9 +1001,9 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                 </div>
 
                 {/* Feature table */}
-                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:14, overflow:"hidden" }}>
-                  {/* Header row */}
-                  <div style={{ display:"grid", gridTemplateColumns:"1fr 26px 120px 120px", padding:"11px 16px", background:E.navyMid, borderBottom:`1px solid ${E.border}` }}>
+                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:14, overflow:"visible" }}>
+                  {/* Header row — sticky */}
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 26px 120px 120px", padding:"11px 16px", background:E.navyMid, borderBottom:`1px solid ${E.border}`, position:"sticky", top:0, zIndex:10, boxShadow:"0 3px 8px rgba(0,0,0,0.3)" }}>
                     {[["Feature","left"],["?","center"],[fp.name,"center"],[tp.name,"center"]].map(([h,a],i)=>(
                       <div key={i} style={{ fontSize:10, fontWeight:700, color: i===3 ? E.teal : E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", textAlign:a }}>{h}</div>
                     ))}
@@ -1078,12 +1074,13 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
               <div style={{ overflowX:"auto", borderRadius:14, border:`1px solid ${E.border}` }}>
                 <table style={{ borderCollapse:"collapse", width:"100%", minWidth:1260 }}>
                   <thead>
+                    {/* Row 1: Generation group headers — sticky at top:0 */}
                     <tr style={{ background:E.navyMid }}>
-                      <th style={{ padding:"12px 16px", textAlign:"left", minWidth:290, position:"sticky", left:0, background:E.navyMid, zIndex:10, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
+                      <th style={{ padding:"12px 16px", textAlign:"left", minWidth:290, position:"sticky", top:0, left:0, background:E.navyMid, zIndex:30, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
                         <span style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase" }}>Feature</span>
                       </th>
                       {Object.entries(families).map(([fam,ps])=>(
-                        <th key={fam} colSpan={ps.length} style={{ padding:"10px 12px", textAlign:"center", borderBottom:`1px solid ${E.border}`, borderLeft:`1px solid ${E.border}` }}>
+                        <th key={fam} colSpan={ps.length} style={{ padding:"10px 12px", textAlign:"center", position:"sticky", top:0, background:E.navyMid, zIndex:20, borderBottom:`1px solid ${E.border}`, borderLeft:`1px solid ${E.border}` }}>
                           <span style={{ fontSize:10, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase",
                             color: fam==="Legacy" ? E.textSub : fam.includes("Gen 3") ? E.blue : E.teal }}>
                             {fam}
@@ -1091,12 +1088,13 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                         </th>
                       ))}
                     </tr>
+                    {/* Row 2: Plan name headers — sticky below row 1 (row 1 height ~39px) */}
                     <tr style={{ background:E.navyCard }}>
-                      <th style={{ padding:"10px 16px", position:"sticky", left:0, background:E.navyCard, zIndex:10, borderBottom:`2px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
+                      <th style={{ padding:"10px 16px", position:"sticky", top:39, left:0, background:E.navyCard, zIndex:30, borderBottom:`2px solid ${E.border}`, borderRight:`1px solid ${E.border}`, boxShadow:"2px 0 0 0 rgba(11,197,186,0.08)" }}>
                         <span style={{ fontSize:9, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase" }}>Docs</span>
                       </th>
                       {PLANS.map(p=>(
-                        <th key={p.id} style={{ padding:"10px 8px", textAlign:"center", borderBottom:`2px solid ${E.border}`, borderLeft:`1px solid ${E.borderSub}`, minWidth:96 }}>
+                        <th key={p.id} style={{ padding:"10px 8px", textAlign:"center", position:"sticky", top:39, background:E.navyCard, zIndex:20, borderBottom:`2px solid ${E.border}`, borderLeft:`1px solid ${E.borderSub}`, minWidth:96, boxShadow:"0 3px 8px rgba(0,0,0,0.3)" }}>
                           <div style={{ fontSize:11, fontWeight:700, color:E.text, marginBottom:3 }}>{p.name}</div>
                           {p.pricing?.msrp!=null && <div style={{ fontSize:10, color:E.textMut }}>${p.pricing.msrp}/mo</div>}
                         </th>
