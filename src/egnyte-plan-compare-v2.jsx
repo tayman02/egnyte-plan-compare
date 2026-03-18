@@ -843,7 +843,7 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
           </div>
         </header>
 
-        <main style={{ maxWidth: mode==="matrix" ? 1680 : 980, margin:"0 auto", padding:"32px 32px 72px" }}>
+        <main style={{ maxWidth: mode==="matrix" ? "none" : 980, margin:"0 auto", padding: mode==="matrix" ? "32px 24px 72px" : "32px 32px 72px" }}>
 
           {/* ── COMPARE ── */}
           {mode==="compare" && (
@@ -1074,16 +1074,20 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                 ))}
               </div>
 
-              <div style={{ overflowX:"auto", borderRadius:14, border:`1px solid ${E.border}` }}>
-                <table style={{ borderCollapse:"collapse", width:"100%", minWidth:1260 }}>
+              <div style={{ borderRadius:14, border:`1px solid ${E.border}`, overflowX:"visible" }}>
+                <table style={{ borderCollapse:"collapse", width:"100%", tableLayout:"fixed" }}>
+                  <colgroup>
+                    <col style={{ width:280 }}/>
+                    {PLANS.map(p => <col key={p.id} style={{ width:110 }}/>)}
+                  </colgroup>
                   <thead>
-                    {/* Row 1: Generation group headers — sticky at top:0 */}
+                    {/* Row 1: Generation group headers — sticky below nav */}
                     <tr style={{ background:E.navyMid }}>
-                      <th style={{ padding:"12px 16px", textAlign:"left", minWidth:290, position:"sticky", top:0, left:0, background:E.navyMid, zIndex:30, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
+                      <th style={{ padding:"12px 16px", textAlign:"left", position:"sticky", top:61, left:0, background:E.navyMid, zIndex:30, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
                         <span style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase" }}>Feature</span>
                       </th>
                       {Object.entries(families).map(([fam,ps])=>(
-                        <th key={fam} colSpan={ps.length} style={{ padding:"10px 12px", textAlign:"center", position:"sticky", top:0, background:E.navyMid, zIndex:20, borderBottom:`1px solid ${E.border}`, borderLeft:`1px solid ${E.border}` }}>
+                        <th key={fam} colSpan={ps.length} style={{ padding:"10px 12px", textAlign:"center", position:"sticky", top:61, background:E.navyMid, zIndex:20, borderBottom:`1px solid ${E.border}`, borderLeft:`1px solid ${E.border}` }}>
                           <span style={{ fontSize:10, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase",
                             color: fam==="Legacy" ? E.textSub : fam.includes("Gen 3") ? E.blue : E.teal }}>
                             {fam}
@@ -1091,14 +1095,14 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                         </th>
                       ))}
                     </tr>
-                    {/* Row 2: Plan name headers — sticky below row 1 (row 1 height ~39px) */}
+                    {/* Row 2: Plan names — sticky below row 1 (61 + 39 = 100) */}
                     <tr style={{ background:E.navyCard }}>
-                      <th style={{ padding:"10px 16px", position:"sticky", top:39, left:0, background:E.navyCard, zIndex:30, borderBottom:`2px solid ${E.border}`, borderRight:`1px solid ${E.border}`, boxShadow:"2px 0 0 0 rgba(11,197,186,0.08)" }}>
+                      <th style={{ padding:"10px 16px", position:"sticky", top:100, left:0, background:E.navyCard, zIndex:30, borderBottom:`2px solid ${E.teal}44`, borderRight:`1px solid ${E.border}` }}>
                         <span style={{ fontSize:9, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase" }}>Docs</span>
                       </th>
                       {PLANS.map(p=>(
-                        <th key={p.id} style={{ padding:"10px 8px", textAlign:"center", position:"sticky", top:39, background:E.navyCard, zIndex:20, borderBottom:`2px solid ${E.border}`, borderLeft:`1px solid ${E.borderSub}`, minWidth:96, boxShadow:"0 3px 8px rgba(0,0,0,0.3)" }}>
-                          <div style={{ fontSize:11, fontWeight:700, color:E.text, marginBottom:3 }}>{p.name}</div>
+                        <th key={p.id} style={{ padding:"10px 8px", textAlign:"center", position:"sticky", top:100, background:E.navyCard, zIndex:20, borderBottom:`2px solid ${E.teal}44`, borderLeft:`1px solid ${E.borderSub}` }}>
+                          <div style={{ fontSize:11, fontWeight:700, color:E.text, marginBottom:3, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.name}</div>
                           {p.pricing?.msrp!=null && <div style={{ fontSize:10, color:E.textMut }}>${p.pricing.msrp}/mo</div>}
                         </th>
                       ))}
