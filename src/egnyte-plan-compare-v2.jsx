@@ -8,24 +8,24 @@ const FEATURE_SECTIONS = [
     label: "Core Platform",
     color: "#037BBD",
     features: [
-      { id: "encryption",       label: "Encryption at Rest and in Transit",            helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/218025867-Enterprise-Key-Management" },
-      { id: "storage_per_user", label: "Storage Per Power User" },
-      { id: "upload_limit",     label: "Upload File Size Limit" },
-      { id: "domains",          label: "Account Domains" },
-      { id: "max_users",        label: "Maximum Number of Users" },
-      { id: "sso",              label: "User Authentication (AD and SSO/SAML)",         helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638364-Active-Directory-LDAP-Integration" },
-      { id: "mfa",              label: "Multi-Factor Authentication",                   helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638344-Two-Factor-Authentication" },
-      { id: "external_collab",  label: "External Collaborators",                        helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637744-Inviting-External-Users" },
-      { id: "granular_perms",   label: "Granular Permissions",                          helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637824-Setting-Folder-Permissions" },
-      { id: "compliant_storage",label: "Compliant Storage (HIPAA, FINRA, SOC2, ISO 27001)", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638124-Compliance-Overview" },
-      { id: "audit",            label: "File & Login Auditing",                         helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637534-File-Audit-Report" },
-      { id: "edge_caching",     label: "Edge Caching / Hybrid Caching",                 helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000286631-Smart-Cache-Overview" },
-      { id: "role_admin",       label: "Role-Based Administration",                     helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638124-Compliance-Overview" },
-      { id: "device_controls",  label: "Device Controls for Mobile & Desktop",          helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638354-Mobile-Device-Management" },
-      { id: "data_residency",   label: "Data Residency Options",                        helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/17391112602637-Customize-Your-Cloud-Storage-on-Egnyte" },
-      { id: "encryption_keys",  label: "Encryption Key Management",                     helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/218025867-Enterprise-Key-Management" },
-      { id: "link_throttling",  label: "Link Throttling Removal" },
-      { id: "migration_tools",  label: "Migration Tools",                               helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360001819831-Egnyte-Migration-App-Overview" },
+      { id: "encryption",       label: "Encryption at Rest and in Transit",            desc: "All files are encrypted using AES-256 while stored and TLS 1.2+ while in transit, keeping data secure at every point.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/218025867-Enterprise-Key-Management" },
+      { id: "storage_per_user", label: "Storage Per Power User",                       desc: "The amount of cloud storage allocated per licensed power user on the account." },
+      { id: "upload_limit",     label: "Upload File Size Limit",                       desc: "The maximum file size that can be uploaded to Egnyte in a single transfer." },
+      { id: "domains",          label: "Account Domains",                              desc: "The number of Egnyte domain URLs included — useful for separating departments or subsidiaries." },
+      { id: "max_users",        label: "Maximum Number of Users",                      desc: "The total number of licensed power users that can be active on the account." },
+      { id: "sso",              label: "User Authentication (AD and SSO/SAML)",        desc: "Connect Egnyte to your identity provider (Okta, Azure AD, etc.) so users log in with their existing corporate credentials.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638364-Active-Directory-LDAP-Integration" },
+      { id: "mfa",              label: "Multi-Factor Authentication",                  desc: "Require a second verification step at login to protect accounts from unauthorized access.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638344-Two-Factor-Authentication" },
+      { id: "external_collab",  label: "External Collaborators",                       desc: "Invite people outside your organization to view or edit specific files and folders without a full license.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637744-Inviting-External-Users" },
+      { id: "granular_perms",   label: "Granular Permissions",                         desc: "Set folder-level access controls (View, Edit, Full) for individual users or groups with full inheritance control.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637824-Setting-Folder-Permissions" },
+      { id: "compliant_storage",label: "Compliant Storage (HIPAA, FINRA, SOC2, ISO 27001)", desc: "Storage infrastructure certified for major regulatory frameworks, with audit trails and controls required for compliance.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638124-Compliance-Overview" },
+      { id: "audit",            label: "File & Login Auditing",                        desc: "Full logs of who accessed, modified, shared, or downloaded every file — searchable and exportable for audits.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637534-File-Audit-Report" },
+      { id: "edge_caching",     label: "Edge Caching / Hybrid Caching",                desc: "A local cache appliance that accelerates file access for on-site users while keeping cloud as the source of truth.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000286631-Smart-Cache-Overview" },
+      { id: "role_admin",       label: "Role-Based Administration",                    desc: "Assign admin privileges by role (Power User, Standard User, Admin) to delegate management without giving full control.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638124-Compliance-Overview" },
+      { id: "device_controls",  label: "Device Controls for Mobile & Desktop",         desc: "Enforce policies on mobile and desktop apps — remote wipe, PIN lock, and restrict downloads on unmanaged devices.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638354-Mobile-Device-Management" },
+      { id: "data_residency",   label: "Data Residency Options",                       desc: "Choose which cloud region (US, EU, etc.) stores your data to meet local data sovereignty laws.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/17391112602637-Customize-Your-Cloud-Storage-on-Egnyte" },
+      { id: "encryption_keys",  label: "Encryption Key Management",                    desc: "Retain and manage your own encryption keys using AWS KMS or Azure Key Vault instead of Egnyte-managed keys.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/218025867-Enterprise-Key-Management" },
+      { id: "link_throttling",  label: "Link Throttling Removal",                      desc: "Remove bandwidth limits on shared links, allowing recipients to download large files at full speed." },
+      { id: "migration_tools",  label: "Migration Tools",                              desc: "Built-in tools to migrate content from file servers, SharePoint, Box, Dropbox, and other sources into Egnyte.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360001819831-Egnyte-Migration-App-Overview" },
     ],
   },
   {
@@ -33,14 +33,14 @@ const FEATURE_SECTIONS = [
     label: "Intelligence & Search",
     color: "#0BC5BA",
     features: [
-      { id: "single_doc_qa",         label: "Single Document / Image Summary & Q&A",              helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/16949145831949-AI-Driven-Document-Summarization-Document-Q-A" },
-      { id: "copilot",               label: "AI Copilot (Multi-Doc Q&A, Knowledge Bases, Content Generation)", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/28274380320397-Copilot-Overview" },
-      { id: "ai_search",             label: "AI Search (Natural Language + AI-Generated Summary)", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/28274380320397-Copilot-Overview" },
-      { id: "ai_workflows",          label: "AI Workflows (AI-Triggered & AI-Step Workflows)",    helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/18313846897549-Workflow-Templates-Overview" },
-      { id: "text_search",           label: "Full-Text Search",                                    helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637624-Searching-in-Egnyte" },
-      { id: "ocr_search",            label: "OCR (Optical Character Recognition)",                 helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31323136131597-AI-Driven-Metadata-Tags-Trainable-Classifiers" },
-      { id: "ai_classification",     label: "Document Type Classification",                        helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31323136131597-AI-Driven-Metadata-Tags-Trainable-Classifiers" },
-      { id: "trainable_classifiers", label: "Trainable Classifiers",                               helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31323136131597-AI-Driven-Metadata-Tags-Trainable-Classifiers" },
+      { id: "single_doc_qa",         label: "Single Document / Image Summary & Q&A",              desc: "Ask questions about or get a summary of any single file — works on PDFs, Word docs, images, and more.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/16949145831949-AI-Driven-Document-Summarization-Document-Q-A" },
+      { id: "copilot",               label: "AI Copilot (Multi-Doc Q&A, Knowledge Bases, Content Generation)", desc: "Chat with multiple files at once, build searchable knowledge bases, and generate content like emails and summaries.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/28274380320397-Copilot-Overview" },
+      { id: "ai_search",             label: "AI Search (Natural Language + AI-Generated Summary)", desc: "Search using plain English questions and get an AI-generated answer alongside the matching files.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/28274380320397-Copilot-Overview" },
+      { id: "ai_workflows",          label: "AI Workflows (AI-Triggered & AI-Step Workflows)",    desc: "Trigger workflows automatically based on AI-detected metadata, or use AI as a step to classify or extract data.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/18313846897549-Workflow-Templates-Overview" },
+      { id: "text_search",           label: "Full-Text Search",                                   desc: "Search inside the content of all stored files, including documents, spreadsheets, and presentations.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637624-Searching-in-Egnyte" },
+      { id: "ocr_search",            label: "OCR (Optical Character Recognition)",                desc: "Automatically extract and index text from scanned documents and images so they become fully searchable.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31323136131597-AI-Driven-Metadata-Tags-Trainable-Classifiers" },
+      { id: "ai_classification",     label: "Document Type Classification",                       desc: "Automatically identify document types (contracts, invoices, resumes, etc.) using AI and apply tags accordingly.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31323136131597-AI-Driven-Metadata-Tags-Trainable-Classifiers" },
+      { id: "trainable_classifiers", label: "Trainable Classifiers",                              desc: "Train a custom AI model on your own document samples so it can recognize and tag your organization's unique file types.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31323136131597-AI-Driven-Metadata-Tags-Trainable-Classifiers" },
     ],
   },
   {
@@ -48,25 +48,25 @@ const FEATURE_SECTIONS = [
     label: "Collaboration",
     color: "#6E49FF",
     features: [
-      { id: "comments_tasks",   label: "Comments and Tasks",                            helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637764-Comments-and-Notes" },
-      { id: "file_locking",     label: "Global File Locking",                           helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637884-File-Locking" },
-      { id: "metadata",         label: "Metadata",                                      helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638074-Custom-Metadata" },
-      { id: "desktop_apps",     label: "Desktop Apps (Mac and PC)",                     helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638044-Desktop-App-Overview" },
-      { id: "mobile_apps",      label: "Mobile Apps (iOS and Android)",                 helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638054-Mobile-App-Overview" },
-      { id: "external_accounts",label: "External User Accounts",                        helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637744-Inviting-External-Users" },
-      { id: "link_sharing",     label: "Link Sharing / Password-Protected Links",       helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637714-Sharing-Files-and-Folders" },
-      { id: "viewer_permission",label: '"Read-Only" Viewer Permission',                 helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/9302129964429-Viewer-Only-Permission" },
-      { id: "email_sharing",    label: "Email-Validated Sharing" },
-      { id: "pdf_handler",      label: "PDF Markup (Edit, Annotate, Compare, Redact)",  helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/28618583088013-PDF-File-Handler-Add-On" },
-      { id: "esignature",       label: "e-Signature",                                   helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/24075263159821-Egnyte-Sign-Overview-and-Administration" },
-      { id: "watermarking",     label: "Dynamic Watermarking",                          helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360056705352-Watermarking" },
-      { id: "content_safeguards",label: "Content Safeguards",                          helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360056705352-Watermarking" },
-      { id: "standard_workflows",label: "Standard Workflows",                          helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/18313846897549-Workflow-Templates-Overview" },
-      { id: "advanced_workflows",label: "Advanced (Multi-Step) Workflows",             helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/18313846897549-Workflow-Templates-Overview" },
-      { id: "advanced_video",   label: "Advanced Video Playback" },
-      { id: "file_versioning",  label: "File Versioning",                               helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637904-File-Versioning" },
-      { id: "advanced_snapshot",label: "Snapshot & Recovery (30-day)",                  helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/4417226750605-Ransomware-Recovery-Using-Egnyte-Secure-Govern" },
-      { id: "snapshot_90",      label: "Advanced Snapshot & Recovery (90-day)",         helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/4417226750605-Ransomware-Recovery-Using-Egnyte-Secure-Govern" },
+      { id: "comments_tasks",    label: "Comments and Tasks",                           desc: "Leave inline comments on files and assign tasks with due dates — keeping feedback and action items in one place.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637764-Comments-and-Notes" },
+      { id: "file_locking",      label: "Global File Locking",                          desc: "Lock a file while editing so no one else can modify it simultaneously — prevents version conflicts across all devices.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637884-File-Locking" },
+      { id: "metadata",          label: "Metadata",                                     desc: "Add custom metadata fields to files and folders for better organization, search filtering, and workflow automation.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638074-Custom-Metadata" },
+      { id: "desktop_apps",      label: "Desktop Apps (Mac and PC)",                    desc: "Native Mac and Windows apps that sync files locally and integrate directly with Office and other desktop applications.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638044-Desktop-App-Overview" },
+      { id: "mobile_apps",       label: "Mobile Apps (iOS and Android)",                desc: "Full-featured iOS and Android apps for accessing, sharing, and editing files securely from any mobile device.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638054-Mobile-App-Overview" },
+      { id: "external_accounts", label: "External User Accounts",                       desc: "Give external collaborators a limited Egnyte account with controlled access to specific folders.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637744-Inviting-External-Users" },
+      { id: "link_sharing",      label: "Link Sharing / Password-Protected Links",      desc: "Share files via secure links — set passwords, expiration dates, and download restrictions for each link.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637714-Sharing-Files-and-Folders" },
+      { id: "viewer_permission", label: '"Read-Only" Viewer Permission',                desc: "A permission level that allows users to view files in the browser but prevents downloading, editing, or forwarding.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/9302129964429-Viewer-Only-Permission" },
+      { id: "email_sharing",     label: "Email-Validated Sharing",                      desc: "Restrict access to a shared link so only specific email addresses can open it — even if the link is forwarded." },
+      { id: "pdf_handler",       label: "PDF Markup (Edit, Annotate, Compare, Redact)", desc: "Annotate, highlight, redact, and compare PDF files directly in the browser without downloading them.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/28618583088013-PDF-File-Handler-Add-On" },
+      { id: "esignature",        label: "e-Signature",                                  desc: "Send documents for legally binding electronic signatures directly from Egnyte — no third-party tool needed.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/24075263159821-Egnyte-Sign-Overview-and-Administration" },
+      { id: "watermarking",      label: "Dynamic Watermarking",                         desc: "Automatically stamp sensitive documents with the viewer's name or email when opened, deterring unauthorized sharing.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360056705352-Watermarking" },
+      { id: "content_safeguards",label: "Content Safeguards",                           desc: "Policy-based controls that restrict how content can be shared, downloaded, or accessed based on sensitivity rules.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360056705352-Watermarking" },
+      { id: "standard_workflows",label: "Standard Workflows",                           desc: "Simple ad hoc approval workflows to route documents to reviewers and capture sign-off in an auditable trail.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/18313846897549-Workflow-Templates-Overview" },
+      { id: "advanced_workflows",label: "Advanced (Multi-Step) Workflows",              desc: "Multi-step, template-based workflows with conditional logic, AI steps, automated actions, and webhook integrations.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/18313846897549-Workflow-Templates-Overview" },
+      { id: "advanced_video",    label: "Advanced Video Playback",                      desc: "Play back a broader range of video formats up to 2GB directly in the browser without downloading." },
+      { id: "file_versioning",   label: "File Versioning",                              desc: "Automatically retain previous versions of every file so you can view history or restore an earlier version at any time.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637904-File-Versioning" },
+      { id: "advanced_snapshot", label: "Snapshot & Recovery (30-day)",                 desc: "Create point-in-time snapshots of all data so you can identify and recover from ransomware or accidental deletions within 30 days.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/4417226750605-Ransomware-Recovery-Using-Egnyte-Secure-Govern" },
+      { id: "snapshot_90",       label: "Advanced Snapshot & Recovery (90-day)",        desc: "Extended 90-day snapshot retention for deeper recovery windows — critical for regulated industries with longer incident timelines.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/4417226750605-Ransomware-Recovery-Using-Egnyte-Secure-Govern" },
     ],
   },
   {
@@ -74,24 +74,24 @@ const FEATURE_SECTIONS = [
     label: "Governance & Security",
     color: "#3D71EA",
     features: [
-      { id: "lifecycle_reports",    label: "Content Lifecycle Analytics & Reports",              helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360034403532-Content-Lifecycle-Policies" },
-      { id: "lifecycle_policies",   label: "Content Lifecycle (Retain, Archive, Delete) Policies", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360034403532-Content-Lifecycle-Policies" },
-      { id: "unified_perms",        label: "Unified Permissions Viewer",                         helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360027511552-Issue-Types-and-Remediation" },
-      { id: "suspicious_login",     label: "Suspicious Login Issue Detection",                   helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/7299778344077-Customizing-Suspicious-Login-Detections" },
-      { id: "sharing_issues",       label: "Public Link / Open Access / Permission Issue Detection", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360027511552-Issue-Types-and-Remediation" },
-      { id: "unusual_access",       label: "Unusual Access Detection",                           helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000723192-Analysis-Rules-Overview" },
-      { id: "inactive_user",        label: "Inactive User Detection",                            helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000723192-Analysis-Rules-Overview" },
-      { id: "malformed_perms",      label: "Malformed Permissions Detection",                    helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000723192-Analysis-Rules-Overview" },
-      { id: "ransomware_artifact",  label: "Probable Ransomware Detection (Artifact-Based)",    helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360059480351-Ransomware-FAQs" },
-      { id: "ransomware_behavioral",label: "Probable Ransomware Detection (Behavioral-Based)",  helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360057085752-Analysis-Rules-FAQs" },
-      { id: "sensitive_data",       label: "Sensitive Data Discovery & Classification",          helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000099332-Egnyte-Secure-Govern-Overview" },
-      { id: "doc_labeling",         label: "Document Labeling",                                  helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/32356780428045-Microsoft-Purview-and-Egnyte-Integration" },
-      { id: "compliance_monitoring",label: "Privacy & Compliance Monitoring",                    helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000099332-Egnyte-Secure-Govern-Overview" },
-      { id: "sensitive_mgmt",       label: "Sensitive Data Management & Reviews",                helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000099332-Egnyte-Secure-Govern-Overview" },
-      { id: "api_remediation",      label: "Manual & API-Based Remediation",                     helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/13601376018829-Issue-Remediation-Best-Practices" },
-      { id: "auto_remediation",     label: "Auto Issue Remediation & Delegation",                 helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/23281081807245-Overview-Secure-Govern-Issue-Auto-Remediation" },
-      { id: "legal_hold",           label: "Legal Hold",                                          helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360034403532-Content-Lifecycle-Policies" },
-      { id: "rot_data",             label: "Redundant, Obsolete, and Trivial (ROT) Data Management", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360027511552-Issue-Types-and-Remediation" },
+      { id: "lifecycle_reports",     label: "Content Lifecycle Analytics & Reports",              desc: "Dashboards showing how content is aging, accessed, and distributed — helping identify stale or at-risk files.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360034403532-Content-Lifecycle-Policies" },
+      { id: "lifecycle_policies",    label: "Content Lifecycle (Retain, Archive, Delete) Policies", desc: "Automate retention schedules, archival, and deletion of content based on age, type, or custom rules.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360034403532-Content-Lifecycle-Policies" },
+      { id: "unified_perms",         label: "Unified Permissions Viewer",                         desc: "A single view showing exactly who has access to what across the entire file system — simplifies access reviews.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360027511552-Issue-Types-and-Remediation" },
+      { id: "suspicious_login",      label: "Suspicious Login Issue Detection",                   desc: "Detects anomalous login patterns (unusual location, time, or frequency) that may indicate a compromised account.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/7299778344077-Customizing-Suspicious-Login-Detections" },
+      { id: "sharing_issues",        label: "Public Link / Open Access / Permission Issue Detection", desc: "Flags files that are publicly shared, over-permissioned, or exposed outside expected access boundaries.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360027511552-Issue-Types-and-Remediation" },
+      { id: "unusual_access",        label: "Unusual Access Detection",                           desc: "Uses behavioral baselines to detect when a user is accessing far more files than normal — an early ransomware signal.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000723192-Analysis-Rules-Overview" },
+      { id: "inactive_user",         label: "Inactive User Detection",                            desc: "Identifies licensed users who haven't logged in recently, helping clean up stale accounts and reduce risk.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000723192-Analysis-Rules-Overview" },
+      { id: "malformed_perms",       label: "Malformed Permissions Detection",                    desc: "Catches broken or misconfigured permission inheritance that could inadvertently expose sensitive content.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000723192-Analysis-Rules-Overview" },
+      { id: "ransomware_artifact",   label: "Probable Ransomware Detection (Artifact-Based)",    desc: "Monitors for known ransomware file extensions, encrypted file patterns, and ransom note indicators.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360059480351-Ransomware-FAQs" },
+      { id: "ransomware_behavioral", label: "Probable Ransomware Detection (Behavioral-Based)",  desc: "Uses machine learning to detect ransomware by recognizing suspicious behavioral patterns before known signatures appear.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360057085752-Analysis-Rules-FAQs" },
+      { id: "sensitive_data",        label: "Sensitive Data Discovery & Classification",          desc: "Scans all content automatically to find PII, financial data, PHI, and other sensitive data — then classifies and monitors it continuously.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000099332-Egnyte-Secure-Govern-Overview" },
+      { id: "doc_labeling",          label: "Document Labeling",                                  desc: "Apply persistent sensitivity labels (e.g. Microsoft Purview labels) to documents for downstream DLP enforcement.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/32356780428045-Microsoft-Purview-and-Egnyte-Integration" },
+      { id: "compliance_monitoring", label: "Privacy & Compliance Monitoring",                    desc: "Continuous monitoring against compliance frameworks (GDPR, HIPAA, CCPA) with dashboards showing exposure and risk.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000099332-Egnyte-Secure-Govern-Overview" },
+      { id: "sensitive_mgmt",        label: "Sensitive Data Management & Reviews",                desc: "Workflow tools to assign owners, trigger reviews, and track the remediation of sensitive data findings.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/115000099332-Egnyte-Secure-Govern-Overview" },
+      { id: "api_remediation",       label: "Manual & API-Based Remediation",                     desc: "Manually fix flagged issues through the UI or automate remediation at scale using the Egnyte API.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/13601376018829-Issue-Remediation-Best-Practices" },
+      { id: "auto_remediation",      label: "Auto Issue Remediation & Delegation",                desc: "Automatically fix governance issues (revoke links, quarantine files) based on policy rules without manual intervention.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/23281081807245-Overview-Secure-Govern-Issue-Auto-Remediation" },
+      { id: "legal_hold",            label: "Legal Hold",                                         desc: "Preserve specific content from deletion or modification during litigation or regulatory investigation.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360034403532-Content-Lifecycle-Policies" },
+      { id: "rot_data",              label: "Redundant, Obsolete, and Trivial (ROT) Data Management", desc: "Identify and clean up duplicate, outdated, or unnecessary files to reduce storage costs and compliance risk.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360027511552-Issue-Types-and-Remediation" },
     ],
   },
   {
@@ -99,10 +99,10 @@ const FEATURE_SECTIONS = [
     label: "Integrations & API",
     color: "#00539A",
     features: [
-      { id: "google_workspace", label: "Google Workspace Integration & Co-Editing",    helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638164-Google-Apps-Integration" },
-      { id: "m365",             label: "M365 / MS Copilot & Co-Editing (Online & Desktop)", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638174-Microsoft-Office-Integration" },
-      { id: "dlp",              label: "DLP / Preventative Control Integrations",      helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/32356780428045-Microsoft-Purview-and-Egnyte-Integration" },
-      { id: "app_integrations", label: "150+ Industry Application Integrations",       helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638984-Third-Party-Apps-That-Can-Be-Used-With-Egnyte" },
+      { id: "google_workspace", label: "Google Workspace Integration & Co-Editing",    desc: "Real-time co-editing of Google Docs, Sheets, and Slides stored in Egnyte — no need to sync to Google Drive.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638164-Google-Apps-Integration" },
+      { id: "m365",             label: "M365 / MS Copilot & Co-Editing (Online & Desktop)", desc: "Co-edit Word, Excel, and PowerPoint files in real time using both the browser and desktop Office apps.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638174-Microsoft-Office-Integration" },
+      { id: "dlp",              label: "DLP / Preventative Control Integrations",      desc: "Connect Egnyte to DLP tools like Microsoft Purview to enforce data loss prevention policies on labeled content.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/32356780428045-Microsoft-Purview-and-Egnyte-Integration" },
+      { id: "app_integrations", label: "150+ Industry Application Integrations",       desc: "Pre-built connectors for Procore, Salesforce, Autodesk, Adobe, Bentley, Esri, and 150+ other industry applications.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638984-Third-Party-Apps-That-Can-Be-Used-With-Egnyte" },
     ],
   },
   {
@@ -111,8 +111,8 @@ const FEATURE_SECTIONS = [
     color: "#FFCA29",
     isAddons: true,
     features: [
-      { id: "project_hub", label: "Project Hub (AEC Dashboard, Templates, Lifecycle)", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360001819831-Egnyte-Migration-App-Overview" },
-      { id: "doc_portal",  label: "Document Portal",                                   helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31085359026701-Document-Portal-Overview-and-using-Document-Portal" },
+      { id: "project_hub", label: "Project Hub (AEC Dashboard, Templates, Lifecycle)", desc: "Automates AEC project setup, folder structure, and close-out workflows with Procore and Autodesk integrations.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360001819831-Egnyte-Migration-App-Overview" },
+      { id: "doc_portal",  label: "Document Portal",                                   desc: "A secure client-facing portal for collecting, requesting, and sharing sensitive documents — ideal for financial services onboarding.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31085359026701-Document-Portal-Overview-and-using-Document-Portal" },
     ],
   },
 ];
@@ -490,17 +490,61 @@ const StatusCell = ({ value }) => {
   );
 };
 
-// ─── HELPDESK LINK ────────────────────────────────────────────────────────────
-const HelpLink = ({ url, small }) => !url ? null : (
-  <a href={url} target="_blank" rel="noreferrer" title="Open helpdesk article"
-    style={{ display:"inline-flex", alignItems:"center", justifyContent:"center",
-      width: small ? 16 : 18, height: small ? 16 : 18,
-      borderRadius:4, background:E.navySurf, border:`1px solid ${E.border}`,
-      color:E.textMut, textDecoration:"none", fontSize: small ? 9 : 10,
-      fontWeight:700, flexShrink:0, transition:"all 0.15s" }}
-    onMouseEnter={e=>{ e.currentTarget.style.borderColor=E.teal; e.currentTarget.style.color=E.teal; e.currentTarget.style.background="rgba(11,197,186,0.1)"; }}
-    onMouseLeave={e=>{ e.currentTarget.style.borderColor=E.border; e.currentTarget.style.color=E.textMut; e.currentTarget.style.background=E.navySurf; }}>?</a>
-);
+// ─── FEATURE TOOLTIP ─────────────────────────────────────────────────────────
+const FeatureTooltip = ({ feat }) => {
+  const [visible, setVisible] = useState(false);
+  const [pos, setPos] = useState("right");
+  const btnRef = React.useRef(null);
+  if (!feat.desc && !feat.helpUrl) return <div style={{width:18}}/>;
+
+  const handleMouseEnter = () => {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setPos(rect.right > window.innerWidth - 280 ? "left" : "right");
+    }
+    setVisible(true);
+  };
+
+  return (
+    <div style={{ position:"relative", display:"flex", justifyContent:"center" }}>
+      <button ref={btnRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={() => setVisible(false)}
+        style={{ width:18, height:18, borderRadius:4, background:E.navySurf, border:`1px solid ${visible ? E.teal : E.border}`, color: visible ? E.teal : E.textMut, fontSize:10, fontWeight:700, cursor:"default", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s", fontFamily:"'Inter',sans-serif" }}>?</button>
+      {visible && (
+        <div style={{
+          position:"absolute", top:"50%", transform:"translateY(-50%)",
+          [pos === "right" ? "left" : "right"]: 26,
+          width:260, zIndex:1000,
+          background:"#0F1E38", border:`1px solid ${E.teal}44`,
+          borderRadius:10, padding:"12px 14px",
+          boxShadow:"0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(11,197,186,0.08)",
+          pointerEvents:"none",
+        }}>
+          <div style={{ fontSize:11, fontWeight:600, color:E.text, marginBottom:6, lineHeight:1.4 }}>{feat.label}</div>
+          {feat.desc && <p style={{ fontSize:11, color:E.textSub, lineHeight:1.65, margin:0, marginBottom: feat.helpUrl ? 10 : 0 }}>{feat.desc}</p>}
+          {feat.helpUrl && (
+            <div style={{ fontSize:10, color:E.teal, fontWeight:600, letterSpacing:"0.04em", pointerEvents:"auto" }}>
+              <a href={feat.helpUrl} target="_blank" rel="noreferrer" style={{ color:E.teal, textDecoration:"none" }} onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"} onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>Learn more →</a>
+            </div>
+          )}
+          {/* Arrow */}
+          <div style={{
+            position:"absolute", top:"50%", transform:"translateY(-50%)",
+            [pos === "right" ? "left" : "right"]: -5,
+            width:8, height:8, background:"#0F1E38",
+            border:`1px solid ${E.teal}44`,
+            borderRight: pos === "right" ? "none" : undefined,
+            borderTop: pos === "right" ? "none" : undefined,
+            borderLeft: pos === "left" ? "none" : undefined,
+            borderBottom: pos === "left" ? "none" : undefined,
+            transform: pos === "right" ? "translateY(-50%) rotate(45deg)" : "translateY(-50%) rotate(-135deg)",
+          }}/>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ─── FEATURE ROW (compare mode) ───────────────────────────────────────────────
 const FeatureRow = ({ feat, value, compareValue }) => {
@@ -520,7 +564,7 @@ const FeatureRow = ({ feat, value, compareValue }) => {
         )}
         <span style={{ fontSize:13, color: isGain ? E.text : E.textSub, fontWeight: isGain ? 600 : 400, lineHeight:1.4 }}>{feat.label}</span>
       </div>
-      <div style={{ display:"flex", justifyContent:"center" }}><HelpLink url={feat.helpUrl} /></div>
+      <FeatureTooltip feat={feat} />
       <StatusCell value={compareValue} />
       <StatusCell value={value} />
     </div>
@@ -543,7 +587,7 @@ const HexBg = () => (
 function PlanCard({ plan, label, isCurrent, families, selected, onChange }) {
   const accent = isCurrent ? E.textSub : E.teal;
   return (
-    <div style={{ background:E.navyCard, border:`1px solid ${isCurrent ? "rgba(118,162,188,0.2)" : E.border}`, borderRadius:14, padding:18 }}>
+    <div style={{ background:E.navyCard, border:`1px solid ${isCurrent ? "rgba(118,162,188,0.2)" : E.border}`, borderRadius:14, padding:18, boxShadow: isCurrent ? "0 4px 24px rgba(0,0,0,0.3)" : "0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(11,197,186,0.05)" }}>
       <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", color: isCurrent ? E.textMut : E.teal, marginBottom:12 }}>{label}</div>
       <div style={{ position:"relative", marginBottom:14 }}>
         <select value={selected} onChange={e=>onChange(e.target.value)}
@@ -614,8 +658,16 @@ export default function EgnytePlanMatrix() {
   const [emailPunchy, setEmailPunchy] = useState(null);
   const [valueLoading, setValueLoading] = useState(false);
   const [valueError, setValueError] = useState(null);
-  const [copiedEmail, setCopiedEmail] = useState(null); // "detailed" | "punchy" | null
+  const [copiedEmail, setCopiedEmail] = useState(null);
+  const [toast, setToast] = useState(null); // { msg, visible }
+  const toastTimer = React.useRef(null);
   const valueCache = React.useRef({});
+
+  const showToast = (msg) => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast({ msg, visible: true });
+    toastTimer.current = setTimeout(() => setToast(t => t ? {...t, visible: false} : null), 2200);
+  };
 
   // Reset when plans change
   React.useEffect(() => {
@@ -629,6 +681,7 @@ export default function EgnytePlanMatrix() {
   const copyEmail = (type, text) => {
     navigator.clipboard.writeText(text).then(() => {
       setCopiedEmail(type);
+      showToast("Email copied to clipboard");
       setTimeout(() => setCopiedEmail(null), 2500);
     });
   };
@@ -716,7 +769,7 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
     { node:<div style={{width:18,height:18,borderRadius:"50%",background:E.teal,display:"flex",alignItems:"center",justifyContent:"center"}}><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke={E.navy} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></div>, label:"Included" },
     { node:<span style={{padding:"2px 8px",borderRadius:4,background:"rgba(255,202,41,0.12)",border:`1px solid ${E.yellow}55`,color:E.yellow,fontSize:9,fontWeight:700,letterSpacing:"0.06em"}}>ADD-ON</span>, label:"Paid add-on" },
     { node:<span style={{padding:"2px 8px",borderRadius:4,background:"rgba(11,197,186,0.12)",border:`1px solid ${E.teal}55`,color:E.teal,fontSize:9,fontWeight:700,letterSpacing:"0.06em"}}>BUNDLED</span>, label:"Add-on included in plan" },
-    { node:<HelpLink url="https://helpdesk.egnyte.com" small />, label:"Helpdesk article" },
+    { node:<span style={{width:18,height:18,borderRadius:4,background:"#0A1628",border:"1px solid rgba(11,197,186,0.2)",color:"#76A2BC",fontSize:10,fontWeight:700,display:"inline-flex",alignItems:"center",justifyContent:"center"}}>?</span>, label:"Hover for feature details" },
   ];
 
   return (
@@ -729,19 +782,39 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
         .sec-hdr:hover{background:rgba(11,197,186,0.05)!important;cursor:pointer;}
         select{color-scheme:dark;}
         select option,select optgroup{background:#0F1E38;color:#F7F9FC;}
+        select:focus{outline:none;border-color:#0BC5BA !important;box-shadow:0 0 0 3px rgba(11,197,186,0.15) !important;}
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-track{background:#0C2340;}
         ::-webkit-scrollbar-thumb{background:rgba(11,197,186,0.25);border-radius:2px;}
         @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
         @keyframes spin{to{transform:rotate(360deg);}}
+        @keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+        @keyframes toastOut{from{opacity:1;transform:translateY(0) scale(1);}to{opacity:0;transform:translateY(8px) scale(0.95);}}
         .fade-up{animation:fadeUp 0.4s ease both;}
         .mode-btn{border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+        .mode-btn:hover{opacity:0.85;}
       `}</style>
 
       <div style={{ minHeight:"100vh", background:`linear-gradient(150deg,#0C2340 0%,#121F37 100%)`, color:E.text }}>
 
+        {/* TOAST */}
+        {toast && (
+          <div style={{
+            position:"fixed", bottom:32, left:"50%", transform:"translateX(-50%)",
+            zIndex:9999, animation: toast.visible ? "toastIn 0.25s ease both" : "toastOut 0.2s ease both",
+            pointerEvents:"none",
+          }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, background:"#0F2A1A", border:"1px solid rgba(11,197,186,0.35)", borderRadius:999, padding:"10px 20px", boxShadow:"0 8px 32px rgba(0,0,0,0.5)" }}>
+              <div style={{ width:18, height:18, borderRadius:"50%", background:"#0BC5BA", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#0C2340" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <span style={{ fontSize:13, fontWeight:600, color:"#F7F9FC", whiteSpace:"nowrap" }}>{toast.msg}</span>
+            </div>
+          </div>
+        )}
+
         {/* NAV */}
-        <header style={{ position:"relative", overflow:"hidden", background:E.navyMid, borderBottom:`1px solid ${E.border}` }}>
+        <header style={{ position:"relative", overflow:"hidden", background:E.navyMid, borderBottom:`1px solid ${E.border}`, boxShadow:"0 4px 24px rgba(0,0,0,0.4)" }}>
           <HexBg/>
           <div style={{ position:"relative", zIndex:1, maxWidth:1680, margin:"0 auto", padding:"0 32px", display:"flex", alignItems:"center", justifyContent:"space-between", height:60 }}>
             {/* Logo */}
@@ -777,12 +850,15 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
           {mode==="compare" && (
             <div className="fade-up">
               {/* Title */}
-              <div style={{ marginBottom:28 }}>
-                <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(11,197,186,0.1)", border:`1px solid rgba(11,197,186,0.25)`, borderRadius:999, padding:"4px 14px", marginBottom:14 }}>
-                  <div style={{ width:6, height:6, borderRadius:"50%", background:E.teal }}/>
-                  <span style={{ fontSize:11, fontWeight:600, color:E.teal, letterSpacing:"0.1em", textTransform:"uppercase" }}>Partner Upgrade Tool</span>
+              <div style={{ marginBottom:32 }}>
+                <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(11,197,186,0.08)", border:`1px solid rgba(11,197,186,0.2)`, borderRadius:999, padding:"5px 14px", marginBottom:16, boxShadow:"0 2px 12px rgba(11,197,186,0.08)" }}>
+                  <div style={{ position:"relative", width:7, height:7 }}>
+                    <div style={{ position:"absolute", inset:0, borderRadius:"50%", background:E.teal, opacity:0.4, animation:"spin 2s linear infinite" }}/>
+                    <div style={{ width:7, height:7, borderRadius:"50%", background:E.teal }}/>
+                  </div>
+                  <span style={{ fontSize:11, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase" }}>Partner Upgrade Tool</span>
                 </div>
-                <h1 style={{ fontSize:30, fontWeight:800, letterSpacing:"-0.03em", color:E.text, lineHeight:1.1, marginBottom:10 }}>
+                <h1 style={{ fontSize:32, fontWeight:800, letterSpacing:"-0.03em", color:E.text, lineHeight:1.1, marginBottom:12 }}>
                   Plan Upgrade{" "}
                   <span style={{ background:`linear-gradient(90deg,${E.teal},#1CFFF1)`, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Comparison</span>
                 </h1>
@@ -1044,7 +1120,7 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                             <td style={{ padding:"9px 16px", fontSize:13, color:E.textSub, position:"sticky", left:0, background:"inherit", borderRight:`1px solid ${E.border}`, zIndex:5 }}>
                               <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                                 {feat.label}
-                                <HelpLink url={feat.helpUrl} small/>
+                                <FeatureTooltip feat={feat} />
                               </div>
                             </td>
                             {PLANS.map(p=>(
