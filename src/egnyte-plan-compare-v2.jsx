@@ -635,6 +635,26 @@ export default function EgnytePlanMatrix() {
   const dMsrp = fp?.pricing?.msrp!=null && tp?.pricing?.msrp!=null ? tp.pricing.msrp - fp.pricing.msrp : null;
   const dMsp  = fp?.pricing?.msp !=null && tp?.pricing?.msp !=null ? tp.pricing.msp  - fp.pricing.msp  : null;
 
+  // ── Calculator state ──
+  const [userCount,  setUserCount]  = useState(25);
+  const [fromPrice,  setFromPrice]  = useState(null);
+  const [toPrice,    setToPrice]    = useState(null);
+  const [showDiffOnly, setShowDiffOnly] = useState(false);
+
+  // Sync prices when plans change
+  React.useEffect(() => {
+    setFromPrice(fp?.pricing?.msp ?? fp?.pricing?.msrp ?? null);
+    setToPrice(tp?.pricing?.msp   ?? tp?.pricing?.msrp ?? null);
+  }, [fromPlan, toPlan]);
+
+  const calcFromPrice = fromPrice ?? (fp?.pricing?.msp ?? fp?.pricing?.msrp ?? 0);
+  const calcToPrice   = toPrice   ?? (tp?.pricing?.msp ?? tp?.pricing?.msrp ?? 0);
+  const monthlyDelta  = (calcToPrice - calcFromPrice) * userCount;
+  const annualDelta   = monthlyDelta * 12;
+  const currentMo     = calcFromPrice * userCount;
+  const proposedMo    = calcToPrice   * userCount;
+  const fmtD = v => v >= 0 ? `+$${v.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:2})}` : `-$${Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:2})}`;
+
   const netNew = useMemo(()=>{
     if(!isUp) return 0;
     return FEATURE_SECTIONS.flatMap(s=>s.features).filter(f=>{
@@ -792,6 +812,13 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
         .fade-up{animation:fadeUp 0.4s ease both;}
         .mode-btn{border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
         .mode-btn:hover{opacity:0.85;}
+        @media print {
+          body { background: white !important; color: #111 !important; }
+          header, .no-print { display: none !important; }
+          .print-only { display: block !important; }
+          * { box-shadow: none !important; }
+          @page { margin: 1.5cm; }
+        }
       `}</style>
 
       <div style={{ minHeight:"100vh", background:`linear-gradient(150deg,#0C2340 0%,#121F37 100%)`, color:E.text }}>
@@ -884,42 +911,70 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                   ⚠ Select a higher-tier proposed plan to generate the upgrade comparison.
                 </div>
               ) : (<>
-                {/* Stat cards */}
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:20 }}>
+
+                {/* ── ROW 1: Stats + Calculator ── */}
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:12 }}>
+
+                  {/* Net-new features */}
                   <div style={{ background:"rgba(110,73,255,0.08)", border:`1px solid rgba(110,73,255,0.2)`, borderRadius:12, padding:"22px 24px" }}>
                     <div style={{ fontSize:10, fontWeight:700, color:"rgba(110,73,255,0.8)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:10 }}>Net-New Features</div>
-                    <div style={{ fontSize:38, fontWeight:800, color:E.purple, letterSpacing:"-0.04em", lineHeight:1, marginBottom:8 }}>{netNew}</div>
-                    <div style={{ fontSize:12, color:E.textMut, fontWeight:500 }}>capabilities unlocked by upgrading to {tp?.name}</div>
+                    <div style={{ fontSize:44, fontWeight:800, color:E.purple, letterSpacing:"-0.04em", lineHeight:1, marginBottom:8 }}>{netNew}</div>
+                    <div style={{ fontSize:12, color:E.textMut }}>capabilities unlocked upgrading to {tp?.name}</div>
                   </div>
-                  <div style={{ background: dMsp!=null ? "rgba(11,197,186,0.08)" : dMsrp!=null ? "rgba(3,123,189,0.08)" : "rgba(118,162,188,0.06)", border:`1px solid ${dMsp!=null ? "rgba(11,197,186,0.2)" : dMsrp!=null ? "rgba(3,123,189,0.2)" : "rgba(118,162,188,0.1)"}`, borderRadius:12, padding:"22px 24px" }}>
-                    <div style={{ fontSize:10, fontWeight:700, color: dMsp!=null ? "rgba(11,197,186,0.8)" : dMsrp!=null ? "rgba(3,123,189,0.8)" : "rgba(118,162,188,0.6)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>Cost Uplift</div>
-                    {dMsp!=null ? (
-                      <div style={{ display:"flex", alignItems:"flex-end", gap:20 }}>
-                        <div>
-                          <div style={{ fontSize:10, fontWeight:600, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4 }}>MSP</div>
-                          <div style={{ fontSize:38, fontWeight:800, color:E.teal, letterSpacing:"-0.04em", lineHeight:1 }}>{`+${fmt(dMsp)}`}</div>
-                        </div>
-                        <div style={{ width:1, height:38, background:"rgba(11,197,186,0.15)", flexShrink:0 }}/>
-                        <div>
-                          <div style={{ fontSize:10, fontWeight:600, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4 }}>MSRP</div>
-                          <div style={{ fontSize:38, fontWeight:800, color:`${E.teal}88`, letterSpacing:"-0.04em", lineHeight:1 }}>{`+${fmt(dMsrp)}`}</div>
-                        </div>
-                      </div>
-                    ) : dMsrp!=null ? (
+
+                  {/* Calculator card */}
+                  <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"18px 22px" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:14 }}>Deal Calculator</div>
+
+                    {/* Inputs row */}
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:14 }}>
+                      {/* User count */}
                       <div>
-                        <div style={{ fontSize:10, fontWeight:600, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4 }}>MSRP</div>
-                        <div style={{ fontSize:38, fontWeight:800, color:E.blue, letterSpacing:"-0.04em", lineHeight:1 }}>{`+${fmt(dMsrp)}`}</div>
+                        <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>Users</div>
+                        <input type="number" min="1" value={userCount}
+                          onChange={e => setUserCount(Math.max(1, parseInt(e.target.value)||1))}
+                          style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.border}`, borderRadius:7, padding:"8px 10px", color:E.text, fontSize:14, fontWeight:700, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
                       </div>
-                    ) : (
-                      <div style={{ fontSize:38, fontWeight:800, color:E.textSub, letterSpacing:"-0.04em", lineHeight:1 }}>—</div>
-                    )}
-                    <div style={{ fontSize:12, color:E.textMut, fontWeight:500, marginTop:8 }}>
-                      {dMsp!=null ? "per user / month" : dMsrp!=null ? "MSRP per user / month · MSP: contact Egnyte" : "contact Egnyte for pricing"}
+                      {/* From price */}
+                      <div>
+                        <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>{fp?.name} $/user</div>
+                        <div style={{ position:"relative" }}>
+                          <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:12 }}>$</span>
+                          <input type="number" min="0" step="0.01" value={calcFromPrice}
+                            onChange={e => setFromPrice(parseFloat(e.target.value)||0)}
+                            style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.border}`, borderRadius:7, padding:"8px 10px 8px 20px", color:E.textSub, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                        </div>
+                      </div>
+                      {/* To price */}
+                      <div>
+                        <div style={{ fontSize:9, fontWeight:700, color:E.teal+"aa", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>{tp?.name} $/user</div>
+                        <div style={{ position:"relative" }}>
+                          <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:12 }}>$</span>
+                          <input type="number" min="0" step="0.01" value={calcToPrice}
+                            onChange={e => setToPrice(parseFloat(e.target.value)||0)}
+                            style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.teal}44`, borderRadius:7, padding:"8px 10px 8px 20px", color:E.teal, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Output numbers */}
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:8 }}>
+                      {[
+                        { label:"Current/mo",  val:`$${currentMo.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:0})}`,  color:E.textSub },
+                        { label:"Proposed/mo", val:`$${proposedMo.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:0})}`, color:E.teal },
+                        { label:"Monthly Δ",   val:fmtD(monthlyDelta),  color: monthlyDelta>=0 ? E.teal : E.yellow },
+                        { label:"Annual Δ",    val:fmtD(annualDelta),   color: annualDelta>=0  ? E.purple : E.yellow },
+                      ].map(({label,val,color})=>(
+                        <div key={label} style={{ background:E.navySurf, borderRadius:8, padding:"10px 10px 8px" }}>
+                          <div style={{ fontSize:9, fontWeight:600, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:5 }}>{label}</div>
+                          <div style={{ fontSize:16, fontWeight:800, color, letterSpacing:"-0.02em" }}>{val}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Value section */}
+                {/* ── Value + Emails section ── */}
                 <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"20px 24px", marginBottom:20 }}>
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: (valuePoints || valueLoading || valueError) ? 16 : 0 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10 }}>
@@ -957,7 +1012,6 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                         <span style={{ fontSize:10, fontWeight:700, color:E.blue2, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Outreach Emails</span>
                       </div>
                       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-                        {/* Detailed email */}
                         {emailDetailed && (
                           <div style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:10, padding:"16px 18px", display:"flex", flexDirection:"column", gap:12 }}>
                             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
@@ -970,7 +1024,6 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                             <pre style={{ fontSize:12, color:E.textSub, lineHeight:1.85, margin:0, fontFamily:"'Inter',sans-serif", whiteSpace:"pre-wrap", wordBreak:"break-word" }}>{emailDetailed}</pre>
                           </div>
                         )}
-                        {/* Punchy email */}
                         {emailPunchy && (
                           <div style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:10, padding:"16px 18px", display:"flex", flexDirection:"column", gap:12 }}>
                             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
@@ -992,15 +1045,33 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                   )}
                 </div>
 
-                {/* Legend */}
-                <div style={{ display:"flex", gap:20, marginBottom:14, alignItems:"center", flexWrap:"wrap" }}>
-                  <span style={{ fontSize:10, fontWeight:700, color:E.textMut, textTransform:"uppercase", letterSpacing:"0.1em" }}>Legend</span>
-                  {LEGEND.map((l,i)=>(
-                    <div key={i} style={{ display:"flex", alignItems:"center", gap:7 }}>
-                      {l.node}
-                      <span style={{ fontSize:12, color:E.textSub }}>{l.label}</span>
-                    </div>
-                  ))}
+                {/* ── Legend + Diff toggle + Print ── */}
+                <div style={{ display:"flex", gap:16, marginBottom:14, alignItems:"center", flexWrap:"wrap", justifyContent:"space-between" }}>
+                  <div style={{ display:"flex", gap:16, alignItems:"center", flexWrap:"wrap" }}>
+                    <span style={{ fontSize:10, fontWeight:700, color:E.textMut, textTransform:"uppercase", letterSpacing:"0.1em" }}>Legend</span>
+                    {LEGEND.map((l,i)=>(
+                      <div key={i} style={{ display:"flex", alignItems:"center", gap:7 }}>
+                        {l.node}
+                        <span style={{ fontSize:12, color:E.textSub }}>{l.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                    {/* Diff toggle */}
+                    <button onClick={()=>setShowDiffOnly(v=>!v)}
+                      style={{ display:"flex", alignItems:"center", gap:7, padding:"6px 14px", borderRadius:7, border:`1px solid ${showDiffOnly ? E.teal+"88" : E.border}`, background: showDiffOnly ? "rgba(11,197,186,0.12)" : E.navyCard, color: showDiffOnly ? E.teal : E.textMut, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.2s" }}>
+                      <div style={{ width:12, height:12, borderRadius:2, border:`1.5px solid ${showDiffOnly ? E.teal : E.textMut}`, background: showDiffOnly ? E.teal : "transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        {showDiffOnly && <svg width="8" height="8" viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke={E.navy} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>}
+                      </div>
+                      Show differences only
+                    </button>
+                    {/* Print button */}
+                    <button onClick={()=>window.print()}
+                      style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 14px", borderRadius:7, border:`1px solid ${E.border}`, background:E.navyCard, color:E.textMut, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.2s" }}
+                      className="no-print">
+                      ⎙ Print / Save PDF
+                    </button>
+                  </div>
                 </div>
 
                 {/* Feature table */}
@@ -1026,7 +1097,14 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                           <div/><div/>
                           <div style={{ textAlign:"right", fontSize:11, color:E.textMut }}>{isExp?"▲":"▼"}</div>
                         </div>
-                        {isExp && section.features.map(feat=>(
+                        {isExp && section.features.filter(feat => {
+                    if(!showDiffOnly) return true;
+                    const fv = fp.features[feat.id];
+                    const tv = tp.features[feat.id];
+                    // Show if values differ in any meaningful way
+                    const norm = v => v===false||v===undefined ? "none" : v===true ? "yes" : String(v);
+                    return norm(fv) !== norm(tv);
+                  }).map(feat=>(
                           <FeatureRow key={feat.id} feat={feat} value={tp.features[feat.id]} compareValue={fp.features[feat.id]}/>
                         ))}
                       </div>
