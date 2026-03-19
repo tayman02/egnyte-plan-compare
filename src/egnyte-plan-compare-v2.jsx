@@ -586,11 +586,11 @@ const HexBg = () => (
 function PlanCard({ plan, label, isCurrent, families, selected, onChange }) {
   const accent = isCurrent ? E.textSub : E.teal;
   return (
-    <div style={{ background:E.navyCard, border:`1px solid ${isCurrent ? "rgba(118,162,188,0.2)" : E.border}`, borderRadius:14, padding:18, boxShadow: isCurrent ? "0 4px 24px rgba(0,0,0,0.3)" : "0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(11,197,186,0.05)" }}>
-      <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", color: isCurrent ? E.textMut : E.teal, marginBottom:12 }}>{label}</div>
-      <div style={{ position:"relative", marginBottom:14 }}>
+    <div style={{ background:E.navyCard, border:`1px solid ${isCurrent ? "rgba(118,162,188,0.2)" : E.border}`, borderRadius:14, padding:"14px 16px", boxShadow: isCurrent ? "0 4px 24px rgba(0,0,0,0.3)" : "0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(11,197,186,0.05)" }}>
+      <div style={{ fontSize:9, fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase", color: isCurrent ? E.textMut : E.teal, marginBottom:8 }}>{label}</div>
+      <div style={{ position:"relative", marginBottom:10 }}>
         <select value={selected} onChange={e=>onChange(e.target.value)}
-          style={{ width:"100%", appearance:"none", background:E.navySurf, border:`1px solid ${isCurrent ? "rgba(118,162,188,0.15)" : E.border}`, borderRadius:8, padding:"11px 36px 11px 14px", color:E.text, fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", outline:"none" }}>
+          style={{ width:"100%", appearance:"none", background:E.navySurf, border:`1px solid ${isCurrent ? "rgba(118,162,188,0.15)" : E.border}`, borderRadius:8, padding:"9px 36px 9px 12px", color:E.text, fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", outline:"none" }}>
           {Object.entries(families).map(([fam,ps])=>(
             <optgroup key={fam} label={fam}>
               {ps.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
@@ -599,8 +599,8 @@ function PlanCard({ plan, label, isCurrent, families, selected, onChange }) {
         </select>
         <span style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", color:accent, pointerEvents:"none", fontSize:11 }}>▾</span>
       </div>
-      <p style={{ fontSize:12, color:E.textSub, lineHeight:1.7, marginBottom:14 }}>{plan?.summary}</p>
-      <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
+      <p style={{ fontSize:11, color:E.textSub, lineHeight:1.6, marginBottom:10 }}>{plan?.summary}</p>
+      <div style={{ display:"flex", gap:14, flexWrap:"wrap" }}>
         {[
           ["MSRP", plan?.pricing?.msrp != null ? fmt(plan.pricing.msrp) : "—"],
           ["MSP",  plan?.pricing?.msp  != null ? fmt(plan.pricing.msp)  : plan?.pricing ? "Contact" : "—"],
@@ -912,65 +912,98 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                 </div>
               ) : (<>
 
-                {/* ── ROW 1: Stats + Calculator ── */}
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:12 }}>
+                {/* ── Unified Summary Bar ── */}
+                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, marginBottom:12, display:"grid", gridTemplateColumns:"auto 1px auto 1px 1fr 1px auto", alignItems:"stretch", overflow:"hidden" }}>
 
                   {/* Net-new features */}
-                  <div style={{ background:"rgba(110,73,255,0.08)", border:`1px solid rgba(110,73,255,0.2)`, borderRadius:12, padding:"22px 24px" }}>
-                    <div style={{ fontSize:10, fontWeight:700, color:"rgba(110,73,255,0.8)", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:10 }}>Net-New Features</div>
-                    <div style={{ fontSize:44, fontWeight:800, color:E.purple, letterSpacing:"-0.04em", lineHeight:1, marginBottom:8 }}>{netNew}</div>
-                    <div style={{ fontSize:12, color:E.textMut }}>capabilities unlocked upgrading to {tp?.name}</div>
+                  <div style={{ padding:"16px 24px", display:"flex", flexDirection:"column", justifyContent:"center", gap:4 }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:"rgba(110,73,255,0.7)", letterSpacing:"0.12em", textTransform:"uppercase" }}>Net-New</div>
+                    <div style={{ display:"flex", alignItems:"baseline", gap:6 }}>
+                      <span style={{ fontSize:36, fontWeight:800, color:E.purple, letterSpacing:"-0.04em", lineHeight:1 }}>{netNew}</span>
+                      <span style={{ fontSize:11, color:E.textMut, fontWeight:500 }}>features</span>
+                    </div>
+                    <div style={{ fontSize:10, color:E.textMut }}>unlocked with {tp?.name}</div>
                   </div>
 
-                  {/* Calculator card */}
-                  <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"18px 22px" }}>
-                    <div style={{ fontSize:10, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:14 }}>Deal Calculator</div>
+                  {/* Divider */}
+                  <div style={{ background:E.border, margin:"12px 0" }}/>
 
-                    {/* Inputs row */}
-                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:14 }}>
-                      {/* User count */}
+                  {/* Per-user cost */}
+                  <div style={{ padding:"16px 24px", display:"flex", flexDirection:"column", justifyContent:"center", gap:8 }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:2 }}>Per User / Month</div>
+                    <div style={{ display:"flex", gap:16, alignItems:"center" }}>
                       <div>
-                        <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>Users</div>
+                        <div style={{ fontSize:9, color:E.textMut, marginBottom:2, fontWeight:600, letterSpacing:"0.06em" }}>MSP</div>
+                        <div style={{ fontSize:22, fontWeight:800, color:E.teal, letterSpacing:"-0.03em" }}>
+                          {dMsp!=null ? `+${fmt(dMsp)}` : "—"}
+                        </div>
+                      </div>
+                      {dMsrp!=null && <>
+                        <div style={{ width:1, height:32, background:E.border }}/>
+                        <div>
+                          <div style={{ fontSize:9, color:E.textMut, marginBottom:2, fontWeight:600, letterSpacing:"0.06em" }}>MSRP</div>
+                          <div style={{ fontSize:22, fontWeight:800, color:`${E.teal}77`, letterSpacing:"-0.03em" }}>{`+${fmt(dMsrp)}`}</div>
+                        </div>
+                      </>}
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div style={{ background:E.border, margin:"12px 0" }}/>
+
+                  {/* Calculator inputs */}
+                  <div style={{ padding:"14px 20px", display:"flex", flexDirection:"column", justifyContent:"center", gap:10 }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase" }}>Deal Calculator</div>
+                    <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+                      {/* Users */}
+                      <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
+                        <span style={{ fontSize:9, color:E.textMut, fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase" }}>Users</span>
                         <input type="number" min="1" value={userCount}
                           onChange={e => setUserCount(Math.max(1, parseInt(e.target.value)||1))}
-                          style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.border}`, borderRadius:7, padding:"8px 10px", color:E.text, fontSize:14, fontWeight:700, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                          style={{ width:70, background:E.navySurf, border:`1px solid ${E.border}`, borderRadius:6, padding:"6px 8px", color:E.text, fontSize:13, fontWeight:700, fontFamily:"'Inter',sans-serif", outline:"none", textAlign:"center" }}/>
                       </div>
                       {/* From price */}
-                      <div>
-                        <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>{fp?.name} $/user</div>
-                        <div style={{ position:"relative" }}>
-                          <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:12 }}>$</span>
+                      <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
+                        <span style={{ fontSize:9, color:E.textMut, fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase" }}>{fp?.name} $/u</span>
+                        <div style={{ position:"relative", width:80 }}>
+                          <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11 }}>$</span>
                           <input type="number" min="0" step="0.01" value={calcFromPrice}
                             onChange={e => setFromPrice(parseFloat(e.target.value)||0)}
-                            style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.border}`, borderRadius:7, padding:"8px 10px 8px 20px", color:E.textSub, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                            style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.border}`, borderRadius:6, padding:"6px 8px 6px 18px", color:E.textSub, fontSize:13, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
                         </div>
                       </div>
+                      <span style={{ color:E.textMut, fontSize:14, marginTop:14 }}>→</span>
                       {/* To price */}
-                      <div>
-                        <div style={{ fontSize:9, fontWeight:700, color:E.teal+"aa", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>{tp?.name} $/user</div>
-                        <div style={{ position:"relative" }}>
-                          <span style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:12 }}>$</span>
+                      <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
+                        <span style={{ fontSize:9, color:E.teal, fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase" }}>{tp?.name} $/u</span>
+                        <div style={{ position:"relative", width:80 }}>
+                          <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11 }}>$</span>
                           <input type="number" min="0" step="0.01" value={calcToPrice}
                             onChange={e => setToPrice(parseFloat(e.target.value)||0)}
-                            style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.teal}44`, borderRadius:7, padding:"8px 10px 8px 20px", color:E.teal, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                            style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.teal}44`, borderRadius:6, padding:"6px 8px 6px 18px", color:E.teal, fontSize:13, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Output numbers */}
-                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:8 }}>
-                      {[
-                        { label:"Current/mo",  val:`$${currentMo.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:0})}`,  color:E.textSub },
-                        { label:"Proposed/mo", val:`$${proposedMo.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:0})}`, color:E.teal },
-                        { label:"Monthly Δ",   val:fmtD(monthlyDelta),  color: monthlyDelta>=0 ? E.teal : E.yellow },
-                        { label:"Annual Δ",    val:fmtD(annualDelta),   color: annualDelta>=0  ? E.purple : E.yellow },
-                      ].map(({label,val,color})=>(
-                        <div key={label} style={{ background:E.navySurf, borderRadius:8, padding:"10px 10px 8px" }}>
-                          <div style={{ fontSize:9, fontWeight:600, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:5 }}>{label}</div>
-                          <div style={{ fontSize:16, fontWeight:800, color, letterSpacing:"-0.02em" }}>{val}</div>
-                        </div>
-                      ))}
+                  {/* Divider */}
+                  <div style={{ background:E.border, margin:"12px 0" }}/>
+
+                  {/* Totals */}
+                  <div style={{ padding:"14px 20px", display:"flex", flexDirection:"column", justifyContent:"center", gap:8 }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:2 }}>Deal Impact</div>
+                    <div style={{ display:"flex", gap:16 }}>
+                      <div>
+                        <div style={{ fontSize:9, color:E.textMut, marginBottom:2, fontWeight:600, letterSpacing:"0.06em" }}>Monthly Δ</div>
+                        <div style={{ fontSize:20, fontWeight:800, color:E.teal, letterSpacing:"-0.03em" }}>{fmtD(monthlyDelta)}</div>
+                      </div>
+                      <div style={{ width:1, height:32, background:E.border, alignSelf:"center" }}/>
+                      <div>
+                        <div style={{ fontSize:9, color:E.textMut, marginBottom:2, fontWeight:600, letterSpacing:"0.06em" }}>Annual Δ</div>
+                        <div style={{ fontSize:20, fontWeight:800, color:E.purple, letterSpacing:"-0.03em" }}>{fmtD(annualDelta)}</div>
+                      </div>
                     </div>
+                    <div style={{ fontSize:10, color:E.textMut }}>{userCount} users · ${currentMo.toLocaleString()} → ${proposedMo.toLocaleString()}/mo</div>
                   </div>
                 </div>
 
