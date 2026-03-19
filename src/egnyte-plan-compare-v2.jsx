@@ -618,7 +618,7 @@ function PlanCard({ plan, label, isCurrent, families, selected, onChange }) {
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function EgnytePlanMatrix() {
-  const [fromPlan, setFromPlan] = useState("legacy_business");
+  const [fromPlan, setFromPlan] = useState("afs");
   const [toPlan,   setToPlan]   = useState("ifs");
   const [mode, setMode] = useState("compare");
   const [expanded, setExpanded] = useState(
