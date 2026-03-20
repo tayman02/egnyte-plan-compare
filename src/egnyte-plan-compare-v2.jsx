@@ -34,7 +34,7 @@ const FEATURE_SECTIONS = [
     color: "#0BC5BA",
     features: [
       { id: "single_doc_qa",         label: "Single Document / Image Summary & Q&A",              desc: "Ask questions about or get a summary of any single file — works on PDFs, Word docs, images, and more.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/16949145831949-AI-Driven-Document-Summarization-Document-Q-A" },
-      { id: "copilot",               label: "AI Copilot (Multi-Doc Q&A, Knowledge Bases, Content Generation)", desc: "Chat with multiple files at once, build searchable knowledge bases, and generate content like emails and summaries.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/28274380320397-Copilot-Overview" },
+      { id: "copilot",               label: "AI Assistant (Multi-Doc Q&A, Knowledge Bases, Content Generation)", desc: "Chat with multiple files at once, build searchable knowledge bases, and generate content like emails and summaries.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/28274380320397-Copilot-Overview" },
       { id: "ai_search",             label: "AI Search (Natural Language + AI-Generated Summary)", desc: "Search using plain English questions and get an AI-generated answer alongside the matching files.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/28274380320397-Copilot-Overview" },
       { id: "ai_workflows",          label: "AI Workflows (AI-Triggered & AI-Step Workflows)",    desc: "Trigger workflows automatically based on AI-detected metadata, or use AI as a step to classify or extract data.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/18313846897549-Workflow-Templates-Overview" },
       { id: "text_search",           label: "Full-Text Search",                                   desc: "Search inside the content of all stored files, including documents, spreadsheets, and presentations.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201637624-Searching-in-Egnyte" },
@@ -323,7 +323,7 @@ const PLANS = [
     name: "IFS",
     family: "Gen 4 MSP",
     gen: "Gen 4",
-    summary: "Everything in Starter, plus email-validated sharing, PDF markup, e-signature, advanced workflows, ransomware detection, and content lifecycle.",
+    summary: "Everything in Starter, plus AI Assistant, AI Search, AI Workflows, PDF markup, e-signature, advanced workflows, ransomware detection, and content lifecycle.",
     pricing: { msrp: 33, msp: 26.4 },
     features: {
       // Core Platform
@@ -333,8 +333,8 @@ const PLANS = [
       sso: true, mfa: true, external_collab: true, granular_perms: true, compliant_storage: true,
       audit: true, edge_caching: true, role_admin: true, device_controls: true,
       data_residency: true, encryption_keys: false, link_throttling: true, migration_tools: true,
-      // Intelligence — AI Copilot/Search/Workflows are $ (paid upgrade); single doc Q&A included
-      single_doc_qa: true, copilot: "optional", ai_search: "optional", ai_workflows: "optional",
+      // Intelligence — AI Assistant, AI Search, AI Workflows all included in IFS
+      single_doc_qa: true, copilot: true, ai_search: true, ai_workflows: true,
       text_search: true, ocr_search: false, ai_classification: false, trainable_classifiers: false,
       // Collaboration
       comments_tasks: true, file_locking: true, metadata: true, desktop_apps: true,
@@ -362,7 +362,7 @@ const PLANS = [
     name: "Elite",
     family: "Gen 4 MSP",
     gen: "Gen 4",
-    summary: "Everything in IFS, plus AI Copilot/Search/Workflows, PDF markup, e-signature, watermarking, and auto-remediation.",
+    summary: "Everything in IFS, plus dynamic watermarking and auto-remediation.",
     pricing: { msrp: 46, msp: 36.8 },
     features: {
       // Core Platform
@@ -372,7 +372,7 @@ const PLANS = [
       sso: true, mfa: true, external_collab: true, granular_perms: true, compliant_storage: true,
       audit: true, edge_caching: true, role_admin: true, device_controls: true,
       data_residency: true, encryption_keys: false, link_throttling: true, migration_tools: true,
-      // Intelligence — AI Copilot, AI Search, AI Workflows included in Elite; OCR, Doc Type Classification, Trainable Classifiers = Ultimate only
+      // Intelligence — AI Assistant, AI Search, AI Workflows included (same as IFS); OCR, Doc Type Classification, Trainable Classifiers = Ultimate only
       single_doc_qa: true, copilot: true, ai_search: true, ai_workflows: true,
       text_search: true, ocr_search: false, ai_classification: false, trainable_classifiers: false,
       // Collaboration — PDF markup, e-sig, watermarking, advanced video all included
