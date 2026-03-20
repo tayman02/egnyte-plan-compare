@@ -546,22 +546,27 @@ const FeatureTooltip = ({ feat }) => {
 };
 
 // ─── FEATURE ROW (compare mode) ───────────────────────────────────────────────
-const FeatureRow = ({ feat, value, compareValue }) => {
+const FeatureRow = ({ feat, value, compareValue, isVerticalHighlight }) => {
   const isGain = (value === true || value === "addon-included") && !compareValue;
+  const highlightBg = isVerticalHighlight ? "rgba(61,113,234,0.07)" : isGain ? "rgba(11,197,186,0.08)" : "transparent";
+  const leftBorder = isGain ? `3px solid ${E.teal}` : isVerticalHighlight ? `3px solid ${E.blue2}` : "3px solid transparent";
   return (
     <div className="feat-row" style={{
       display:"grid", gridTemplateColumns:"1fr 26px 120px 120px",
       padding:"10px 16px", alignItems:"center",
       borderBottom:`1px solid ${E.borderSub}`,
-      borderLeft: isGain ? `3px solid ${E.teal}` : "3px solid transparent",
-      background: isGain ? "rgba(11,197,186,0.08)" : "transparent",
+      borderLeft: leftBorder,
+      background: highlightBg,
       transition:"background 0.15s",
     }}>
       <div style={{ display:"flex", alignItems:"center", gap:8 }}>
         {isGain && (
           <span style={{ flexShrink:0, fontSize:9, fontWeight:700, letterSpacing:"0.07em", color:E.navy, background:E.teal, borderRadius:3, padding:"2px 5px", lineHeight:1 }}>NEW</span>
         )}
-        <span style={{ fontSize:13, color: isGain ? E.text : E.textSub, fontWeight: isGain ? 600 : 400, lineHeight:1.4 }}>{feat.label}</span>
+        {!isGain && isVerticalHighlight && (
+          <span style={{ flexShrink:0, fontSize:9, fontWeight:700, letterSpacing:"0.07em", color:E.blue2, background:"rgba(61,113,234,0.15)", border:`1px solid rgba(61,113,234,0.3)`, borderRadius:3, padding:"2px 5px", lineHeight:1 }}>KEY</span>
+        )}
+        <span style={{ fontSize:13, color: isGain ? E.text : isVerticalHighlight ? E.text : E.textSub, fontWeight: (isGain || isVerticalHighlight) ? 600 : 400, lineHeight:1.4 }}>{feat.label}</span>
       </div>
       <FeatureTooltip feat={feat} />
       <StatusCell value={compareValue} />
@@ -671,14 +676,33 @@ export default function EgnytePlanMatrix() {
 
   const toggle = id => setExpanded(p=>({...p,[id]:!p[id]}));
 
+  // ── Vertical filter ──
+  const [vertical, setVertical] = useState(null); // null = all
+
+  const VERTICALS = [
+    { id:"aec",      label:"AEC",              icon:"🏗",
+      desc:"Architecture, Engineering & Construction",
+      highlights:["project_hub","advanced_video","file_locking","link_sharing","advanced_workflows","app_integrations","edge_caching","migration_tools"] },
+    { id:"finserv",  label:"Financial Services",icon:"🏦",
+      desc:"Banking, Wealth, Insurance",
+      highlights:["doc_portal","sensitive_data","compliance_monitoring","lifecycle_policies","legal_hold","dlp","doc_labeling","suspicious_login","auto_remediation","audit","ransomware_artifact","ransomware_behavioral"] },
+    { id:"lifesci",  label:"Life Sciences",     icon:"🧬",
+      desc:"Pharma, Biotech, Medical Devices",
+      highlights:["compliant_storage","lifecycle_policies","legal_hold","compliance_monitoring","audit","sensitive_data","advanced_workflows","ocr_search","ransomware_artifact"] },
+    { id:"mssp",     label:"MSP / IT",          icon:"🖥",
+      desc:"Managed Service Providers & IT Teams",
+      highlights:["sso","device_controls","role_admin","ransomware_artifact","ransomware_behavioral","auto_remediation","suspicious_login","unusual_access","data_residency","encryption_keys","migration_tools","api_remediation"] },
+  ];
+
   // ── AI Value Generation ──
   const [valuePoints, setValuePoints] = useState(null);
   const [emailDetailed, setEmailDetailed] = useState(null);
   const [emailPunchy, setEmailPunchy] = useState(null);
+  const [objections, setObjections] = useState(null);
   const [valueLoading, setValueLoading] = useState(false);
   const [valueError, setValueError] = useState(null);
   const [copiedEmail, setCopiedEmail] = useState(null);
-  const [toast, setToast] = useState(null); // { msg, visible }
+  const [toast, setToast] = useState(null);
   const toastTimer = React.useRef(null);
   const valueCache = React.useRef({});
 
@@ -693,6 +717,7 @@ export default function EgnytePlanMatrix() {
     setValuePoints(null);
     setEmailDetailed(null);
     setEmailPunchy(null);
+    setObjections(null);
     setValueError(null);
     setCopiedEmail(null);
   }, [fromPlan, toPlan]);
@@ -707,12 +732,14 @@ export default function EgnytePlanMatrix() {
 
   const generateValue = () => {
     if (!isUp || !fp || !tp) return;
-    const valueKey = `${fromPlan}→${toPlan}`;
+    const verticalInfo = vertical ? VERTICALS.find(v=>v.id===vertical) : null;
+    const valueKey = `${fromPlan}→${toPlan}${vertical||""}`;
     if (valueCache.current[valueKey]) {
       const c = valueCache.current[valueKey];
       setValuePoints(c.points);
       setEmailDetailed(c.emailDetailed);
       setEmailPunchy(c.emailPunchy);
+      setObjections(c.objections);
       return;
     }
 
@@ -721,14 +748,26 @@ export default function EgnytePlanMatrix() {
       return (tv === true || tv === "addon-included") && !fv;
     }).map(f => f.label);
 
+    const verticalHighlights = verticalInfo
+      ? gained.filter(label => {
+          const feat = FEATURE_SECTIONS.flatMap(s=>s.features).find(f=>f.label===label);
+          return feat && verticalInfo.highlights.includes(feat.id);
+        })
+      : [];
+
     const costLine = dMsp != null
       ? `The MSP cost uplift is +$${dMsp.toFixed(2)}/user/month (MSRP +$${dMsrp}/user/month).`
       : `Pricing is available through the Egnyte partner team.`;
+
+    const verticalLine = verticalInfo
+      ? `The customer is in the ${verticalInfo.desc} industry. ${verticalHighlights.length > 0 ? `The most relevant capabilities for this vertical are: ${verticalHighlights.join(", ")}.` : ""}`
+      : "";
 
     setValueLoading(true);
     setValuePoints(null);
     setEmailDetailed(null);
     setEmailPunchy(null);
+    setObjections(null);
     setValueError(null);
 
     fetch("/api/value", {
@@ -736,7 +775,7 @@ export default function EgnytePlanMatrix() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 2000,
+        max_tokens: 2500,
         messages: [{
           role: "user",
           content: `You are a sales enablement writer for Egnyte, a content security and collaboration platform. A partner account manager is preparing an upgrade conversation with a customer moving from "${fp.name}" to "${tp.name}".
@@ -745,12 +784,18 @@ Net-new capabilities the customer will gain:
 ${gained.map(f => `- ${f}`).join("\n")}
 
 ${costLine}
+${verticalLine}
 
-Return ONLY a valid JSON object with exactly these three keys. No preamble, no markdown fences, no extra text whatsoever:
+Return ONLY a valid JSON object with exactly these four keys. No preamble, no markdown fences, no extra text whatsoever:
 {
   "points": ["value point 1", "value point 2", "value point 3"],
   "emailDetailed": "full detailed email text",
-  "emailPunchy": "short punchy email text"
+  "emailPunchy": "short punchy email text",
+  "objections": [
+    { "q": "objection question", "a": "concise response" },
+    { "q": "objection question", "a": "concise response" },
+    { "q": "objection question", "a": "concise response" }
+  ]
 }
 
 Rules that apply to ALL outputs:
@@ -760,11 +805,13 @@ Rules that apply to ALL outputs:
 - Do not reference AI, automation, or scripting in any way
 - Use plain text only, no HTML, no bullet symbols, no markdown
 
-For "points": 3 outcome-focused value statements (1-2 sentences each). Weave in the specific capabilities gained. Focus on what the business can now do or prevent, not feature names.
+For "points": 3 outcome-focused value statements (1-2 sentences each). ${verticalInfo ? `Tailor these to resonate with a ${verticalInfo.desc} buyer.` : "Focus on what the business can now do or prevent, not feature names."}
 
-For "emailDetailed": A professional but conversational upgrade outreach email. Structure: warm opener, 2-3 sentences grounded in the value points above explaining what they gain and why it matters for their business, a soft close inviting a conversation. 4-6 sentences total. No fluff. The value reasoning should be clear and direct.
+For "emailDetailed": A professional but conversational upgrade outreach email. Structure: warm opener, 2-3 sentences grounded in the value points above explaining what they gain and why it matters for their business, a soft close inviting a conversation. 4-6 sentences total. No fluff.
 
-For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most compelling outcome from the upgrade. One clear reason why now. One low-pressure ask. Everyday language, no jargon. Should feel like something a real person dashed off quickly.`
+For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most compelling outcome. One clear reason why now. One low-pressure ask. Everyday language, no jargon.
+
+For "objections": Exactly 3 of the most common real-world objections a customer would raise when asked to upgrade from ${fp.name} to ${tp.name}. Each "q" should be the objection phrased as the customer would say it (e.g. "Why would I pay more for features I don't use?"). Each "a" should be a confident, concise response a PAM would give — 2 sentences max, grounded in real business value, no fluff.`
         }]
       })
     })
@@ -778,6 +825,7 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
         setValuePoints(parsed.points);
         setEmailDetailed(parsed.emailDetailed);
         setEmailPunchy(parsed.emailPunchy);
+        setObjections(parsed.objections);
       } catch(e) { setValueError("Could not parse response. Try again."); }
     })
     .catch(() => setValueError("Request failed. Check your API key in Vercel environment variables."))
@@ -1007,6 +1055,52 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                   </div>
                 </div>
 
+                {/* ── Vertical Filter ── */}
+                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"16px 20px", marginBottom:12 }}>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <div style={{ width:2.5, height:14, borderRadius:2, background:E.blue2 }}/>
+                      <span style={{ fontSize:10, fontWeight:700, color:E.blue2, textTransform:"uppercase", letterSpacing:"0.12em" }}>Customer Vertical</span>
+                      <span style={{ fontSize:11, color:E.textMut }}>— highlights relevant features and tailors AI output</span>
+                    </div>
+                    <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                      <button onClick={()=>setVertical(null)}
+                        style={{ padding:"5px 14px", borderRadius:20, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s",
+                          background: vertical===null ? "rgba(118,162,188,0.15)" : "transparent",
+                          border: `1px solid ${vertical===null ? E.textSub : E.borderSub}`,
+                          color: vertical===null ? E.text : E.textMut }}>
+                        All
+                      </button>
+                      {VERTICALS.map(v=>(
+                        <button key={v.id} onClick={()=>setVertical(prev=>prev===v.id?null:v.id)}
+                          style={{ padding:"5px 14px", borderRadius:20, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s",
+                            background: vertical===v.id ? "rgba(11,197,186,0.12)" : "transparent",
+                            border: `1px solid ${vertical===v.id ? E.teal+"88" : E.borderSub}`,
+                            color: vertical===v.id ? E.teal : E.textMut }}>
+                          {v.icon} {v.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {vertical && (()=>{
+                    const v = VERTICALS.find(x=>x.id===vertical);
+                    const relevantGained = isUp ? FEATURE_SECTIONS.flatMap(s=>s.features).filter(f=>{
+                      const fv=fp?.features[f.id]; const tv=tp?.features[f.id];
+                      return (tv===true||tv==="addon-included") && !fv && v.highlights.includes(f.id);
+                    }) : [];
+                    return relevantGained.length > 0 ? (
+                      <div style={{ marginTop:12, paddingTop:12, borderTop:`1px solid ${E.borderSub}` }}>
+                        <div style={{ fontSize:10, color:E.textMut, marginBottom:8, fontWeight:600 }}>KEY GAINS FOR {v.label.toUpperCase()}</div>
+                        <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                          {relevantGained.map(f=>(
+                            <span key={f.id} style={{ fontSize:11, background:"rgba(11,197,186,0.1)", border:`1px solid rgba(11,197,186,0.25)`, color:E.teal, borderRadius:6, padding:"3px 10px", fontWeight:500 }}>{f.label}</span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+
                 {/* ── Value + Emails section ── */}
                 <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"20px 24px", marginBottom:20 }}>
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom: (valuePoints || valueLoading || valueError) ? 16 : 0 }}>
@@ -1019,7 +1113,7 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                       style={{ display:"flex", alignItems:"center", gap:7, padding:"7px 16px", borderRadius:7, border:`1px solid ${E.teal}55`, background: valueLoading ? "rgba(11,197,186,0.05)" : "rgba(11,197,186,0.1)", color: valueLoading ? E.textMut : E.teal, fontSize:12, fontWeight:600, cursor: valueLoading ? "not-allowed" : "pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s" }}>
                       {valueLoading
                         ? <><div style={{ width:12, height:12, borderRadius:"50%", border:`2px solid ${E.teal}55`, borderTopColor:E.teal, animation:"spin 0.8s linear infinite" }}/> Generating…</>
-                        : <>{valuePoints ? "↻ Regenerate" : "✦ Generate Value Summary"}</>}
+                        : <>{valuePoints ? "↻ Regenerate" : "✦ Generate Value Summary"}{vertical ? ` · ${VERTICALS.find(v=>v.id===vertical)?.icon}${VERTICALS.find(v=>v.id===vertical)?.label}` : ""}</>}
                     </button>
                   </div>
 
@@ -1075,6 +1169,31 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
 
                   {valueError && (
                     <p style={{ fontSize:12, color:E.yellow, marginTop:8 }}>⚠ {valueError}</p>
+                  )}
+
+                  {/* Objection Handler */}
+                  {objections && (
+                    <div style={{ borderTop:`1px solid ${E.border}`, paddingTop:20, marginTop:20 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
+                        <div style={{ width:2.5, height:14, borderRadius:2, background:E.yellow }}/>
+                        <span style={{ fontSize:10, fontWeight:700, color:E.yellow, textTransform:"uppercase", letterSpacing:"0.12em" }}>Common Objections</span>
+                        <span style={{ fontSize:10, color:E.textMut }}>— {fp.name} → {tp.name}</span>
+                      </div>
+                      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                        {objections.map((obj, i) => (
+                          <div key={i} style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:10, overflow:"hidden" }}>
+                            <div style={{ padding:"12px 16px", display:"flex", gap:10, alignItems:"flex-start", borderBottom:`1px solid ${E.borderSub}` }}>
+                              <span style={{ fontSize:10, fontWeight:700, color:E.yellow, background:"rgba(255,202,41,0.1)", border:`1px solid rgba(255,202,41,0.25)`, borderRadius:4, padding:"2px 7px", flexShrink:0, marginTop:1 }}>Q</span>
+                              <span style={{ fontSize:13, color:E.text, fontWeight:500, lineHeight:1.5 }}>{obj.q}</span>
+                            </div>
+                            <div style={{ padding:"12px 16px", display:"flex", gap:10, alignItems:"flex-start" }}>
+                              <span style={{ fontSize:10, fontWeight:700, color:E.teal, background:"rgba(11,197,186,0.1)", border:`1px solid rgba(11,197,186,0.25)`, borderRadius:4, padding:"2px 7px", flexShrink:0, marginTop:1 }}>A</span>
+                              <span style={{ fontSize:13, color:E.textSub, lineHeight:1.65 }}>{obj.a}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
 
@@ -1134,11 +1253,13 @@ For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most com
                     if(!showDiffOnly) return true;
                     const fv = fp.features[feat.id];
                     const tv = tp.features[feat.id];
-                    // Show if values differ in any meaningful way
                     const norm = v => v===false||v===undefined ? "none" : v===true ? "yes" : String(v);
                     return norm(fv) !== norm(tv);
-                  }).map(feat=>(
-                          <FeatureRow key={feat.id} feat={feat} value={tp.features[feat.id]} compareValue={fp.features[feat.id]}/>
+                  }).map(feat=>{
+                    const vertObj = vertical ? VERTICALS.find(v=>v.id===vertical) : null;
+                    const isVerticalHighlight = vertObj ? vertObj.highlights.includes(feat.id) : false;
+                    return (
+                          <FeatureRow key={feat.id} feat={feat} value={tp.features[feat.id]} compareValue={fp.features[feat.id]} isVerticalHighlight={isVerticalHighlight}/>
                         ))}
                       </div>
                     );
