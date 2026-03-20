@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import ReactDOM from "react-dom";
 
 // ─── TYPES: true = included, "optional" = paid add-on, "addon-included" = add-on bundled in plan, false/undefined = not available
 
@@ -492,22 +493,49 @@ const StatusCell = ({ value }) => {
 // ─── FEATURE TOOLTIP ─────────────────────────────────────────────────────────
 const FeatureTooltip = ({ feat }) => {
   const [visible, setVisible] = useState(false);
-  const [coords, setCoords] = useState({ top:0, left:0, pos:"right" });
+  const [coords, setCoords] = useState({ top:0, left:0 });
   const btnRef = React.useRef(null);
   if (!feat.desc && !feat.helpUrl) return <div style={{width:18}}/>;
 
   const handleMouseEnter = () => {
     if (btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect();
-      const goLeft = rect.right > window.innerWidth - 290;
-      setCoords({
-        top: rect.top + rect.height / 2,
-        left: goLeft ? rect.left - 270 : rect.right + 10,
-        pos: goLeft ? "left" : "right",
-      });
+      const r = btnRef.current.getBoundingClientRect();
+      const tooltipW = 264;
+      const goLeft = r.right + tooltipW + 12 > window.innerWidth;
+      const left = goLeft ? r.left - tooltipW - 8 : r.right + 8;
+      const top = r.top + r.height / 2;
+      // Clamp vertically so it doesn't go off screen
+      const clampedTop = Math.max(10, Math.min(top, window.innerHeight - 150));
+      setCoords({ top: clampedTop, left });
     }
     setVisible(true);
   };
+
+  const tooltip = visible ? (
+    <div style={{
+      position:"fixed", top:coords.top, left:coords.left,
+      transform:"translateY(-50%)",
+      width:264, zIndex:99999,
+      background:"#0F1E38",
+      border:`1px solid rgba(11,197,186,0.35)`,
+      borderRadius:10, padding:"12px 14px",
+      boxShadow:"0 8px 32px rgba(0,0,0,0.7)",
+      pointerEvents:"none",
+    }}>
+      <div style={{ fontSize:11, fontWeight:600, color:E.text, marginBottom:6, lineHeight:1.4 }}>{feat.label}</div>
+      {feat.desc && <p style={{ fontSize:11, color:E.textSub, lineHeight:1.65, margin:0, marginBottom: feat.helpUrl ? 10 : 0 }}>{feat.desc}</p>}
+      {feat.helpUrl && (
+        <div style={{ fontSize:10, color:E.teal, fontWeight:600, letterSpacing:"0.04em" }}>
+          <a href={feat.helpUrl} target="_blank" rel="noreferrer"
+            style={{ color:E.teal, textDecoration:"none" }}
+            onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"}
+            onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>
+            Learn more →
+          </a>
+        </div>
+      )}
+    </div>
+  ) : null;
 
   return (
     <div style={{ position:"relative", display:"flex", justifyContent:"center" }}>
@@ -515,27 +543,7 @@ const FeatureTooltip = ({ feat }) => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setVisible(false)}
         style={{ width:18, height:18, borderRadius:4, background:E.navySurf, border:`1px solid ${visible ? E.teal : E.border}`, color: visible ? E.teal : E.textMut, fontSize:10, fontWeight:700, cursor:"default", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s", fontFamily:"'Inter',sans-serif" }}>?</button>
-      {visible && (
-        <div style={{
-          position:"fixed",
-          top: coords.top,
-          left: coords.left,
-          transform:"translateY(-50%)",
-          width:260, zIndex:9999,
-          background:"#0F1E38", border:`1px solid ${E.teal}44`,
-          borderRadius:10, padding:"12px 14px",
-          boxShadow:"0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(11,197,186,0.1)",
-          pointerEvents:"none",
-        }}>
-          <div style={{ fontSize:11, fontWeight:600, color:E.text, marginBottom:6, lineHeight:1.4 }}>{feat.label}</div>
-          {feat.desc && <p style={{ fontSize:11, color:E.textSub, lineHeight:1.65, margin:0, marginBottom: feat.helpUrl ? 10 : 0 }}>{feat.desc}</p>}
-          {feat.helpUrl && (
-            <div style={{ fontSize:10, color:E.teal, fontWeight:600, letterSpacing:"0.04em", pointerEvents:"auto" }}>
-              <a href={feat.helpUrl} target="_blank" rel="noreferrer" style={{ color:E.teal, textDecoration:"none" }} onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"} onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>Learn more →</a>
-            </div>
-          )}
-        </div>
-      )}
+      {ReactDOM.createPortal(tooltip, document.body)}
     </div>
   );
 };
