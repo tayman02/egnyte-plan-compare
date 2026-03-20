@@ -621,6 +621,28 @@ function PlanCard({ plan, label, isCurrent, families, selected, onChange }) {
   );
 }
 
+// ─── VERTICAL KEY GAINS ───────────────────────────────────────────────────────
+function VerticalKeyGains({ vertical, VERTICALS, isUp, fp, tp, E }) {
+  const v = VERTICALS.find(x => x.id === vertical);
+  if (!v) return null;
+  const relevantGained = isUp ? FEATURE_SECTIONS.flatMap(s => s.features).filter(f => {
+    const fv = fp?.features[f.id];
+    const tv = tp?.features[f.id];
+    return (tv === true || tv === "addon-included") && !fv && v.highlights.includes(f.id);
+  }) : [];
+  if (relevantGained.length === 0) return null;
+  return (
+    <div style={{ marginTop:12, paddingTop:12, borderTop:`1px solid ${E.borderSub}` }}>
+      <div style={{ fontSize:10, color:E.textMut, marginBottom:8, fontWeight:600 }}>KEY GAINS FOR {v.label.toUpperCase()}</div>
+      <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+        {relevantGained.map(f=>(
+          <span key={f.id} style={{ fontSize:11, background:"rgba(11,197,186,0.1)", border:`1px solid rgba(11,197,186,0.25)`, color:E.teal, borderRadius:6, padding:"3px 10px", fontWeight:500 }}>{f.label}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function EgnytePlanMatrix() {
   const [fromPlan, setFromPlan] = useState("afs");
@@ -760,7 +782,7 @@ export default function EgnytePlanMatrix() {
       : `Pricing is available through the Egnyte partner team.`;
 
     const verticalLine = verticalInfo
-      ? `The customer is in the ${verticalInfo.desc} industry. ${verticalHighlights.length > 0 ? `The most relevant capabilities for this vertical are: ${verticalHighlights.join(", ")}.` : ""}`
+      ? "The customer is in the " + verticalInfo.desc + " industry. " + (verticalHighlights.length > 0 ? "The most relevant capabilities for this vertical are: " + verticalHighlights.join(", ") + "." : "")
       : "";
 
     setValueLoading(true);
@@ -805,7 +827,7 @@ Rules that apply to ALL outputs:
 - Do not reference AI, automation, or scripting in any way
 - Use plain text only, no HTML, no bullet symbols, no markdown
 
-For "points": 3 outcome-focused value statements (1-2 sentences each). ${verticalInfo ? `Tailor these to resonate with a ${verticalInfo.desc} buyer.` : "Focus on what the business can now do or prevent, not feature names."}
+For "points": 3 outcome-focused value statements (1-2 sentences each). ${verticalInfo ? "Tailor these to resonate with a " + verticalInfo.desc + " buyer." : "Focus on what the business can now do or prevent, not feature names."}
 
 For "emailDetailed": A professional but conversational upgrade outreach email. Structure: warm opener, 2-3 sentences grounded in the value points above explaining what they gain and why it matters for their business, a soft close inviting a conversation. 4-6 sentences total. No fluff.
 
@@ -1082,23 +1104,7 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                       ))}
                     </div>
                   </div>
-                  {vertical && (()=>{
-                    const v = VERTICALS.find(x=>x.id===vertical);
-                    const relevantGained = isUp ? FEATURE_SECTIONS.flatMap(s=>s.features).filter(f=>{
-                      const fv=fp?.features[f.id]; const tv=tp?.features[f.id];
-                      return (tv===true||tv==="addon-included") && !fv && v.highlights.includes(f.id);
-                    }) : [];
-                    return relevantGained.length > 0 ? (
-                      <div style={{ marginTop:12, paddingTop:12, borderTop:`1px solid ${E.borderSub}` }}>
-                        <div style={{ fontSize:10, color:E.textMut, marginBottom:8, fontWeight:600 }}>KEY GAINS FOR {v.label.toUpperCase()}</div>
-                        <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                          {relevantGained.map(f=>(
-                            <span key={f.id} style={{ fontSize:11, background:"rgba(11,197,186,0.1)", border:`1px solid rgba(11,197,186,0.25)`, color:E.teal, borderRadius:6, padding:"3px 10px", fontWeight:500 }}>{f.label}</span>
-                          ))}
-                        </div>
-                      </div>
-                    ) : null;
-                  })()}
+                  {vertical && VerticalKeyGains({ vertical, VERTICALS, isUp, fp, tp, E })}
                 </div>
 
                 {/* ── Value + Emails section ── */}
@@ -1315,30 +1321,39 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                   </colgroup>
                   <thead>
                     {/* Row 1: Generation group headers — sticky below nav */}
-                    <tr style={{ background:E.navyMid }}>
-                      <th style={{ padding:"12px 16px", textAlign:"left", position:"sticky", top:61, left:0, background:E.navyMid, zIndex:30, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
+                    <tr>
+                      <th style={{ padding:"12px 16px", textAlign:"left", position:"sticky", top:61, left:0, background:E.navySurf, zIndex:30, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
                         <span style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase" }}>Feature</span>
                       </th>
-                      {Object.entries(families).map(([fam,ps])=>(
-                        <th key={fam} colSpan={ps.length} style={{ padding:"10px 12px", textAlign:"center", position:"sticky", top:61, background:E.navyMid, zIndex:20, borderBottom:`1px solid ${E.border}`, borderLeft:`1px solid ${E.border}` }}>
-                          <span style={{ fontSize:10, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase",
-                            color: fam==="Legacy" ? E.textSub : fam.includes("Gen 3") ? E.blue : E.teal }}>
-                            {fam}
-                          </span>
-                        </th>
-                      ))}
+                      {Object.entries(families).map(([fam,ps])=>{
+                        const famAccent = fam==="Legacy" ? E.textSub : fam.includes("Gen 3") ? E.blue : E.teal;
+                        const famBg = fam==="Legacy" ? "rgba(118,162,188,0.06)" : fam.includes("Gen 3") ? "rgba(3,123,189,0.1)" : "rgba(11,197,186,0.1)";
+                        return (
+                          <th key={fam} colSpan={ps.length} style={{ padding:"11px 12px", textAlign:"center", position:"sticky", top:61, background:famBg, zIndex:20, borderBottom:`2px solid ${famAccent}55`, borderLeft:`2px solid ${famAccent}44` }}>
+                            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+                              <div style={{ width:6, height:6, borderRadius:"50%", background:famAccent, flexShrink:0 }}/>
+                              <span style={{ fontSize:10, fontWeight:800, letterSpacing:"0.12em", textTransform:"uppercase", color:famAccent }}>{fam}</span>
+                            </div>
+                          </th>
+                        );
+                      })}
                     </tr>
-                    {/* Row 2: Plan names — sticky below row 1 (61 + 39 = 100) */}
-                    <tr style={{ background:E.navyCard }}>
-                      <th style={{ padding:"10px 16px", position:"sticky", top:100, left:0, background:E.navyCard, zIndex:30, borderBottom:`2px solid ${E.teal}44`, borderRight:`1px solid ${E.border}` }}>
+                    {/* Row 2: Plan names — sticky below row 1 */}
+                    <tr>
+                      <th style={{ padding:"10px 16px", position:"sticky", top:100, left:0, background:E.navyCard, zIndex:30, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
                         <span style={{ fontSize:9, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase" }}>Docs</span>
                       </th>
-                      {PLANS.map(p=>(
-                        <th key={p.id} style={{ padding:"10px 8px", textAlign:"center", position:"sticky", top:100, background:E.navyCard, zIndex:20, borderBottom:`2px solid ${E.teal}44`, borderLeft:`1px solid ${E.borderSub}` }}>
-                          <div style={{ fontSize:11, fontWeight:700, color:E.text, marginBottom:3, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.name}</div>
-                          {p.pricing?.msrp!=null && <div style={{ fontSize:10, color:E.textMut }}>${p.pricing.msrp}/mo</div>}
-                        </th>
-                      ))}
+                      {PLANS.map((p, pi)=>{
+                        const famAccent = p.family==="Legacy" ? E.textSub : p.family.includes("Gen 3") ? E.blue : E.teal;
+                        const famBg = p.family==="Legacy" ? "rgba(118,162,188,0.04)" : p.family.includes("Gen 3") ? "rgba(3,123,189,0.07)" : "rgba(11,197,186,0.07)";
+                        const isFirstInFamily = pi===0 || PLANS[pi-1]?.family !== p.family;
+                        return (
+                          <th key={p.id} style={{ padding:"10px 8px", textAlign:"center", position:"sticky", top:100, background:famBg, zIndex:20, borderBottom:`2px solid ${famAccent}55`, borderLeft: isFirstInFamily ? `2px solid ${famAccent}44` : `1px solid ${E.borderSub}` }}>
+                            <div style={{ fontSize:12, fontWeight:700, color:E.text, marginBottom:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.name}</div>
+                            {p.pricing?.msrp!=null && <div style={{ fontSize:10, color:famAccent, fontWeight:600 }}>${p.pricing.msrp}/mo</div>}
+                          </th>
+                        );
+                      })}
                     </tr>
                   </thead>
                   <tbody>
@@ -1361,11 +1376,16 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                                 <FeatureTooltip feat={feat} />
                               </div>
                             </td>
-                            {PLANS.map(p=>(
-                              <td key={p.id} style={{ padding:"9px 8px", borderLeft:`1px solid ${E.borderSub}`, textAlign:"center" }}>
-                                <StatusCell value={p.features[feat.id]}/>
-                              </td>
-                            ))}
+                            {PLANS.map((p, pi)=>{
+                              const famAccent = p.family==="Legacy" ? E.textSub : p.family.includes("Gen 3") ? E.blue : E.teal;
+                              const famTint = p.family==="Legacy" ? "rgba(118,162,188,0.03)" : p.family.includes("Gen 3") ? "rgba(3,123,189,0.04)" : "rgba(11,197,186,0.04)";
+                              const isFirstInFamily = pi===0 || PLANS[pi-1]?.family !== p.family;
+                              return (
+                                <td key={p.id} style={{ padding:"9px 8px", textAlign:"center", background:famTint, borderLeft: isFirstInFamily ? `2px solid ${famAccent}33` : `1px solid ${E.borderSub}` }}>
+                                  <StatusCell value={p.features[feat.id]}/>
+                                </td>
+                              );
+                            })}
                           </tr>
                         ))}
                       </React.Fragment>
