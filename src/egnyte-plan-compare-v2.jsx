@@ -492,14 +492,19 @@ const StatusCell = ({ value }) => {
 // ─── FEATURE TOOLTIP ─────────────────────────────────────────────────────────
 const FeatureTooltip = ({ feat }) => {
   const [visible, setVisible] = useState(false);
-  const [pos, setPos] = useState("right");
+  const [coords, setCoords] = useState({ top:0, left:0, pos:"right" });
   const btnRef = React.useRef(null);
   if (!feat.desc && !feat.helpUrl) return <div style={{width:18}}/>;
 
   const handleMouseEnter = () => {
     if (btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect();
-      setPos(rect.right > window.innerWidth - 280 ? "left" : "right");
+      const goLeft = rect.right > window.innerWidth - 290;
+      setCoords({
+        top: rect.top + rect.height / 2,
+        left: goLeft ? rect.left - 270 : rect.right + 10,
+        pos: goLeft ? "left" : "right",
+      });
     }
     setVisible(true);
   };
@@ -512,12 +517,14 @@ const FeatureTooltip = ({ feat }) => {
         style={{ width:18, height:18, borderRadius:4, background:E.navySurf, border:`1px solid ${visible ? E.teal : E.border}`, color: visible ? E.teal : E.textMut, fontSize:10, fontWeight:700, cursor:"default", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s", fontFamily:"'Inter',sans-serif" }}>?</button>
       {visible && (
         <div style={{
-          position:"absolute", top:"50%", transform:"translateY(-50%)",
-          [pos === "right" ? "left" : "right"]: 26,
-          width:260, zIndex:1000,
+          position:"fixed",
+          top: coords.top,
+          left: coords.left,
+          transform:"translateY(-50%)",
+          width:260, zIndex:9999,
           background:"#0F1E38", border:`1px solid ${E.teal}44`,
           borderRadius:10, padding:"12px 14px",
-          boxShadow:"0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(11,197,186,0.08)",
+          boxShadow:"0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(11,197,186,0.1)",
           pointerEvents:"none",
         }}>
           <div style={{ fontSize:11, fontWeight:600, color:E.text, marginBottom:6, lineHeight:1.4 }}>{feat.label}</div>
@@ -527,18 +534,6 @@ const FeatureTooltip = ({ feat }) => {
               <a href={feat.helpUrl} target="_blank" rel="noreferrer" style={{ color:E.teal, textDecoration:"none" }} onMouseEnter={e=>e.currentTarget.style.textDecoration="underline"} onMouseLeave={e=>e.currentTarget.style.textDecoration="none"}>Learn more →</a>
             </div>
           )}
-          {/* Arrow */}
-          <div style={{
-            position:"absolute", top:"50%", transform:"translateY(-50%)",
-            [pos === "right" ? "left" : "right"]: -5,
-            width:8, height:8, background:"#0F1E38",
-            border:`1px solid ${E.teal}44`,
-            borderRight: pos === "right" ? "none" : undefined,
-            borderTop: pos === "right" ? "none" : undefined,
-            borderLeft: pos === "left" ? "none" : undefined,
-            borderBottom: pos === "left" ? "none" : undefined,
-            transform: pos === "right" ? "translateY(-50%) rotate(45deg)" : "translateY(-50%) rotate(-135deg)",
-          }}/>
         </div>
       )}
     </div>
@@ -1322,12 +1317,12 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                   <thead>
                     {/* Row 1: Generation group headers — sticky below nav */}
                     <tr>
-                      <th style={{ padding:"12px 16px", textAlign:"left", position:"sticky", top:61, left:0, background:E.navySurf, zIndex:30, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
+                      <th style={{ padding:"12px 16px", textAlign:"left", position:"sticky", top:61, left:0, background:"#0B1D35", zIndex:30, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
                         <span style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase" }}>Feature</span>
                       </th>
                       {Object.entries(families).map(([fam,ps])=>{
                         const famAccent = fam==="Legacy" ? E.textSub : fam.includes("Gen 3") ? E.blue : E.teal;
-                        const famBg = fam==="Legacy" ? "rgba(118,162,188,0.06)" : fam.includes("Gen 3") ? "rgba(3,123,189,0.1)" : "rgba(11,197,186,0.1)";
+                        const famBg = fam==="Legacy" ? "#0D1F33" : fam.includes("Gen 3") ? "#0B2040" : "#0B2238";
                         return (
                           <th key={fam} colSpan={ps.length} style={{ padding:"11px 12px", textAlign:"center", position:"sticky", top:61, background:famBg, zIndex:20, borderBottom:`2px solid ${famAccent}55`, borderLeft:`2px solid ${famAccent}44` }}>
                             <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
@@ -1340,12 +1335,12 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                     </tr>
                     {/* Row 2: Plan names — sticky below row 1 */}
                     <tr>
-                      <th style={{ padding:"10px 16px", position:"sticky", top:100, left:0, background:E.navyCard, zIndex:30, borderBottom:`1px solid ${E.border}`, borderRight:`1px solid ${E.border}` }}>
+                      <th style={{ padding:"10px 16px", position:"sticky", top:100, left:0, background:"#0C1E32", zIndex:30, borderBottom:`2px solid rgba(11,197,186,0.2)`, borderRight:`1px solid ${E.border}` }}>
                         <span style={{ fontSize:9, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase" }}>Docs</span>
                       </th>
                       {PLANS.map((p, pi)=>{
                         const famAccent = p.family==="Legacy" ? E.textSub : p.family.includes("Gen 3") ? E.blue : E.teal;
-                        const famBg = p.family==="Legacy" ? "rgba(118,162,188,0.04)" : p.family.includes("Gen 3") ? "rgba(3,123,189,0.07)" : "rgba(11,197,186,0.07)";
+                        const famBg = p.family==="Legacy" ? "#0D1F33" : p.family.includes("Gen 3") ? "#0B2040" : "#0B2238";
                         const isFirstInFamily = pi===0 || PLANS[pi-1]?.family !== p.family;
                         return (
                           <th key={p.id} style={{ padding:"10px 8px", textAlign:"center", position:"sticky", top:100, background:famBg, zIndex:20, borderBottom:`2px solid ${famAccent}55`, borderLeft: isFirstInFamily ? `2px solid ${famAccent}44` : `1px solid ${E.borderSub}` }}>
