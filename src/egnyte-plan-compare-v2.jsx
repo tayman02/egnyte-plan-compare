@@ -1259,8 +1259,9 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                     const vertObj = vertical ? VERTICALS.find(v=>v.id===vertical) : null;
                     const isVerticalHighlight = vertObj ? vertObj.highlights.includes(feat.id) : false;
                     return (
-                          <FeatureRow key={feat.id} feat={feat} value={tp.features[feat.id]} compareValue={fp.features[feat.id]} isVerticalHighlight={isVerticalHighlight}/>
-                        ))}
+                      <FeatureRow key={feat.id} feat={feat} value={tp.features[feat.id]} compareValue={fp.features[feat.id]} isVerticalHighlight={isVerticalHighlight}/>
+                    );
+                  })}
                       </div>
                     );
                   })}
