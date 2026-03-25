@@ -438,7 +438,7 @@ const PLANS = [
 ];
 
 const PLAN_ORDER = PLANS.map((p) => p.id);
-const fmt = (v) => (typeof v === "number" ? `$${v % 1 === 0 ? v : v.toFixed(2)}` : "—");
+const fmt = (v) => (typeof v === "number" ? `$${v.toFixed(2)}` : "—");
 
 // ─── BRAND TOKENS ─────────────────────────────────────────────────────────────
 const E = {
@@ -649,61 +649,69 @@ function VerticalKeyGains({ vertical, VERTICALS, isUp, fp, tp, E }) {
 // ─── PLAN BUILDER DATA ───────────────────────────────────────────────────────
 const BUILDER_QUESTIONS = [
   {
-    id: "primary",
-    q: "What is the customer's primary challenge?",
-    sub: "Pick the one that best describes why they're looking at Egnyte",
+    id: "infra",
+    q: "How is the customer currently managing files and storage?",
+    sub: "This helps us understand where they're starting from",
     options: [
-      { id: "fileserver", icon: "🖥", label: "Replace file servers or SharePoint", desc: "Move off on-premises storage, VPN access, or SharePoint to a managed cloud platform", scores: { starter:4, ifs:3, elite:1, ultimate:0 } },
-      { id: "collab",     icon: "🤝", label: "Organize and share files across teams", desc: "Give departments a single place to store, access, and collaborate on documents", scores: { starter:3, ifs:4, elite:2, ultimate:0 } },
-      { id: "external",   icon: "🔗", label: "Share securely with clients or partners", desc: "Replace email attachments and consumer tools with controlled, auditable file sharing", scores: { starter:2, ifs:4, elite:3, ultimate:0 } },
-      { id: "ransomware", icon: "🛡", label: "Protect against ransomware or data threats", desc: "Detect attacks early, recover quickly, and monitor for unusual access patterns", scores: { starter:0, ifs:3, elite:4, ultimate:3 } },
-      { id: "compliance", icon: "📋", label: "Meet compliance or regulatory requirements", desc: "HIPAA, GDPR, SOC2, FINRA — need documented data controls and audit trails", scores: { starter:0, ifs:2, elite:3, ultimate:4 } },
-      { id: "sensitive",  icon: "🔍", label: "Find, classify, and control sensitive data", desc: "Discover where PII, PHI, or regulated data lives and enforce policies automatically", scores: { starter:0, ifs:0, elite:1, ultimate:5 } },
+      { id: "fileserver", icon: "🖥", label: "On-premises file servers or NAS devices", desc: "Still running Windows file servers, VPN for remote access, or hardware that's due for refresh", scores: { starter:5, ifs:3, elite:1, ultimate:0 } },
+      { id: "sharepoint", icon: "📎", label: "Heavily reliant on SharePoint or OneDrive", desc: "Using Microsoft 365 but frustrated with SharePoint complexity or governance gaps", scores: { starter:3, ifs:4, elite:2, ultimate:0 } },
+      { id: "scattered",  icon: "📂", label: "Files scattered across multiple tools and silos", desc: "Content split between email, Dropbox, local drives, and file servers with no single source of truth", scores: { starter:2, ifs:4, elite:3, ultimate:1 } },
+      { id: "cloud",      icon: "☁", label: "Already on a cloud platform but outgrowing it", desc: "Current solution lacks governance, compliance controls, or security monitoring they now need", scores: { starter:0, ifs:2, elite:4, ultimate:3 } },
+    ]
+  },
+  {
+    id: "scale",
+    q: "How many users need access, and how are they distributed?",
+    sub: "Include staff, contractors, and regular external collaborators",
+    options: [
+      { id: "tiny",   icon: "👤", label: "Under 25 users — single location or small remote team", desc: "Small business standardizing on cloud file storage and basic collaboration", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
+      { id: "small",  icon: "👥", label: "25–100 users — growing team, possibly multi-location", desc: "Mid-market company needing consistent access across offices and hybrid workers", scores: { starter:2, ifs:4, elite:2, ultimate:0 } },
+      { id: "mid",    icon: "🏢", label: "100–500 users — multiple departments or job sites", desc: "Organization-wide deployment with role-based admin and advanced workflows", scores: { starter:0, ifs:2, elite:4, ultimate:2 } },
+      { id: "large",  icon: "🏙", label: "500+ users — enterprise, multiple offices or countries", desc: "Enterprise scale requiring data residency, encryption key management, and full governance", scores: { starter:0, ifs:0, elite:3, ultimate:5 } },
+    ]
+  },
+  {
+    id: "collab",
+    q: "What best describes their collaboration and workflow needs?",
+    sub: "Think about how content moves through their organization day-to-day",
+    options: [
+      { id: "basic",     icon: "📧", label: "Basic sharing — teams need a clean shared drive with external link sharing", desc: "Replace email attachments and consumer tools with a secure, organized file platform", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
+      { id: "workflows", icon: "✍",  label: "Structured workflows — approvals, e-signatures, and PDF editing", desc: "Contracts, proposals, and SOPs need repeatable review and sign-off with audit trails", scores: { starter:0, ifs:5, elite:3, ultimate:1 } },
+      { id: "advanced",  icon: "⚙",  label: "Advanced workflows — multi-step, automated, integrated with other systems", desc: "Complex cross-department processes that trigger actions in CRM, ERP, or other tools", scores: { starter:0, ifs:2, elite:5, ultimate:2 } },
+      { id: "lifecycle", icon: "🗂",  label: "Full lifecycle — retention policies, archiving, and defensible deletion", desc: "Legal, compliance, or records teams require structured retention and disposal of content", scores: { starter:0, ifs:0, elite:4, ultimate:4 } },
     ]
   },
   {
     id: "security",
-    q: "What level of security protection do they need?",
-    sub: "Think about what their IT or security team is asking for",
+    q: "What security and compliance requirements do they have?",
+    sub: "Think about what their IT, legal, or security team is asking for",
     options: [
-      { id: "basic",      icon: "🔒", label: "Standard — MFA, file versioning, audit logs", desc: "Core security that most businesses need, nothing advanced required", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
-      { id: "ransomdet",  icon: "🚨", label: "Ransomware detection and login anomaly alerts", desc: "Cyber insurance or recent incidents require documented detection capabilities", scores: { starter:0, ifs:5, elite:3, ultimate:2 } },
-      { id: "advanced",   icon: "🛡", label: "Full threat monitoring and auto-remediation", desc: "Security team wants visibility into all risky behaviors with automated response", scores: { starter:0, ifs:1, elite:5, ultimate:3 } },
-      { id: "sensitive",  icon: "🔐", label: "Sensitive data classification and DLP integration", desc: "Need to prove exactly where regulated data is and demonstrate control to auditors", scores: { starter:0, ifs:0, elite:1, ultimate:5 } },
+      { id: "standard",   icon: "🔒", label: "Standard — MFA, audit logs, file versioning, and secure link sharing", desc: "Core security controls every business needs. No advanced threat detection required", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
+      { id: "ransomware", icon: "🚨", label: "Ransomware detection, unusual access alerts, and snapshot recovery", desc: "Cyber insurance or a past incident requires documented detection and fast recovery capabilities", scores: { starter:0, ifs:4, elite:4, ultimate:2 } },
+      { id: "governance", icon: "🛡", label: "Full governance — issue remediation, insider risk, and compliance reporting", desc: "Security team needs visibility across all sharing, permissions, and access anomalies with auto-remediation", scores: { starter:0, ifs:1, elite:5, ultimate:3 } },
+      { id: "regulated",  icon: "📋", label: "Regulated data — HIPAA, FINRA, GDPR, SOC 2, or contractual obligations", desc: "Must classify sensitive data, prove where it lives, support audits, and meet data residency requirements", scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
     ]
   },
   {
-    id: "workflows",
-    q: "How complex are their document workflows?",
-    sub: "How does content get reviewed, approved, and signed off in their organization?",
+    id: "ai",
+    q: "How important is AI and intelligence to this opportunity?",
+    sub: "What level of AI capability is the customer ready to adopt?",
     options: [
-      { id: "simple",    icon: "📧", label: "Simple — ad hoc sharing and email-based review", desc: "Files are shared and people respond by email, no structured process", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
-      { id: "esig",      icon: "✍", label: "Structured — repeatable approvals and e-signatures", desc: "Contracts, proposals, or SOPs go through a defined review and sign-off process", scores: { starter:0, ifs:5, elite:3, ultimate:1 } },
-      { id: "automated", icon: "⚙", label: "Automated — multi-step flows connected to other systems", desc: "Complex workflows across departments that trigger actions in other tools", scores: { starter:0, ifs:2, elite:5, ultimate:2 } },
-      { id: "lifecycle", icon: "🗂", label: "Lifecycle — retention, archiving, and deletion policies", desc: "Content must be kept for legal requirements and automatically moved or purged", scores: { starter:0, ifs:0, elite:4, ultimate:4 } },
+      { id: "none",     icon: "➖", label: "Not a priority right now — focused on core file management", desc: "Customer wants a solid foundation before thinking about AI features", scores: { starter:3, ifs:1, elite:0, ultimate:0 } },
+      { id: "search",   icon: "🤖", label: "AI Assistant and search — ask questions across documents, get summaries", desc: "Want to reduce time finding information and generate content from stored files", scores: { starter:0, ifs:5, elite:3, ultimate:1 } },
+      { id: "classify", icon: "🧠", label: "AI classification — auto-tag document types and extract data at scale", desc: "Large volumes of unstructured content that need to be organized and acted on automatically", scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
+      { id: "all",      icon: "⚡", label: "Full AI suite — search, assistant, classification, and AI-triggered workflows", desc: "AI is a core part of the business case and they want the most advanced capabilities available", scores: { starter:0, ifs:2, elite:3, ultimate:5 } },
     ]
   },
   {
-    id: "remoteai",
-    q: "Which of these apply to the customer? (pick all that apply)",
-    sub: "Select everything that's relevant — these help fine-tune the recommendation",
-    type: "multi",
+    id: "budget",
+    q: "How would you characterize the customer's investment approach?",
+    sub: "This helps calibrate the recommendation to what will actually land",
     options: [
-      { id: "remote",   icon: "📡", label: "Remote offices or job sites needing fast local file access", desc: "Field workers or branch offices with bandwidth issues accessing large files", scores: { starter:0, ifs:3, elite:1, ultimate:0 } },
-      { id: "ai",       icon: "🤖", label: "AI-powered search and document assistant", desc: "Ask questions across documents, get summaries, or generate content from stored files", scores: { starter:0, ifs:3, elite:2, ultimate:1 } },
-      { id: "classify", icon: "🧠", label: "AI-driven document classification and tagging", desc: "Auto-identify document types, extract data, or train custom classifiers at scale", scores: { starter:0, ifs:0, elite:1, ultimate:4 } },
-      { id: "archive",  icon: "🗃", label: "Long-term archiving for legal or compliance requirements", desc: "Must retain data 5+ years and prove it hasn't been tampered with", scores: { starter:0, ifs:0, elite:4, ultimate:3 } },
-    ]
-  },
-  {
-    id: "size",
-    q: "How many users will need access?",
-    sub: "Include all staff, contractors, and regular external collaborators",
-    options: [
-      { id: "tiny",  icon: "👤", label: "Under 25 users", desc: "Small team, single office or fully remote", scores: { starter:4, ifs:1, elite:0, ultimate:0 } },
-      { id: "small", icon: "👥", label: "25–100 users",   desc: "Growing team, possibly multiple locations", scores: { starter:2, ifs:3, elite:1, ultimate:0 } },
-      { id: "mid",   icon: "🏢", label: "100–500 users",  desc: "Mid-size organization, multiple departments", scores: { starter:0, ifs:3, elite:3, ultimate:1 } },
-      { id: "large", icon: "🏙", label: "500+ users",     desc: "Enterprise, multiple offices or countries", scores: { starter:0, ifs:1, elite:3, ultimate:4 } },
+      { id: "essential",  icon: "💡", label: "Essential — get the basics right at the lowest cost", desc: "Budget-conscious. They want to solve the core problem without overbuying", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
+      { id: "value",      icon: "📈", label: "Value — willing to invest more for meaningful capability upgrades", desc: "Will pay more if the ROI is clear. Open to a mid-tier plan with strong features", scores: { starter:1, ifs:4, elite:3, ultimate:0 } },
+      { id: "strategic",  icon: "🚀", label: "Strategic — security and governance are a business priority", desc: "Leadership sees content security and compliance as competitive or regulatory differentiators", scores: { starter:0, ifs:1, elite:4, ultimate:3 } },
+      { id: "enterprise", icon: "🏛", label: "Enterprise — needs the most comprehensive solution available", desc: "Has regulatory, insurance, or contractual requirements that demand an enterprise-grade platform", scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
     ]
   },
 ];
@@ -743,6 +751,7 @@ export default function EgnytePlanMatrix() {
   const [builderStep, setBuilderStep] = useState(0);
   const [builderAnswers, setBuilderAnswers] = useState({});
   const [builderResult, setBuilderResult] = useState(null);
+  const [builderShowFeatures, setBuilderShowFeatures] = useState(false);
 
   const fromIdx = PLAN_ORDER.indexOf(fromPlan);
   const toIdx   = PLAN_ORDER.indexOf(toPlan);
@@ -772,7 +781,7 @@ export default function EgnytePlanMatrix() {
   const annualDelta   = monthlyDelta * 12;
   const currentMo     = calcFromPrice * userCount;
   const proposedMo    = calcToPrice   * userCount;
-  const fmtD = v => v >= 0 ? `+$${v.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:2})}` : `-$${Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:2})}`;
+  const fmtD = v => v >= 0 ? `+$${v.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}` : `-$${Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}`;
 
   const netNew = useMemo(()=>{
     if(!isUp) return 0;
@@ -1021,7 +1030,7 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
             {/* Tabs */}
             <div style={{ display:"flex", gap:2, background:E.navySurf, borderRadius:9, padding:3, border:`1px solid ${E.border}` }}>
               {[{id:"compare",label:"Upgrade Compare"},{id:"matrix",label:"Full Matrix"},{id:"builder",label:"✦ Plan Builder"}].map(tab=>(
-                <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); } }} style={{
+                <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); } }} style={{
                   padding:"7px 20px", borderRadius:7, fontSize:12, fontWeight:600, letterSpacing:"0.01em",
                   background: mode===tab.id ? tab.id==="builder" ? `linear-gradient(135deg,${E.purple},${E.blue2})` : `linear-gradient(135deg,${E.teal},#0099A8)` : "transparent",
                   color: mode===tab.id ? "white" : E.textMut,
@@ -1165,7 +1174,7 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                         <div style={{ fontSize:20, fontWeight:800, color:E.purple, letterSpacing:"-0.03em" }}>{fmtD(annualDelta)}</div>
                       </div>
                     </div>
-                    <div style={{ fontSize:10, color:E.textMut }}>{userCount} users · ${currentMo.toLocaleString()} → ${proposedMo.toLocaleString()}/mo</div>
+                    <div style={{ fontSize:10, color:E.textMut }}>{userCount} users · ${currentMo.toFixed(2)} → ${proposedMo.toFixed(2)}/mo</div>
                   </div>
                 </div>
 
@@ -1442,7 +1451,7 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                         return (
                           <th key={p.id} style={{ padding:"10px 8px", textAlign:"center", position:"sticky", top:100, background:famBg, zIndex:20, borderBottom:`2px solid ${famAccent}55`, borderLeft: isFirstInFamily ? `2px solid ${famAccent}44` : `1px solid ${E.borderSub}` }}>
                             <div style={{ fontSize:12, fontWeight:700, color:E.text, marginBottom:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{p.name}</div>
-                            {p.pricing?.msrp!=null && <div style={{ fontSize:10, color:famAccent, fontWeight:600 }}>${p.pricing.msrp}/mo</div>}
+                            {p.pricing?.msrp!=null && <div style={{ fontSize:10, color:famAccent, fontWeight:600 }}>${p.pricing.msrp.toFixed(2)}/mo</div>}
                           </th>
                         );
                       })}
@@ -1614,19 +1623,31 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                 return (
                   <div>
                     {/* Result card */}
-                    <div style={{ background:meta.bg, border:`1.5px solid ${meta.border}`, borderRadius:16, padding:"32px", marginBottom:20, boxShadow:`0 8px 40px rgba(0,0,0,0.4)` }}>
-                      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:20, gap:16, flexWrap:"wrap" }}>
+                    <div style={{ background:meta.bg, border:`1.5px solid ${meta.border}`, borderRadius:16, padding:"28px 32px", marginBottom:16, boxShadow:`0 8px 40px rgba(0,0,0,0.4)` }}>
+
+                      {/* Plan name + badge */}
+                      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16, gap:16, flexWrap:"wrap" }}>
                         <div>
-                          <div style={{ fontSize:10, fontWeight:700, color:meta.color, letterSpacing:"0.15em", textTransform:"uppercase", marginBottom:8 }}>Recommended Plan</div>
-                          <div style={{ fontSize:44, fontWeight:900, color:meta.color, letterSpacing:"-0.04em", lineHeight:1, marginBottom:6 }}>{meta.name}</div>
-                          <div style={{ fontSize:13, color:E.textSub }}>{plan?.summary}</div>
+                          <div style={{ fontSize:10, fontWeight:700, color:meta.color, letterSpacing:"0.15em", textTransform:"uppercase", marginBottom:6 }}>Recommended Plan</div>
+                          <div style={{ fontSize:48, fontWeight:900, color:meta.color, letterSpacing:"-0.04em", lineHeight:1 }}>{meta.name}</div>
                         </div>
-                        <div style={{ textAlign:"right", flexShrink:0 }}>
-                          {plan?.pricing?.msp && <div style={{ fontSize:13, color:E.textMut, marginBottom:2 }}>Starting at</div>}
-                          {plan?.pricing?.msp && <div style={{ fontSize:28, fontWeight:800, color:meta.color, letterSpacing:"-0.03em" }}>${plan.pricing.msp}<span style={{ fontSize:13, fontWeight:500, color:E.textMut }}>/user/mo</span></div>}
-                          <div style={{ fontSize:11, color:E.textMut, marginTop:4 }}>MSP price · MSRP ${plan?.pricing?.msrp}/mo</div>
+                        {/* Pricing block — clean */}
+                        <div style={{ background:"rgba(0,0,0,0.2)", borderRadius:12, padding:"14px 20px", textAlign:"center", flexShrink:0 }}>
+                          <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>MSP Price</div>
+                          {plan?.pricing?.msp != null ? (
+                            <div style={{ display:"flex", alignItems:"baseline", gap:2, justifyContent:"center" }}>
+                              <span style={{ fontSize:32, fontWeight:900, color:meta.color, letterSpacing:"-0.03em" }}>${plan.pricing.msp.toFixed(2)}</span>
+                              <span style={{ fontSize:12, color:E.textMut, fontWeight:500 }}>/user/mo</span>
+                            </div>
+                          ) : <div style={{ fontSize:18, fontWeight:700, color:E.textMut }}>Contact Egnyte</div>}
+                          {plan?.pricing?.msrp != null && (
+                            <div style={{ fontSize:11, color:E.textMut, marginTop:4 }}>MSRP ${plan.pricing.msrp.toFixed(2)}/user/mo</div>
+                          )}
                         </div>
                       </div>
+
+                      {/* Summary */}
+                      <p style={{ fontSize:13, color:E.textSub, lineHeight:1.7, marginBottom:20, paddingBottom:20, borderBottom:`1px solid ${meta.border}` }}>{plan?.summary}</p>
 
                       {/* Why this plan */}
                       {reasons.length > 0 && (
@@ -1638,14 +1659,14 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                                 <div style={{ width:18, height:18, borderRadius:"50%", background:meta.color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                                   <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 4-4" stroke={E.navy} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 </div>
-                                <span style={{ fontSize:13, color:E.textSub }}>{r}</span>
+                                <span style={{ fontSize:13, color:E.textSub, lineHeight:1.5 }}>{r}</span>
                               </div>
                             ))}
                           </div>
                         </div>
                       )}
 
-                      {/* Score bar visual */}
+                      {/* Score bars */}
                       <div style={{ borderTop:`1px solid ${meta.border}`, paddingTop:16 }}>
                         <div style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:12 }}>Plan fit scores</div>
                         <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
@@ -1656,14 +1677,60 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                               <div key={planId} style={{ display:"flex", alignItems:"center", gap:10 }}>
                                 <div style={{ width:70, fontSize:11, fontWeight:700, color: planId===winner ? m.color : E.textMut, textAlign:"right", flexShrink:0 }}>{m.name}</div>
                                 <div style={{ flex:1, height:8, background:E.borderSub, borderRadius:4, overflow:"hidden" }}>
-                                  <div style={{ height:"100%", width:`${pct}%`, background: planId===winner ? `linear-gradient(90deg,${m.color},${m.color}aa)` : E.borderSub, borderRadius:4, transition:"width 0.6s ease", border: planId===winner ? `none` : "none", backgroundImage: planId!==winner ? "none" : undefined, opacity: planId===winner ? 1 : 0.4, backgroundColor: planId!==winner ? E.textMut : undefined }}/>
+                                  <div style={{ height:"100%", width:`${pct}%`, background: planId===winner ? m.color : E.textMut, borderRadius:4, opacity: planId===winner ? 1 : 0.25, transition:"width 0.6s ease" }}/>
                                 </div>
-                                <div style={{ width:28, fontSize:11, color: planId===winner ? m.color : E.textMut, fontWeight:600, flexShrink:0 }}>{score}</div>
+                                <div style={{ width:24, fontSize:11, color: planId===winner ? m.color : E.textMut, fontWeight:600, flexShrink:0 }}>{score}</div>
                               </div>
                             );
                           })}
                         </div>
                       </div>
+                    </div>
+
+                    {/* Feature toggle */}
+                    <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, marginBottom:16, overflow:"hidden" }}>
+                      <button onClick={()=>setBuilderShowFeatures(v=>!v)}
+                        style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", background:"transparent", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                          <div style={{ width:2.5, height:14, borderRadius:2, background:meta.color }}/>
+                          <span style={{ fontSize:11, fontWeight:700, color:meta.color, textTransform:"uppercase", letterSpacing:"0.12em" }}>What's included in {meta.name}</span>
+                        </div>
+                        <span style={{ color:E.textMut, fontSize:12 }}>{builderShowFeatures ? "▲" : "▼"}</span>
+                      </button>
+                      {builderShowFeatures && (
+                        <div style={{ borderTop:`1px solid ${E.border}` }}>
+                          {FEATURE_SECTIONS.map(section => {
+                            const sectionFeats = section.features.filter(f => {
+                              const v = plan?.features[f.id];
+                              return v === true || v === "addon-included" || v === "optional";
+                            });
+                            if (sectionFeats.length === 0) return null;
+                            return (
+                              <div key={section.id}>
+                                <div style={{ padding:"8px 20px", background:E.navySurf, borderTop:`1px solid ${E.borderSub}`, display:"flex", alignItems:"center", gap:8 }}>
+                                  <div style={{ width:2, height:12, borderRadius:1, background:section.color }}/>
+                                  <span style={{ fontSize:9, fontWeight:700, color:section.color, textTransform:"uppercase", letterSpacing:"0.1em" }}>{section.label}</span>
+                                </div>
+                                {sectionFeats.map(f => {
+                                  const v = plan?.features[f.id];
+                                  return (
+                                    <div key={f.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 20px", borderTop:`1px solid ${E.borderSub}` }}>
+                                      <span style={{ fontSize:12, color:E.textSub }}>{f.label}</span>
+                                      {v === "optional" ? (
+                                        <span style={{ fontSize:9, fontWeight:700, color:E.yellow, background:"rgba(255,202,41,0.1)", border:`1px solid ${E.yellow}55`, borderRadius:3, padding:"2px 6px" }}>ADD-ON</span>
+                                      ) : (
+                                        <div style={{ width:16, height:16, borderRadius:"50%", background:meta.color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                                          <svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 4-4" stroke={E.navy} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
 
                     {/* CTAs */}
@@ -1672,13 +1739,12 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                         style={{ flex:1, minWidth:200, padding:"14px 24px", borderRadius:10, border:"none", background:`linear-gradient(135deg,${meta.color},${meta.color}cc)`, color: winner==="starter" ? E.navy : "white", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", boxShadow:`0 4px 20px ${meta.color}44` }}>
                         Compare {meta.name} vs Current Plan →
                       </button>
-                      <button onClick={()=>{ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); }}
+                      <button onClick={()=>{ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); }}
                         style={{ padding:"14px 24px", borderRadius:10, border:`1px solid ${E.border}`, background:E.navyCard, color:E.textMut, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
                         Start Over
                       </button>
                     </div>
 
-                    {/* Disclaimer */}
                     <p style={{ fontSize:11, color:E.textMut, marginTop:16, lineHeight:1.7 }}>
                       This recommendation is based on the information provided. For complex or regulated environments, discuss with your Egnyte partner team to validate the best fit.
                     </p>
