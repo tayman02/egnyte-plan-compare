@@ -646,6 +646,90 @@ function VerticalKeyGains({ vertical, VERTICALS, isUp, fp, tp, E }) {
   );
 }
 
+// ─── PLAN BUILDER DATA ───────────────────────────────────────────────────────
+const BUILDER_QUESTIONS = [
+  {
+    id: "primary",
+    q: "What is the customer's primary challenge?",
+    sub: "Pick the one that best describes why they're looking at Egnyte",
+    options: [
+      { id: "fileserver", icon: "🖥", label: "Replace file servers or SharePoint", desc: "Move off on-premises storage, VPN access, or SharePoint to a managed cloud platform", scores: { starter:4, ifs:3, elite:1, ultimate:0 } },
+      { id: "collab",     icon: "🤝", label: "Organize and share files across teams", desc: "Give departments a single place to store, access, and collaborate on documents", scores: { starter:3, ifs:4, elite:2, ultimate:0 } },
+      { id: "external",   icon: "🔗", label: "Share securely with clients or partners", desc: "Replace email attachments and consumer tools with controlled, auditable file sharing", scores: { starter:2, ifs:4, elite:3, ultimate:0 } },
+      { id: "ransomware", icon: "🛡", label: "Protect against ransomware or data threats", desc: "Detect attacks early, recover quickly, and monitor for unusual access patterns", scores: { starter:0, ifs:3, elite:4, ultimate:3 } },
+      { id: "compliance", icon: "📋", label: "Meet compliance or regulatory requirements", desc: "HIPAA, GDPR, SOC2, FINRA — need documented data controls and audit trails", scores: { starter:0, ifs:2, elite:3, ultimate:4 } },
+      { id: "sensitive",  icon: "🔍", label: "Find, classify, and control sensitive data", desc: "Discover where PII, PHI, or regulated data lives and enforce policies automatically", scores: { starter:0, ifs:0, elite:1, ultimate:5 } },
+    ]
+  },
+  {
+    id: "security",
+    q: "What level of security protection do they need?",
+    sub: "Think about what their IT or security team is asking for",
+    options: [
+      { id: "basic",      icon: "🔒", label: "Standard — MFA, file versioning, audit logs", desc: "Core security that most businesses need, nothing advanced required", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
+      { id: "ransomdet",  icon: "🚨", label: "Ransomware detection and login anomaly alerts", desc: "Cyber insurance or recent incidents require documented detection capabilities", scores: { starter:0, ifs:5, elite:3, ultimate:2 } },
+      { id: "advanced",   icon: "🛡", label: "Full threat monitoring and auto-remediation", desc: "Security team wants visibility into all risky behaviors with automated response", scores: { starter:0, ifs:1, elite:5, ultimate:3 } },
+      { id: "sensitive",  icon: "🔐", label: "Sensitive data classification and DLP integration", desc: "Need to prove exactly where regulated data is and demonstrate control to auditors", scores: { starter:0, ifs:0, elite:1, ultimate:5 } },
+    ]
+  },
+  {
+    id: "workflows",
+    q: "How complex are their document workflows?",
+    sub: "How does content get reviewed, approved, and signed off in their organization?",
+    options: [
+      { id: "simple",    icon: "📧", label: "Simple — ad hoc sharing and email-based review", desc: "Files are shared and people respond by email, no structured process", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
+      { id: "esig",      icon: "✍", label: "Structured — repeatable approvals and e-signatures", desc: "Contracts, proposals, or SOPs go through a defined review and sign-off process", scores: { starter:0, ifs:5, elite:3, ultimate:1 } },
+      { id: "automated", icon: "⚙", label: "Automated — multi-step flows connected to other systems", desc: "Complex workflows across departments that trigger actions in other tools", scores: { starter:0, ifs:2, elite:5, ultimate:2 } },
+      { id: "lifecycle", icon: "🗂", label: "Lifecycle — retention, archiving, and deletion policies", desc: "Content must be kept for legal requirements and automatically moved or purged", scores: { starter:0, ifs:0, elite:4, ultimate:4 } },
+    ]
+  },
+  {
+    id: "remoteai",
+    q: "Which of these apply to the customer? (pick all that apply)",
+    sub: "Select everything that's relevant — these help fine-tune the recommendation",
+    type: "multi",
+    options: [
+      { id: "remote",   icon: "📡", label: "Remote offices or job sites needing fast local file access", desc: "Field workers or branch offices with bandwidth issues accessing large files", scores: { starter:0, ifs:3, elite:1, ultimate:0 } },
+      { id: "ai",       icon: "🤖", label: "AI-powered search and document assistant", desc: "Ask questions across documents, get summaries, or generate content from stored files", scores: { starter:0, ifs:3, elite:2, ultimate:1 } },
+      { id: "classify", icon: "🧠", label: "AI-driven document classification and tagging", desc: "Auto-identify document types, extract data, or train custom classifiers at scale", scores: { starter:0, ifs:0, elite:1, ultimate:4 } },
+      { id: "archive",  icon: "🗃", label: "Long-term archiving for legal or compliance requirements", desc: "Must retain data 5+ years and prove it hasn't been tampered with", scores: { starter:0, ifs:0, elite:4, ultimate:3 } },
+    ]
+  },
+  {
+    id: "size",
+    q: "How many users will need access?",
+    sub: "Include all staff, contractors, and regular external collaborators",
+    options: [
+      { id: "tiny",  icon: "👤", label: "Under 25 users", desc: "Small team, single office or fully remote", scores: { starter:4, ifs:1, elite:0, ultimate:0 } },
+      { id: "small", icon: "👥", label: "25–100 users",   desc: "Growing team, possibly multiple locations", scores: { starter:2, ifs:3, elite:1, ultimate:0 } },
+      { id: "mid",   icon: "🏢", label: "100–500 users",  desc: "Mid-size organization, multiple departments", scores: { starter:0, ifs:3, elite:3, ultimate:1 } },
+      { id: "large", icon: "🏙", label: "500+ users",     desc: "Enterprise, multiple offices or countries", scores: { starter:0, ifs:1, elite:3, ultimate:4 } },
+    ]
+  },
+];
+
+const PLAN_BUILDER_MAP = {
+  starter: { id:"starter", name:"Starter", color:"#76A2BC", bg:"rgba(118,162,188,0.08)", border:"rgba(118,162,188,0.25)" },
+  ifs:     { id:"ifs",     name:"IFS",     color:"#0BC5BA", bg:"rgba(11,197,186,0.08)",  border:"rgba(11,197,186,0.3)"  },
+  elite:   { id:"elite",   name:"Elite",   color:"#3D71EA", bg:"rgba(61,113,234,0.08)",  border:"rgba(61,113,234,0.3)"  },
+  ultimate:{ id:"ultimate",name:"Ultimate",color:"#6E49FF", bg:"rgba(110,73,255,0.08)",  border:"rgba(110,73,255,0.3)"  },
+};
+
+const scoreBuilder = (answers) => {
+  const totals = { starter:0, ifs:0, elite:0, ultimate:0 };
+  BUILDER_QUESTIONS.forEach(q => {
+    const ans = answers[q.id];
+    if (!ans) return;
+    const ids = Array.isArray(ans) ? ans : [ans];
+    ids.forEach(id => {
+      const opt = q.options.find(o => o.id === id);
+      if (opt) Object.entries(opt.scores).forEach(([plan, pts]) => { totals[plan] += pts; });
+    });
+  });
+  const ranked = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+  return { totals, winner: ranked[0][0], ranked };
+};
+
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function EgnytePlanMatrix() {
   const [fromPlan, setFromPlan] = useState("afs");
@@ -654,6 +738,11 @@ export default function EgnytePlanMatrix() {
   const [expanded, setExpanded] = useState(
     Object.fromEntries(FEATURE_SECTIONS.map(s=>[s.id,true]))
   );
+
+  // ── Plan Builder state ──
+  const [builderStep, setBuilderStep] = useState(0);
+  const [builderAnswers, setBuilderAnswers] = useState({});
+  const [builderResult, setBuilderResult] = useState(null);
 
   const fromIdx = PLAN_ORDER.indexOf(fromPlan);
   const toIdx   = PLAN_ORDER.indexOf(toPlan);
@@ -931,12 +1020,12 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
             </div>
             {/* Tabs */}
             <div style={{ display:"flex", gap:2, background:E.navySurf, borderRadius:9, padding:3, border:`1px solid ${E.border}` }}>
-              {[{id:"compare",label:"Upgrade Compare"},{id:"matrix",label:"Full Matrix"}].map(tab=>(
-                <button key={tab.id} className="mode-btn" onClick={()=>setMode(tab.id)} style={{
+              {[{id:"compare",label:"Upgrade Compare"},{id:"matrix",label:"Full Matrix"},{id:"builder",label:"✦ Plan Builder"}].map(tab=>(
+                <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); } }} style={{
                   padding:"7px 20px", borderRadius:7, fontSize:12, fontWeight:600, letterSpacing:"0.01em",
-                  background: mode===tab.id ? `linear-gradient(135deg,${E.teal},#0099A8)` : "transparent",
-                  color: mode===tab.id ? E.navy : E.textMut,
-                  boxShadow: mode===tab.id ? `0 2px 14px rgba(11,197,186,0.3)` : "none",
+                  background: mode===tab.id ? tab.id==="builder" ? `linear-gradient(135deg,${E.purple},${E.blue2})` : `linear-gradient(135deg,${E.teal},#0099A8)` : "transparent",
+                  color: mode===tab.id ? "white" : E.textMut,
+                  boxShadow: mode===tab.id ? tab.id==="builder" ? `0 2px 14px rgba(110,73,255,0.4)` : `0 2px 14px rgba(11,197,186,0.3)` : "none",
                 }}>{tab.label}</button>
               ))}
             </div>
@@ -1402,6 +1491,200 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
                 <span style={{ color:E.teal, fontWeight:600 }}>BUNDLED:</span> Add-on package included at no extra cost.{" "}
                 Legacy MSP pricing varies — contact your Egnyte partner team. Gen 3/4 pricing is MSRP per user/month.
               </div>
+            </div>
+          )}
+          {/* ── PLAN BUILDER ── */}
+          {mode==="builder" && (
+            <div className="fade-up" style={{ maxWidth:720, margin:"0 auto" }}>
+
+              {/* Header */}
+              <div style={{ marginBottom:32 }}>
+                <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(110,73,255,0.1)", border:`1px solid rgba(110,73,255,0.25)`, borderRadius:999, padding:"5px 14px", marginBottom:16 }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:E.purple, letterSpacing:"0.12em", textTransform:"uppercase" }}>✦ Plan Builder</span>
+                </div>
+                <h1 style={{ fontSize:32, fontWeight:800, letterSpacing:"-0.03em", color:E.text, lineHeight:1.1, marginBottom:12 }}>
+                  Find the Right{" "}
+                  <span style={{ background:`linear-gradient(90deg,${E.purple},${E.teal})`, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Gen 4 Plan</span>
+                </h1>
+                <p style={{ fontSize:13, color:E.textSub, lineHeight:1.75 }}>
+                  Answer 5 quick questions about the customer and we'll recommend the best fit — no Egnyte expertise required.
+                </p>
+              </div>
+
+              {!builderResult ? (() => {
+                const q = BUILDER_QUESTIONS[builderStep];
+                const isMulti = q.type === "multi";
+                const currentAns = builderAnswers[q.id];
+                const hasAnswer = isMulti ? (currentAns?.length > 0) : !!currentAns;
+                const progress = (builderStep / BUILDER_QUESTIONS.length) * 100;
+
+                const selectOption = (optId) => {
+                  if (isMulti) {
+                    const prev = builderAnswers[q.id] || [];
+                    const next = prev.includes(optId) ? prev.filter(x=>x!==optId) : [...prev, optId];
+                    setBuilderAnswers(a => ({...a, [q.id]: next}));
+                  } else {
+                    setBuilderAnswers(a => ({...a, [q.id]: optId}));
+                  }
+                };
+
+                const next = () => {
+                  if (builderStep < BUILDER_QUESTIONS.length - 1) {
+                    setBuilderStep(s => s+1);
+                  } else {
+                    setBuilderResult(scoreBuilder(builderAnswers));
+                  }
+                };
+
+                const back = () => {
+                  if (builderStep > 0) setBuilderStep(s => s-1);
+                };
+
+                return (
+                  <div>
+                    {/* Progress bar */}
+                    <div style={{ marginBottom:24 }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+                        <span style={{ fontSize:11, color:E.textMut, fontWeight:600 }}>Question {builderStep+1} of {BUILDER_QUESTIONS.length}</span>
+                        <span style={{ fontSize:11, color:E.textMut }}>{Math.round(progress)}% complete</span>
+                      </div>
+                      <div style={{ height:4, background:E.borderSub, borderRadius:2, overflow:"hidden" }}>
+                        <div style={{ height:"100%", width:`${progress}%`, background:`linear-gradient(90deg,${E.purple},${E.teal})`, borderRadius:2, transition:"width 0.4s ease" }}/>
+                      </div>
+                    </div>
+
+                    {/* Question card */}
+                    <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:16, padding:"28px 32px", marginBottom:20, boxShadow:"0 4px 24px rgba(0,0,0,0.3)" }}>
+                      <div style={{ marginBottom:24 }}>
+                        <h2 style={{ fontSize:20, fontWeight:800, color:E.text, marginBottom:6, lineHeight:1.3 }}>{q.q}</h2>
+                        <p style={{ fontSize:13, color:E.textMut }}>{q.sub}</p>
+                        {isMulti && <p style={{ fontSize:11, color:E.purple, marginTop:6, fontWeight:600 }}>Select all that apply — or skip if none apply</p>}
+                      </div>
+
+                      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                        {q.options.map(opt => {
+                          const selected = isMulti ? (currentAns||[]).includes(opt.id) : currentAns===opt.id;
+                          return (
+                            <button key={opt.id} onClick={()=>selectOption(opt.id)}
+                              style={{ display:"flex", alignItems:"flex-start", gap:14, padding:"14px 18px", borderRadius:10, border:`1.5px solid ${selected ? E.purple : E.border}`, background: selected ? "rgba(110,73,255,0.1)" : E.navySurf, cursor:"pointer", textAlign:"left", fontFamily:"'Inter',sans-serif", transition:"all 0.15s" }}>
+                              <div style={{ width:36, height:36, borderRadius:8, background: selected ? "rgba(110,73,255,0.2)" : "rgba(255,255,255,0.04)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0, marginTop:2 }}>{opt.icon}</div>
+                              <div style={{ flex:1 }}>
+                                <div style={{ fontSize:14, fontWeight:700, color: selected ? E.text : E.textSub, marginBottom:3 }}>{opt.label}</div>
+                                <div style={{ fontSize:12, color:E.textMut, lineHeight:1.5 }}>{opt.desc}</div>
+                              </div>
+                              <div style={{ width:20, height:20, borderRadius: isMulti ? 4 : "50%", border:`2px solid ${selected ? E.purple : E.border}`, background: selected ? E.purple : "transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:8, transition:"all 0.15s" }}>
+                                {selected && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 4-4" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Nav buttons */}
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                      <button onClick={back} disabled={builderStep===0}
+                        style={{ padding:"10px 22px", borderRadius:8, border:`1px solid ${E.border}`, background:"transparent", color: builderStep===0 ? E.textMut+"44" : E.textMut, fontSize:13, fontWeight:600, cursor: builderStep===0 ? "not-allowed" : "pointer", fontFamily:"'Inter',sans-serif" }}>
+                        ← Back
+                      </button>
+                      <button onClick={next} disabled={!hasAnswer && !isMulti}
+                        style={{ padding:"10px 28px", borderRadius:8, border:"none", background: (hasAnswer||isMulti) ? `linear-gradient(135deg,${E.purple},${E.blue2})` : E.navySurf, color: (hasAnswer||isMulti) ? "white" : E.textMut, fontSize:13, fontWeight:700, cursor:(hasAnswer||isMulti) ? "pointer" : "not-allowed", fontFamily:"'Inter',sans-serif", boxShadow:(hasAnswer||isMulti) ? "0 4px 16px rgba(110,73,255,0.4)" : "none", transition:"all 0.15s" }}>
+                        {builderStep === BUILDER_QUESTIONS.length - 1 ? "Get My Recommendation →" : "Next →"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })() : (() => {
+                const { winner, totals, ranked } = builderResult;
+                const plan = PLANS.find(p=>p.id===winner);
+                const meta = PLAN_BUILDER_MAP[winner];
+                const maxScore = ranked[0][1];
+
+                // Key reasons based on highest-scoring answers
+                const reasons = [];
+                BUILDER_QUESTIONS.forEach(q => {
+                  const ans = builderAnswers[q.id];
+                  const ids = Array.isArray(ans) ? ans : ans ? [ans] : [];
+                  ids.forEach(id => {
+                    const opt = q.options.find(o=>o.id===id);
+                    if (opt && opt.scores[winner] >= 3) reasons.push(opt.label);
+                  });
+                });
+
+                return (
+                  <div>
+                    {/* Result card */}
+                    <div style={{ background:meta.bg, border:`1.5px solid ${meta.border}`, borderRadius:16, padding:"32px", marginBottom:20, boxShadow:`0 8px 40px rgba(0,0,0,0.4)` }}>
+                      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:20, gap:16, flexWrap:"wrap" }}>
+                        <div>
+                          <div style={{ fontSize:10, fontWeight:700, color:meta.color, letterSpacing:"0.15em", textTransform:"uppercase", marginBottom:8 }}>Recommended Plan</div>
+                          <div style={{ fontSize:44, fontWeight:900, color:meta.color, letterSpacing:"-0.04em", lineHeight:1, marginBottom:6 }}>{meta.name}</div>
+                          <div style={{ fontSize:13, color:E.textSub }}>{plan?.summary}</div>
+                        </div>
+                        <div style={{ textAlign:"right", flexShrink:0 }}>
+                          {plan?.pricing?.msp && <div style={{ fontSize:13, color:E.textMut, marginBottom:2 }}>Starting at</div>}
+                          {plan?.pricing?.msp && <div style={{ fontSize:28, fontWeight:800, color:meta.color, letterSpacing:"-0.03em" }}>${plan.pricing.msp}<span style={{ fontSize:13, fontWeight:500, color:E.textMut }}>/user/mo</span></div>}
+                          <div style={{ fontSize:11, color:E.textMut, marginTop:4 }}>MSP price · MSRP ${plan?.pricing?.msrp}/mo</div>
+                        </div>
+                      </div>
+
+                      {/* Why this plan */}
+                      {reasons.length > 0 && (
+                        <div style={{ marginBottom:20 }}>
+                          <div style={{ fontSize:10, fontWeight:700, color:meta.color, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:10 }}>Why this plan fits</div>
+                          <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                            {reasons.slice(0,3).map((r,i) => (
+                              <div key={i} style={{ display:"flex", alignItems:"center", gap:10 }}>
+                                <div style={{ width:18, height:18, borderRadius:"50%", background:meta.color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                                  <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 4-4" stroke={E.navy} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </div>
+                                <span style={{ fontSize:13, color:E.textSub }}>{r}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Score bar visual */}
+                      <div style={{ borderTop:`1px solid ${meta.border}`, paddingTop:16 }}>
+                        <div style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:12 }}>Plan fit scores</div>
+                        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                          {ranked.map(([planId, score]) => {
+                            const m = PLAN_BUILDER_MAP[planId];
+                            const pct = maxScore > 0 ? (score / maxScore) * 100 : 0;
+                            return (
+                              <div key={planId} style={{ display:"flex", alignItems:"center", gap:10 }}>
+                                <div style={{ width:70, fontSize:11, fontWeight:700, color: planId===winner ? m.color : E.textMut, textAlign:"right", flexShrink:0 }}>{m.name}</div>
+                                <div style={{ flex:1, height:8, background:E.borderSub, borderRadius:4, overflow:"hidden" }}>
+                                  <div style={{ height:"100%", width:`${pct}%`, background: planId===winner ? `linear-gradient(90deg,${m.color},${m.color}aa)` : E.borderSub, borderRadius:4, transition:"width 0.6s ease", border: planId===winner ? `none` : "none", backgroundImage: planId!==winner ? "none" : undefined, opacity: planId===winner ? 1 : 0.4, backgroundColor: planId!==winner ? E.textMut : undefined }}/>
+                                </div>
+                                <div style={{ width:28, fontSize:11, color: planId===winner ? m.color : E.textMut, fontWeight:600, flexShrink:0 }}>{score}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CTAs */}
+                    <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
+                      <button onClick={()=>{ setToPlan(winner); setMode("compare"); }}
+                        style={{ flex:1, minWidth:200, padding:"14px 24px", borderRadius:10, border:"none", background:`linear-gradient(135deg,${meta.color},${meta.color}cc)`, color: winner==="starter" ? E.navy : "white", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", boxShadow:`0 4px 20px ${meta.color}44` }}>
+                        Compare {meta.name} vs Current Plan →
+                      </button>
+                      <button onClick={()=>{ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); }}
+                        style={{ padding:"14px 24px", borderRadius:10, border:`1px solid ${E.border}`, background:E.navyCard, color:E.textMut, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
+                        Start Over
+                      </button>
+                    </div>
+
+                    {/* Disclaimer */}
+                    <p style={{ fontSize:11, color:E.textMut, marginTop:16, lineHeight:1.7 }}>
+                      This recommendation is based on the information provided. For complex or regulated environments, discuss with your Egnyte partner team to validate the best fit.
+                    </p>
+                  </div>
+                );
+              })()}
             </div>
           )}
         </main>
