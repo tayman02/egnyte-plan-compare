@@ -112,8 +112,51 @@ const FEATURE_SECTIONS = [
     color: "#FFCA29",
     isAddons: true,
     features: [
-      { id: "project_hub", label: "Project Hub (AEC Dashboard, Templates, Lifecycle)", desc: "Automates AEC project setup, folder structure, and close-out workflows with Procore and Autodesk integrations.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/360001819831-Egnyte-Migration-App-Overview" },
-      { id: "doc_portal",  label: "Document Portal",                                   desc: "A secure client-facing portal for collecting, requesting, and sharing sensitive documents — ideal for financial services onboarding.", helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31085359026701-Document-Portal-Overview-and-using-Document-Portal" },
+      {
+        id: "salesforce_integration",
+        label: "Salesforce Integration",
+        price: 6.00,
+        mspPrice: 6.00,
+        priceNote: "per user/mo · 1:1 with platform licenses",
+        desc: "Embed Egnyte directly inside Salesforce so sales teams can access, upload, and share account files from within Leads, Opportunities, Contacts, and Cases. Files stay in Egnyte with full audit trails and permissions — no duplicate storage in Salesforce. Requires Salesforce Enterprise or Unlimited edition.",
+        helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/201638874-Egnyte-for-Salesforce",
+      },
+      {
+        id: "specialized_file_handler",
+        label: "Specialized File Handler (AEC)",
+        price: 6.00,
+        mspPrice: 4.80,
+        priceNote: "per user/mo · 1:1 with platform licenses",
+        desc: "Preview, annotate, and collaborate on AEC-specific file formats — CAD (.dwg, .dgn, .dxf), BIM (.rvt, .ifc, .nwd, .dwf), and 3D models (.stl, .stp, .obj) — directly in the browser without specialized software. Designed for architects, engineers, VDC teams, and field crews working with large design files.",
+        helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/18744343055629-Specialized-File-Handler-Add-On",
+      },
+      {
+        id: "project_hub",
+        label: "Project Hub (AEC)",
+        price: 6.00,
+        mspPrice: 4.80,
+        priceNote: "per user/mo · 1:1 with platform licenses",
+        desc: "AI-powered project data infrastructure for AEC firms. Standardize project folder structures with templates, automate project setup and closeout, sync with Procore, Autodesk Construction Cloud, Newforma, and Bluebeam, and manage the full project lifecycle from kickoff through archival — all from a centralized Project Center.",
+        helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/18743554145165-Project-Hub",
+      },
+      {
+        id: "snapshot_addon",
+        label: "Advanced Snapshot & Recovery (90-day)",
+        price: 10.00,
+        mspPrice: 8.00,
+        priceNote: "per user/mo · 1:1 with platform licenses",
+        desc: "Extends ransomware snapshot retention from 30 to 90 days. Point-in-time snapshots are captured automatically and can be mounted and browsed within 15–30 minutes. Admins can restore individual files or entire folder structures to a pre-attack state without involving IT support. Critical for cyber insurance requirements.",
+        helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/4416718848397-Snapshot-Based-Ransomware-Recovery",
+      },
+      {
+        id: "doc_portal",
+        label: "Document Portal",
+        price: 10.00,
+        mspPrice: 8.00,
+        priceNote: "per user/mo · 1:1 with platform licenses",
+        desc: "A branded, secure client-facing portal for requesting, collecting, and sharing sensitive documents. Ideal for financial services onboarding, legal due diligence, and healthcare intake. Clients can upload documents through a controlled interface without needing an Egnyte account, with full audit trails on every interaction.",
+        helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/31085359026701-Document-Portal-Overview-and-using-Document-Portal",
+      },
     ],
   },
 ];
@@ -181,6 +224,7 @@ const PLANS = [
       google_workspace: true, m365: true, app_integrations: true,
       pdf_handler: "optional", auto_remediation: "addon-included", copilot: "optional",
       project_hub: "optional", doc_portal: "optional",
+      salesforce_integration: false, specialized_file_handler: false, snapshot_addon: false,
     },
   },
   // ── GEN 3 MSP ──
@@ -222,6 +266,7 @@ const PLANS = [
       file_versioning: true, advanced_snapshot: "optional", snapshot_90: false,
       google_workspace: true, m365: true, app_integrations: true,
       project_hub: "optional", doc_portal: "optional",
+      salesforce_integration: false, specialized_file_handler: false, snapshot_addon: false,
     },
   },
   {
@@ -250,6 +295,7 @@ const PLANS = [
       api_remediation: true, auto_remediation: "optional",
       google_workspace: true, m365: true, app_integrations: true,
       project_hub: "optional", doc_portal: "optional",
+      salesforce_integration: false, specialized_file_handler: false, snapshot_addon: false,
     },
   },
   {
@@ -317,6 +363,7 @@ const PLANS = [
       google_workspace: true, m365: true, dlp: false, app_integrations: true,
       // No add-ons available on Starter
       project_hub: false, doc_portal: false,
+      salesforce_integration: false, specialized_file_handler: false, snapshot_addon: false,
     },
   },
   {
@@ -356,6 +403,7 @@ const PLANS = [
       google_workspace: true, m365: true, dlp: false, app_integrations: true,
       // Add-ons
       project_hub: "optional", doc_portal: "optional",
+      salesforce_integration: "optional", specialized_file_handler: "optional", snapshot_addon: "optional",
     },
   },
   {
@@ -395,6 +443,7 @@ const PLANS = [
       google_workspace: true, m365: true, dlp: false, app_integrations: true,
       // Add-ons
       project_hub: "optional", doc_portal: "optional",
+      salesforce_integration: "optional", specialized_file_handler: "optional", snapshot_addon: "optional",
     },
   },
   {
@@ -433,6 +482,7 @@ const PLANS = [
       google_workspace: true, m365: true, dlp: true, app_integrations: true,
       // Add-ons
       project_hub: "optional", doc_portal: "optional",
+      salesforce_integration: "optional", specialized_file_handler: "optional", snapshot_addon: "optional",
     },
   },
 ];
@@ -523,6 +573,28 @@ const FeatureTooltip = ({ feat }) => {
       pointerEvents:"none",
     }}>
       <div style={{ fontSize:11, fontWeight:600, color:E.text, marginBottom:6, lineHeight:1.4 }}>{feat.label}</div>
+      {feat.price != null && (
+        <div style={{ marginBottom:8, padding:"8px 10px", background:"rgba(255,202,41,0.08)", border:"1px solid rgba(255,202,41,0.2)", borderRadius:6 }}>
+          <div style={{ display:"flex", gap:16, alignItems:"baseline", marginBottom:4 }}>
+            <div>
+              <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:2 }}>MSP</div>
+              <span style={{ fontSize:18, fontWeight:800, color:E.yellow }}>${feat.mspPrice?.toFixed(2)}</span>
+              <span style={{ fontSize:10, color:E.textMut }}>/user/mo</span>
+            </div>
+            {feat.price !== feat.mspPrice && (
+              <>
+                <div style={{ width:1, height:28, background:E.borderSub }}/>
+                <div>
+                  <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:2 }}>MSRP</div>
+                  <span style={{ fontSize:18, fontWeight:800, color:`${E.yellow}77` }}>${feat.price.toFixed(2)}</span>
+                  <span style={{ fontSize:10, color:E.textMut }}>/user/mo</span>
+                </div>
+              </>
+            )}
+          </div>
+          <div style={{ fontSize:9, color:E.textMut }}>{feat.priceNote}</div>
+        </div>
+      )}
       {feat.desc && <p style={{ fontSize:11, color:E.textSub, lineHeight:1.65, margin:0, marginBottom: feat.helpUrl ? 10 : 0 }}>{feat.desc}</p>}
       {feat.helpUrl && (
         <div style={{ fontSize:10, color:E.teal, fontWeight:600, letterSpacing:"0.04em" }}>
@@ -551,6 +623,7 @@ const FeatureTooltip = ({ feat }) => {
 // ─── FEATURE ROW (compare mode) ───────────────────────────────────────────────
 const FeatureRow = ({ feat, value, compareValue, isVerticalHighlight }) => {
   const isGain = (value === true || value === "addon-included") && !compareValue;
+  const isAddon = value === "optional";
   const highlightBg = isVerticalHighlight ? "rgba(61,113,234,0.07)" : isGain ? "rgba(11,197,186,0.08)" : "transparent";
   const leftBorder = isGain ? `3px solid ${E.teal}` : isVerticalHighlight ? `3px solid ${E.blue2}` : "3px solid transparent";
   return (
@@ -562,7 +635,7 @@ const FeatureRow = ({ feat, value, compareValue, isVerticalHighlight }) => {
       background: highlightBg,
       transition:"background 0.15s",
     }}>
-      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
         {isGain && (
           <span style={{ flexShrink:0, fontSize:9, fontWeight:700, letterSpacing:"0.07em", color:E.navy, background:E.teal, borderRadius:3, padding:"2px 5px", lineHeight:1 }}>NEW</span>
         )}
@@ -570,6 +643,11 @@ const FeatureRow = ({ feat, value, compareValue, isVerticalHighlight }) => {
           <span style={{ flexShrink:0, fontSize:9, fontWeight:700, letterSpacing:"0.07em", color:E.blue2, background:"rgba(61,113,234,0.15)", border:`1px solid rgba(61,113,234,0.3)`, borderRadius:3, padding:"2px 5px", lineHeight:1 }}>KEY</span>
         )}
         <span style={{ fontSize:13, color: isGain ? E.text : isVerticalHighlight ? E.text : E.textSub, fontWeight: (isGain || isVerticalHighlight) ? 600 : 400, lineHeight:1.4 }}>{feat.label}</span>
+        {feat.price != null && isAddon && (
+          <span style={{ fontSize:10, fontWeight:700, color:E.yellow, background:"rgba(255,202,41,0.08)", border:`1px solid rgba(255,202,41,0.2)`, borderRadius:4, padding:"1px 7px", letterSpacing:"0.02em" }}>
+            MSP ${(feat.mspPrice ?? feat.price).toFixed(2)}/u · MSRP ${feat.price.toFixed(2)}/u
+          </span>
+        )}
       </div>
       <FeatureTooltip feat={feat} />
       <StatusCell value={compareValue} />
@@ -1305,6 +1383,40 @@ export default function EgnytePlanMatrix() {
                   })}
                 </div>
 
+                {/* Add-Ons Pricing Card */}
+                {(() => {
+                  const addonSection = FEATURE_SECTIONS.find(s => s.isAddons);
+                  const availableAddons = addonSection?.features.filter(f => tp.features[f.id] === "optional") || [];
+                  if (!availableAddons.length) return null;
+                  return (
+                    <div style={{ marginTop:14, background:E.navyCard, border:`1px solid rgba(255,202,41,0.2)`, borderRadius:12, overflow:"hidden" }}>
+                      <div style={{ padding:"14px 20px", background:"rgba(255,202,41,0.05)", borderBottom:`1px solid rgba(255,202,41,0.15)`, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                          <div style={{ width:2.5, height:14, borderRadius:2, background:E.yellow }}/>
+                          <span style={{ fontSize:10, fontWeight:700, color:E.yellow, textTransform:"uppercase", letterSpacing:"0.12em" }}>Optional Add-Ons available on {tp.name}</span>
+                        </div>
+                        <span style={{ fontSize:11, color:E.textMut }}>Purchased separately · 1:1 with platform licenses</span>
+                      </div>
+                      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))", gap:0 }}>
+                        {availableAddons.map((f, i) => (
+                          <div key={f.id} style={{ padding:"14px 20px", borderTop: i > 0 ? `1px solid ${E.borderSub}` : "none", display:"flex", alignItems:"flex-start", gap:12, borderRight: i % 2 === 0 ? `1px solid ${E.borderSub}` : "none" }}>
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <div style={{ fontSize:12, fontWeight:700, color:E.text, marginBottom:3 }}>{f.label}</div>
+                              <div style={{ fontSize:11, color:E.textMut, lineHeight:1.5 }}>{f.desc?.split(".")[0]}.</div>
+                            </div>
+                            <div style={{ flexShrink:0, textAlign:"right" }}>
+                              <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:2 }}>MSP</div>
+                              <div style={{ fontSize:18, fontWeight:800, color:E.yellow, letterSpacing:"-0.02em" }}>${(f.mspPrice ?? f.price)?.toFixed(2)}</div>
+                              {f.price !== f.mspPrice && <div style={{ fontSize:10, color:E.textMut, textDecoration:"line-through" }}>MSRP ${f.price?.toFixed(2)}</div>}
+                              <div style={{ fontSize:9, color:E.textMut }}>per user / mo</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* Footer */}
                 <div style={{ marginTop:14, display:"flex", alignItems:"flex-start", gap:14, background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:10, padding:"14px 18px" }}>
                   <div style={{ width:32, height:32, borderRadius:8, background:"rgba(11,197,186,0.1)", border:`1px solid rgba(11,197,186,0.25)`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:14 }}>↑</div>
@@ -1403,8 +1515,9 @@ export default function EgnytePlanMatrix() {
                         {section.features.map((feat,fi)=>(
                           <tr key={feat.id} className="feat-row" style={{ background: fi%2===0 ? E.navyCard : E.navySurf, transition:"background 0.15s" }}>
                             <td style={{ padding:"9px 16px", fontSize:13, color:E.textSub, position:"sticky", left:0, background:"inherit", borderRight:`1px solid ${E.border}`, zIndex:5 }}>
-                              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                              <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                                 {feat.label}
+                                {feat.price != null && <span style={{ fontSize:9, fontWeight:700, color:E.yellow, background:"rgba(255,202,41,0.08)", border:`1px solid rgba(255,202,41,0.2)`, borderRadius:4, padding:"1px 6px" }}>MSP ${(feat.mspPrice ?? feat.price).toFixed(2)}/u</span>}
                                 <FeatureTooltip feat={feat} />
                               </div>
                             </td>
@@ -1447,7 +1560,7 @@ export default function EgnytePlanMatrix() {
                   <span style={{ background:`linear-gradient(90deg,${E.purple},${E.teal})`, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Gen 4 Plan</span>
                 </h1>
                 <p style={{ fontSize:13, color:E.textSub, lineHeight:1.75 }}>
-                  Answer 5 quick questions about the customer and we'll recommend the best fit — no Egnyte expertise required.
+                  Answer a few questions about the customer and we'll recommend the best fit — no Egnyte expertise required.
                 </p>
               </div>
 
