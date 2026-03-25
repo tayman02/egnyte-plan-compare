@@ -266,7 +266,7 @@ const PLANS = [
       file_versioning: true, advanced_snapshot: "optional", snapshot_90: false,
       google_workspace: true, m365: true, app_integrations: true,
       project_hub: "optional", doc_portal: "optional",
-      salesforce_integration: false, specialized_file_handler: false, snapshot_addon: false,
+      salesforce_integration: "optional", specialized_file_handler: "optional", snapshot_addon: "optional",
     },
   },
   {
@@ -295,7 +295,7 @@ const PLANS = [
       api_remediation: true, auto_remediation: "optional",
       google_workspace: true, m365: true, app_integrations: true,
       project_hub: "optional", doc_portal: "optional",
-      salesforce_integration: false, specialized_file_handler: false, snapshot_addon: false,
+      salesforce_integration: "optional", specialized_file_handler: "optional", snapshot_addon: "optional",
     },
   },
   {
@@ -325,6 +325,7 @@ const PLANS = [
       compliance_monitoring: true, sensitive_mgmt: true, api_remediation: true,
       dlp: true, google_workspace: true, m365: true, app_integrations: true,
       auto_remediation: "addon-included", project_hub: "optional", doc_portal: "optional",
+      salesforce_integration: "optional", specialized_file_handler: "optional", snapshot_addon: "optional",
     },
   },
   // ── GEN 4 MSP ──
