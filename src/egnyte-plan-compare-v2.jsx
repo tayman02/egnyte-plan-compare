@@ -819,12 +819,9 @@ export default function EgnytePlanMatrix() {
 
   // ── AI Value Generation ──
   const [valuePoints, setValuePoints] = useState(null);
-  const [emailDetailed, setEmailDetailed] = useState(null);
-  const [emailPunchy, setEmailPunchy] = useState(null);
   const [objections, setObjections] = useState(null);
   const [valueLoading, setValueLoading] = useState(false);
   const [valueError, setValueError] = useState(null);
-  const [copiedEmail, setCopiedEmail] = useState(null);
   const [toast, setToast] = useState(null);
   const toastTimer = React.useRef(null);
   const valueCache = React.useRef({});
@@ -838,20 +835,10 @@ export default function EgnytePlanMatrix() {
   // Reset when plans change
   React.useEffect(() => {
     setValuePoints(null);
-    setEmailDetailed(null);
-    setEmailPunchy(null);
     setObjections(null);
     setValueError(null);
-    setCopiedEmail(null);
   }, [fromPlan, toPlan]);
 
-  const copyEmail = (type, text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopiedEmail(type);
-      showToast("Email copied to clipboard");
-      setTimeout(() => setCopiedEmail(null), 2500);
-    });
-  };
 
   const generateValue = () => {
     if (!isUp || !fp || !tp) return;
@@ -860,82 +847,64 @@ export default function EgnytePlanMatrix() {
     if (valueCache.current[valueKey]) {
       const c = valueCache.current[valueKey];
       setValuePoints(c.points);
-      setEmailDetailed(c.emailDetailed);
-      setEmailPunchy(c.emailPunchy);
       setObjections(c.objections);
       return;
     }
 
-    const gained = FEATURE_SECTIONS.flatMap(s => s.features).filter(f => {
-      const fv = fp.features[f.id]; const tv = tp.features[f.id];
-      return (tv === true || tv === "addon-included") && !fv;
-    }).map(f => f.label);
+    const gained = FEATURE_SECTIONS.flatMap(s =>
+      s.features.filter(f => {
+        const fv = fp.features[f.id]; const tv = tp.features[f.id];
+        return (tv === true || tv === "addon-included") && !fv;
+      }).map(f => ({ ...f, sectionLabel: s.label }))
+    );
+
+    // Group by section for context-rich prompt
+    const gainedBySec = FEATURE_SECTIONS.map(s => {
+      const feats = gained.filter(f => f.sectionLabel === s.label).map(f => f.label);
+      return feats.length ? s.label + ": " + feats.join(", ") : null;
+    }).filter(Boolean).join("\n");
 
     const verticalHighlights = verticalInfo
-      ? gained.filter(label => {
-          const feat = FEATURE_SECTIONS.flatMap(s=>s.features).find(f=>f.label===label);
-          return feat && verticalInfo.highlights.includes(feat.id);
-        })
+      ? gained.filter(f => verticalInfo.highlights.includes(f.id)).map(f => f.label)
       : [];
 
     const costLine = dMsp != null
-      ? `The MSP cost uplift is +$${dMsp.toFixed(2)}/user/month (MSRP +$${dMsrp}/user/month).`
-      : `Pricing is available through the Egnyte partner team.`;
+      ? "MSP price uplift: +$" + dMsp.toFixed(2) + "/user/month (MSRP +$" + (dMsrp != null ? dMsrp.toFixed(2) : "—") + "/user/month)."
+      : "Pricing available through the Egnyte partner team.";
 
     const verticalLine = verticalInfo
-      ? "The customer is in the " + verticalInfo.desc + " industry. " + (verticalHighlights.length > 0 ? "The most relevant capabilities for this vertical are: " + verticalHighlights.join(", ") + "." : "")
+      ? " The customer is in the " + verticalInfo.desc + " industry." + (verticalHighlights.length > 0 ? " Prioritize outcomes around: " + verticalHighlights.join(", ") + "." : "")
       : "";
 
     setValueLoading(true);
     setValuePoints(null);
-    setEmailDetailed(null);
-    setEmailPunchy(null);
     setObjections(null);
     setValueError(null);
+
+    const prompt = "You are a senior Egnyte partner sales engineer. A PAM needs specific, use-case-grounded talking points for a customer upgrading from " + fp.name + " (" + fp.family + ") to " + tp.name + " (" + tp.family + ").\n\n"
+      + "Net-new capabilities gained, by category:\n" + gainedBySec + "\n\n"
+      + costLine + verticalLine + "\n\n"
+      + "Return ONLY valid JSON with exactly these two keys (no markdown, no preamble):\n"
+      + '{"points":["...","...","...","...","..."],"objections":[{"q":"...","a":"..."},{"q":"...","a":"..."},{"q":"...","a":"..."}]}\n\n'
+      + 'For "points" — exactly 5 talking points:\n'
+      + "- Each must tie to a SPECIFIC capability or category listed above\n"
+      + "- Lead with the business outcome, not the feature name. Say what changes operationally, what risk is removed, what the customer can now do that they couldn't before\n"
+      + "- Be concrete and direct. No filler phrases like 'improve productivity' or 'enhance collaboration'\n"
+      + "- Cover at least 3 different categories from the list\n"
+      + "- 1-2 sentences each\n"
+      + (verticalInfo ? "- Weight outcomes relevant to " + verticalInfo.desc + " buyers\n" : "")
+      + "\n"
+      + 'For "objections" — 3 real pushbacks a customer would raise when moving from ' + fp.name + " to " + tp.name + ":\n"
+      + '- "q": phrased exactly as the customer would say it (skeptical, direct, casual)\n'
+      + '- "a": 1-2 sentences grounded in specific capability or ROI. No generic responses.';
 
     fetch("/api/value", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 2500,
-        messages: [{
-          role: "user",
-          content: `You are a sales enablement writer for Egnyte, a content security and collaboration platform. A partner account manager is preparing an upgrade conversation with a customer moving from "${fp.name}" to "${tp.name}".
-
-Net-new capabilities the customer will gain:
-${gained.map(f => `- ${f}`).join("\n")}
-
-${costLine}
-${verticalLine}
-
-Return ONLY a valid JSON object with exactly these four keys. No preamble, no markdown fences, no extra text whatsoever:
-{
-  "points": ["value point 1", "value point 2", "value point 3"],
-  "emailDetailed": "full detailed email text",
-  "emailPunchy": "short punchy email text",
-  "objections": [
-    { "q": "objection question", "a": "concise response" },
-    { "q": "objection question", "a": "concise response" },
-    { "q": "objection question", "a": "concise response" }
-  ]
-}
-
-Rules that apply to ALL outputs:
-- Never use "--" or "---" anywhere
-- Never use placeholder brackets like [Name] or [Company]
-- Write ready-to-send language using warm, generic openers like "Hi there" or "Hope you are doing well"
-- Do not reference AI, automation, or scripting in any way
-- Use plain text only, no HTML, no bullet symbols, no markdown
-
-For "points": 3 outcome-focused value statements (1-2 sentences each). ${verticalInfo ? "Tailor these to resonate with a " + verticalInfo.desc + " buyer." : "Focus on what the business can now do or prevent, not feature names."}
-
-For "emailDetailed": A professional but conversational upgrade outreach email. Structure: warm opener, 2-3 sentences grounded in the value points above explaining what they gain and why it matters for their business, a soft close inviting a conversation. 4-6 sentences total. No fluff.
-
-For "emailPunchy": A short, sharp email. 3 sentences max. Lead with the most compelling outcome. One clear reason why now. One low-pressure ask. Everyday language, no jargon.
-
-For "objections": Exactly 3 of the most common real-world objections a customer would raise when asked to upgrade from ${fp.name} to ${tp.name}. Each "q" should be the objection phrased as the customer would say it (e.g. "Why would I pay more for features I don't use?"). Each "a" should be a confident, concise response a PAM would give — 2 sentences max, grounded in real business value, no fluff.`
-        }]
+        max_tokens: 1600,
+        messages: [{ role: "user", content: prompt }]
       })
     })
     .then(r => r.json())
@@ -946,8 +915,6 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
         const parsed = JSON.parse(clean);
         valueCache.current[valueKey] = parsed;
         setValuePoints(parsed.points);
-        setEmailDetailed(parsed.emailDetailed);
-        setEmailPunchy(parsed.emailPunchy);
         setObjections(parsed.objections);
       } catch(e) { setValueError("Could not parse response. Try again."); }
     })
@@ -1226,51 +1193,15 @@ For "objections": Exactly 3 of the most common real-world objections a customer 
 
                   {/* Value points */}
                   {valuePoints && (
-                    <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom: emailDetailed ? 4 : 0 }}>
+                    <div style={{ display:"flex", flexDirection:"column", gap:10, marginBottom: objections ? 20 : 0 }}>
                       {valuePoints.map((pt, i) => (
-                        <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start" }}>
-                          <div style={{ width:22, height:22, borderRadius:6, background:"rgba(11,197,186,0.12)", border:`1px solid rgba(11,197,186,0.25)`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>
-                            <span style={{ fontSize:11, fontWeight:700, color:E.teal }}>{i+1}</span>
+                        <div key={i} style={{ display:"flex", gap:12, alignItems:"flex-start", padding:"10px 14px", background:E.navySurf, borderRadius:8, borderLeft:`3px solid ${E.teal}` }}>
+                          <div style={{ width:22, height:22, borderRadius:6, background:"rgba(11,197,186,0.15)", border:`1px solid rgba(11,197,186,0.3)`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>
+                            <span style={{ fontSize:11, fontWeight:800, color:E.teal }}>{i+1}</span>
                           </div>
-                          <p style={{ fontSize:13, color:E.textSub, lineHeight:1.7, margin:0 }}>{pt}</p>
+                          <p style={{ fontSize:13, color:E.text, lineHeight:1.7, margin:0, fontWeight:400 }}>{pt}</p>
                         </div>
                       ))}
-                    </div>
-                  )}
-
-                  {/* Email drafts */}
-                  {(emailDetailed || emailPunchy) && (
-                    <div style={{ borderTop:`1px solid ${E.border}`, paddingTop:20, marginTop: valuePoints ? 20 : 0 }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16 }}>
-                        <div style={{ width:2.5, height:14, borderRadius:2, background:E.blue2 }}/>
-                        <span style={{ fontSize:10, fontWeight:700, color:E.blue2, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Outreach Emails</span>
-                      </div>
-                      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-                        {emailDetailed && (
-                          <div style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:10, padding:"16px 18px", display:"flex", flexDirection:"column", gap:12 }}>
-                            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                              <span style={{ fontSize:10, fontWeight:700, color:E.textMut, textTransform:"uppercase", letterSpacing:"0.1em" }}>Detailed</span>
-                              <button onClick={() => copyEmail("detailed", emailDetailed)}
-                                style={{ display:"flex", alignItems:"center", gap:5, padding:"4px 12px", borderRadius:6, border:`1px solid ${copiedEmail==="detailed" ? E.teal+"88" : E.blue2+"55"}`, background: copiedEmail==="detailed" ? "rgba(11,197,186,0.12)" : "rgba(61,113,234,0.1)", color: copiedEmail==="detailed" ? E.teal : E.blue2, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.2s" }}>
-                                {copiedEmail==="detailed" ? "✓ Copied!" : "⎘ Copy"}
-                              </button>
-                            </div>
-                            <pre style={{ fontSize:12, color:E.textSub, lineHeight:1.85, margin:0, fontFamily:"'Inter',sans-serif", whiteSpace:"pre-wrap", wordBreak:"break-word" }}>{emailDetailed}</pre>
-                          </div>
-                        )}
-                        {emailPunchy && (
-                          <div style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:10, padding:"16px 18px", display:"flex", flexDirection:"column", gap:12 }}>
-                            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                              <span style={{ fontSize:10, fontWeight:700, color:E.textMut, textTransform:"uppercase", letterSpacing:"0.1em" }}>Short & Direct</span>
-                              <button onClick={() => copyEmail("punchy", emailPunchy)}
-                                style={{ display:"flex", alignItems:"center", gap:5, padding:"4px 12px", borderRadius:6, border:`1px solid ${copiedEmail==="punchy" ? E.teal+"88" : E.blue2+"55"}`, background: copiedEmail==="punchy" ? "rgba(11,197,186,0.12)" : "rgba(61,113,234,0.1)", color: copiedEmail==="punchy" ? E.teal : E.blue2, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.2s" }}>
-                                {copiedEmail==="punchy" ? "✓ Copied!" : "⎘ Copy"}
-                              </button>
-                            </div>
-                            <pre style={{ fontSize:12, color:E.textSub, lineHeight:1.85, margin:0, fontFamily:"'Inter',sans-serif", whiteSpace:"pre-wrap", wordBreak:"break-word" }}>{emailPunchy}</pre>
-                          </div>
-                        )}
-                      </div>
                     </div>
                   )}
 
