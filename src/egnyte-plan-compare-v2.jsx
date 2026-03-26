@@ -546,33 +546,45 @@ const FeatureTooltip = ({ feat }) => {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ top:0, left:0 });
   const btnRef = React.useRef(null);
+  const hideTimer = React.useRef(null);
   if (!feat.desc && !feat.helpUrl) return <div style={{width:18}}/>;
 
+  const scheduleHide = () => {
+    hideTimer.current = setTimeout(() => setVisible(false), 150);
+  };
+  const cancelHide = () => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+  };
+
   const handleMouseEnter = () => {
+    cancelHide();
     if (btnRef.current) {
       const r = btnRef.current.getBoundingClientRect();
-      const tooltipW = 264;
+      const tooltipW = 280;
       const goLeft = r.right + tooltipW + 12 > window.innerWidth;
       const left = goLeft ? r.left - tooltipW - 8 : r.right + 8;
       const top = r.top + r.height / 2;
-      // Clamp vertically so it doesn't go off screen
-      const clampedTop = Math.max(10, Math.min(top, window.innerHeight - 150));
+      const clampedTop = Math.max(10, Math.min(top, window.innerHeight - 180));
       setCoords({ top: clampedTop, left });
     }
     setVisible(true);
   };
 
   const tooltip = visible ? (
-    <div style={{
-      position:"fixed", top:coords.top, left:coords.left,
-      transform:"translateY(-50%)",
-      width:264, zIndex:99999,
-      background:"#0F1E38",
-      border:`1px solid rgba(11,197,186,0.35)`,
-      borderRadius:10, padding:"12px 14px",
-      boxShadow:"0 8px 32px rgba(0,0,0,0.7)",
-      pointerEvents:"none",
-    }}>
+    <div
+      onMouseEnter={cancelHide}
+      onMouseLeave={scheduleHide}
+      style={{
+        position:"fixed", top:coords.top, left:coords.left,
+        transform:"translateY(-50%)",
+        width:280, zIndex:99999,
+        background:"#0F1E38",
+        border:`1px solid rgba(11,197,186,0.35)`,
+        borderRadius:10, padding:"12px 14px",
+        boxShadow:"0 8px 32px rgba(0,0,0,0.7)",
+        pointerEvents:"auto",
+        cursor:"default",
+      }}>
       <div style={{ fontSize:11, fontWeight:600, color:E.text, marginBottom:6, lineHeight:1.4 }}>{feat.label}</div>
       {feat.price != null && (
         <div style={{ marginBottom:8, padding:"8px 10px", background:"rgba(255,202,41,0.08)", border:"1px solid rgba(255,202,41,0.2)", borderRadius:6 }}>
@@ -614,7 +626,7 @@ const FeatureTooltip = ({ feat }) => {
     <div style={{ position:"relative", display:"flex", justifyContent:"center" }}>
       <button ref={btnRef}
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={() => setVisible(false)}
+        onMouseLeave={scheduleHide}
         style={{ width:18, height:18, borderRadius:4, background:E.navySurf, border:`1px solid ${visible ? E.teal : E.border}`, color: visible ? E.teal : E.textMut, fontSize:10, fontWeight:700, cursor:"default", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s", fontFamily:"'Inter',sans-serif" }}>?</button>
       {ReactDOM.createPortal(tooltip, document.body)}
     </div>
