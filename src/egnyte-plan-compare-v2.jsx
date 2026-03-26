@@ -236,7 +236,7 @@ const PLANS = [
     summary: "Effective and secure collaboration to get your team up and running quickly and easily.",
     pricing: { msrp: 12, msp: 10 },
     features: {
-      encryption: true, storage_per_user: "200 GB", upload_limit: "100 GB", domains: "1",
+      encryption: true, storage_per_user: "100 GB", upload_limit: "100 GB", domains: "1",
       mfa: true, external_collab: true, granular_perms: true, compliant_storage: true,
       single_doc_qa: true, copilot: false, ai_search: false, ai_workflows: false,
       text_search: true, ocr_search: false, ai_classification: false, trainable_classifiers: false,
