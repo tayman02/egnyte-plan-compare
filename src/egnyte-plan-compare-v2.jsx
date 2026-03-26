@@ -1050,6 +1050,8 @@ export default function EgnytePlanMatrix() {
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-track{background:#0C2340;}
         ::-webkit-scrollbar-thumb{background:rgba(11,197,186,0.25);border-radius:2px;}
+        @keyframes shimmer{from{background-position:-468px 0}to{background-position:468px 0}}
+        .shimmer{background:linear-gradient(90deg,rgba(11,197,186,0.04) 0%,rgba(11,197,186,0.1) 50%,rgba(11,197,186,0.04) 100%);background-size:936px 100%;animation:shimmer 1.4s ease infinite;}
         @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
         @keyframes spin{to{transform:rotate(360deg);}}
         @keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
@@ -1252,13 +1254,29 @@ export default function EgnytePlanMatrix() {
                   </div>
                 </div>
 
-                {/* ── Vertical Filter ── */}
-                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"16px 20px", marginBottom:12 }}>
-                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                      <div style={{ width:2.5, height:14, borderRadius:2, background:E.blue2 }}/>
-                      <span style={{ fontSize:10, fontWeight:700, color:E.blue2, textTransform:"uppercase", letterSpacing:"0.12em" }}>Customer Vertical</span>
-                      <span style={{ fontSize:11, color:E.textMut }}>— highlights relevant features and tailors AI output</span>
+                {/* ── Upgrade Value + Vertical (unified card) ── */}
+                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, marginBottom:20, overflow:"hidden" }}>
+
+                  {/* Header */}
+                  <div style={{ padding:"18px 24px 0", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                      <div style={{ width:2.5, height:14, borderRadius:2, background:E.teal }}/>
+                      <span style={{ fontSize:10, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Value Summary</span>
+                      <span style={{ fontSize:10, color:E.textMut }}>— {fp.name} → {tp.name}</span>
+                    </div>
+                    {valuePillars && !valueLoading && (
+                      <button onClick={generateValue} style={{ background:"transparent", border:"none", color:E.textMut, fontSize:11, cursor:"pointer", fontFamily:"'Inter',sans-serif", padding:0, opacity:0.7 }}>
+                        ↻ Regenerate
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Step 1 — Customer Industry */}
+                  <div style={{ padding:"16px 24px 0" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:8, display:"flex", alignItems:"center", gap:8 }}>
+                      <span style={{ width:18, height:18, borderRadius:"50%", background:E.navySurf, border:`1px solid ${E.border}`, fontSize:10, fontWeight:800, color:E.textMut, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>1</span>
+                      Customer Industry
+                      <span style={{ fontSize:9, color:E.textMut, fontWeight:400, background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:4, padding:"1px 6px" }}>optional — tailors AI output + highlights features below</span>
                     </div>
                     <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
                       <button onClick={()=>setVertical(null)}
@@ -1278,79 +1296,97 @@ export default function EgnytePlanMatrix() {
                         </button>
                       ))}
                     </div>
-                  </div>
-                  {vertical && VerticalKeyGains({ vertical, VERTICALS, isUp, fp, tp, E })}
-                </div>
-
-                {/* ── Value section ── */}
-                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"20px 24px", marginBottom:20 }}>
-
-                  {/* Header */}
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:12, marginBottom:16 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                      <div style={{ width:2.5, height:14, borderRadius:2, background:E.teal }}/>
-                      <span style={{ fontSize:10, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Value</span>
-                      <span style={{ fontSize:10, color:E.textMut }}>— {fp.name} → {tp.name}</span>
-                    </div>
-                    <button onClick={generateValue} disabled={valueLoading}
-                      style={{ flexShrink:0, display:"flex", alignItems:"center", gap:7, padding:"7px 16px", borderRadius:7, border:`1px solid ${E.teal}55`, background: valueLoading ? "rgba(11,197,186,0.05)" : "rgba(11,197,186,0.1)", color: valueLoading ? E.textMut : E.teal, fontSize:12, fontWeight:600, cursor: valueLoading ? "not-allowed" : "pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s" }}>
-                      {valueLoading
-                        ? <><div style={{ width:12, height:12, borderRadius:"50%", border:`2px solid ${E.teal}55`, borderTopColor:E.teal, animation:"spin 0.8s linear infinite" }}/> Generating…</>
-                        : <>{valuePillars ? "↻ Regenerate" : "✦ Generate Value Summary"}{vertical ? ` · ${VERTICALS.find(v=>v.id===vertical)?.icon}${VERTICALS.find(v=>v.id===vertical)?.label}` : ""}</>}
-                    </button>
+                    {vertical && (
+                      <div style={{ marginTop:10 }}>
+                        {VerticalKeyGains({ vertical, VERTICALS, isUp, fp, tp, E })}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Optional scenario input */}
-                  <div style={{ marginBottom:16 }}>
-                    <div style={{ fontSize:10, fontWeight:600, color:E.textMut, marginBottom:6, display:"flex", alignItems:"center", gap:6 }}>
-                      <span style={{ letterSpacing:"0.08em", textTransform:"uppercase" }}>Customer Context</span>
-                      <span style={{ fontSize:9, color:E.textMut, background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:4, padding:"1px 6px" }}>optional</span>
+                  {/* Step 2 — Customer Context */}
+                  <div style={{ padding:"16px 24px 0" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:8, display:"flex", alignItems:"center", gap:8 }}>
+                      <span style={{ width:18, height:18, borderRadius:"50%", background:E.navySurf, border:`1px solid ${E.border}`, fontSize:10, fontWeight:800, color:E.textMut, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>2</span>
+                      Customer Context
+                      <span style={{ fontSize:9, color:E.textMut, fontWeight:400, background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:4, padding:"1px 6px" }}>optional</span>
                     </div>
                     <textarea
                       value={scenario}
                       onChange={e => setScenario(e.target.value)}
-                      placeholder="e.g. 80-user AEC firm moving off SharePoint, field teams on job sites, concerned about ransomware after a recent incident…"
+                      placeholder="e.g. 80-user AEC firm moving off an on-prem file server, field teams on job sites, concerned about ransomware after a recent incident…"
                       rows={2}
-                      style={{ width:"100%", background:E.navySurf, border:`1px solid ${scenario ? E.teal+"55" : E.borderSub}`, borderRadius:8, padding:"10px 12px", color:E.text, fontSize:12, fontFamily:"'Inter',sans-serif", outline:"none", resize:"vertical", lineHeight:1.6, color:E.textSub, transition:"border-color 0.15s" }}
+                      style={{ width:"100%", background:E.navySurf, border:`1px solid ${scenario ? E.teal+"66" : E.borderSub}`, borderRadius:8, padding:"10px 12px", color:E.textSub, fontSize:12, fontFamily:"'Inter',sans-serif", outline:"none", resize:"vertical", lineHeight:1.6, transition:"border-color 0.15s", boxSizing:"border-box" }}
                     />
-                    {scenario && <div style={{ fontSize:10, color:E.teal, marginTop:4 }}>✓ This context will personalize the output</div>}
                   </div>
 
-                  {/* Pillar cards */}
-                  {valuePillars && (
-                    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(260px, 1fr))", gap:10, marginBottom: objections ? 20 : 0 }}>
-                      {valuePillars.map((p, i) => (
-                        <div key={i} style={{ background:E.navySurf, borderRadius:10, padding:"14px 16px", borderLeft:`3px solid ${E.teal}`, border:`1px solid ${E.borderSub}`, borderLeftWidth:3, borderLeftColor:E.teal }}>
-                          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
-                            <span style={{ fontSize:18, lineHeight:1 }}>{p.icon}</span>
-                            <span style={{ fontSize:10, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.1em" }}>{p.pillar}</span>
-                          </div>
-                          <p style={{ fontSize:13, color:E.text, lineHeight:1.7, margin:0 }}>{p.point}</p>
-                        </div>
+                  {/* Step 3 — Generate */}
+                  <div style={{ padding:"12px 24px 20px" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:8, display:"flex", alignItems:"center", gap:8 }}>
+                      <span style={{ width:18, height:18, borderRadius:"50%", background:E.navySurf, border:`1px solid ${E.border}`, fontSize:10, fontWeight:800, color:E.textMut, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>3</span>
+                      Generate
+                    </div>
+                    <button onClick={generateValue} disabled={valueLoading}
+                      style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:"13px 24px", borderRadius:8, border:`1px solid ${E.teal}55`, background: valueLoading ? "rgba(11,197,186,0.05)" : "rgba(11,197,186,0.12)", color: valueLoading ? E.textMut : E.teal, fontSize:13, fontWeight:700, cursor: valueLoading ? "not-allowed" : "pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s" }}>
+                      {valueLoading
+                        ? <><div style={{ width:14, height:14, borderRadius:"50%", border:`2px solid ${E.teal}44`, borderTopColor:E.teal, animation:"spin 0.8s linear infinite" }}/> Generating…</>
+                        : <>✦ Generate Value Summary{vertical ? ` · ${VERTICALS.find(v=>v.id===vertical)?.icon} ${VERTICALS.find(v=>v.id===vertical)?.label}` : ""}{scenario.trim() ? " · with context" : ""}</>}
+                    </button>
+                  </div>
+
+                  {valueError && (
+                    <div style={{ margin:"0 24px 20px", padding:"10px 14px", background:"rgba(255,202,41,0.08)", border:`1px solid rgba(255,202,41,0.2)`, borderRadius:8, fontSize:12, color:E.yellow }}>⚠ {valueError}</div>
+                  )}
+
+                  {/* Loading shimmer */}
+                  {valueLoading && (
+                    <div style={{ borderTop:`1px solid ${E.border}`, padding:"20px 24px", display:"flex", flexDirection:"column", gap:10 }}>
+                      {[1,2,3].map(i => (
+                        <div key={i} className="shimmer" style={{ borderRadius:10, height:86 }}/>
                       ))}
+                      <div style={{ borderTop:`1px solid ${E.borderSub}`, paddingTop:16, display:"flex", flexDirection:"column", gap:8, marginTop:4 }}>
+                        {[1,2,3].map(i => (
+                          <div key={i} className="shimmer" style={{ borderRadius:8, height:56 }}/>
+                        ))}
+                      </div>
                     </div>
                   )}
 
-                  {valueError && (
-                    <p style={{ fontSize:12, color:E.yellow, marginTop:8 }}>⚠ {valueError}</p>
+                  {/* Pillar cards */}
+                  {valuePillars && !valueLoading && (
+                    <div style={{ borderTop:`1px solid ${E.border}`, padding:"20px 24px", display:"flex", flexDirection:"column", gap:10 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+                        <div style={{ width:2.5, height:12, borderRadius:2, background:E.teal }}/>
+                        <span style={{ fontSize:9, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.12em" }}>Value by Pillar</span>
+                      </div>
+                      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(240px, 1fr))", gap:10 }}>
+                        {valuePillars.map((p, i) => (
+                          <div key={i} className="fade-up" style={{ background:E.navySurf, borderRadius:10, padding:"14px 16px", borderLeft:`3px solid ${E.teal}55`, border:`1px solid ${E.borderSub}`, borderLeftWidth:3, borderLeftColor:`${E.teal}55`, animationDelay:`${i*60}ms` }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
+                              <span style={{ fontSize:20, lineHeight:1 }}>{p.icon}</span>
+                              <span style={{ fontSize:10, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.1em" }}>{p.pillar}</span>
+                            </div>
+                            <p style={{ fontSize:13, color:E.text, lineHeight:1.7, margin:0 }}>{p.point}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
 
                   {/* Objections */}
-                  {objections && (
-                    <div style={{ borderTop:`1px solid ${E.border}`, paddingTop:20, marginTop: valuePillars ? 0 : 0 }}>
+                  {objections && !valueLoading && (
+                    <div style={{ borderTop:`1px solid ${E.border}`, padding:"20px 24px" }}>
                       <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
-                        <div style={{ width:2.5, height:14, borderRadius:2, background:E.yellow }}/>
-                        <span style={{ fontSize:10, fontWeight:700, color:E.yellow, textTransform:"uppercase", letterSpacing:"0.12em" }}>Common Objections</span>
-                        <span style={{ fontSize:10, color:E.textMut }}>— {fp.name} → {tp.name}</span>
+                        <div style={{ width:2.5, height:12, borderRadius:2, background:E.yellow }}/>
+                        <span style={{ fontSize:9, fontWeight:700, color:E.yellow, textTransform:"uppercase", letterSpacing:"0.12em" }}>Common Objections</span>
                       </div>
                       <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                         {objections.map((obj, i) => (
-                          <div key={i} style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:10, overflow:"hidden" }}>
-                            <div style={{ padding:"12px 16px", display:"flex", gap:10, alignItems:"flex-start", borderBottom:`1px solid ${E.borderSub}` }}>
+                          <div key={i} className="fade-up" style={{ background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:10, overflow:"hidden", animationDelay:`${i*80}ms` }}>
+                            <div style={{ padding:"11px 16px", display:"flex", gap:10, alignItems:"flex-start", borderBottom:`1px solid ${E.borderSub}` }}>
                               <span style={{ fontSize:10, fontWeight:700, color:E.yellow, background:"rgba(255,202,41,0.1)", border:`1px solid rgba(255,202,41,0.25)`, borderRadius:4, padding:"2px 7px", flexShrink:0, marginTop:1 }}>Q</span>
                               <span style={{ fontSize:13, color:E.text, fontWeight:500, lineHeight:1.5 }}>{obj.q}</span>
                             </div>
-                            <div style={{ padding:"12px 16px", display:"flex", gap:10, alignItems:"flex-start" }}>
+                            <div style={{ padding:"11px 16px", display:"flex", gap:10, alignItems:"flex-start" }}>
                               <span style={{ fontSize:10, fontWeight:700, color:E.teal, background:"rgba(11,197,186,0.1)", border:`1px solid rgba(11,197,186,0.25)`, borderRadius:4, padding:"2px 7px", flexShrink:0, marginTop:1 }}>A</span>
                               <span style={{ fontSize:13, color:E.textSub, lineHeight:1.65 }}>{obj.a}</span>
                             </div>
