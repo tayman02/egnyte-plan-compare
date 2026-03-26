@@ -897,16 +897,24 @@ export default function EgnytePlanMatrix() {
   const VERTICALS = [
     { id:"aec",      label:"AEC",              icon:"🏗",
       desc:"Architecture, Engineering & Construction",
-      highlights:["project_hub","advanced_video","file_locking","link_sharing","advanced_workflows","app_integrations","edge_caching","migration_tools"] },
+      // AEC: BIM/CAD file handling, project lifecycle, Procore/Autodesk integrations,
+      // field site access, PDF markup, e-sig for submittals, ransomware protection, AI search for large file sets
+      highlights:["specialized_file_handler","project_hub","pdf_handler","esignature","advanced_workflows","app_integrations","edge_caching","file_locking","link_sharing","ransomware_artifact","ai_search","ocr_search"] },
     { id:"finserv",  label:"Financial Services",icon:"🏦",
-      desc:"Banking, Wealth, Insurance",
-      highlights:["doc_portal","sensitive_data","compliance_monitoring","lifecycle_policies","legal_hold","dlp","doc_labeling","suspicious_login","auto_remediation","audit","ransomware_artifact","ransomware_behavioral"] },
+      desc:"Banking, Wealth, Insurance & Financial Advisory",
+      // FinServ: client onboarding portals, sensitive data/PII discovery, compliance monitoring,
+      // lifecycle policies, legal hold, DLP, audit trails, auto-remediation, e-sig for contracts
+      highlights:["doc_portal","pdf_handler","esignature","sensitive_data","compliance_monitoring","lifecycle_policies","legal_hold","dlp","doc_labeling","auto_remediation","audit","suspicious_login","ransomware_artifact"] },
     { id:"lifesci",  label:"Life Sciences",     icon:"🧬",
-      desc:"Pharma, Biotech, Medical Devices",
-      highlights:["compliant_storage","lifecycle_policies","legal_hold","compliance_monitoring","audit","sensitive_data","advanced_workflows","ocr_search","ransomware_artifact"] },
+      desc:"Pharma, Biotech & Medical Devices",
+      // Life Sciences: GxP compliant storage, lifecycle/retention, legal hold, audit trails,
+      // sensitive data for patient/IP protection, PDF workflows, OCR search for lab docs
+      highlights:["compliant_storage","lifecycle_policies","legal_hold","compliance_monitoring","audit","sensitive_data","advanced_workflows","pdf_handler","esignature","ocr_search","ransomware_artifact","doc_labeling"] },
     { id:"mssp",     label:"MSP / IT",          icon:"🖥",
       desc:"Managed Service Providers & IT Teams",
-      highlights:["sso","device_controls","role_admin","ransomware_artifact","ransomware_behavioral","auto_remediation","suspicious_login","unusual_access","data_residency","encryption_keys","migration_tools","api_remediation"] },
+      // MSP/IT: SSO/SAML for client domains, device controls, role admin,
+      // ransomware detection + behavioral, auto-remediation, insider risk, data residency, encryption keys
+      highlights:["sso","device_controls","role_admin","ransomware_artifact","ransomware_behavioral","auto_remediation","suspicious_login","unusual_access","data_residency","encryption_keys","api_remediation","lifecycle_policies"] },
   ];
 
   // ── AI Value Generation ──
@@ -986,7 +994,7 @@ export default function EgnytePlanMatrix() {
       + "Return ONLY valid JSON (no markdown, no preamble):\n"
       + '{\n'
       + '  "pillars": [\n'
-      + '    { "icon": "🤝", "pillar": "Pillar Name", "point": "1-2 sentence outcome-focused value statement" },\n'
+      + '    { "icon": "🤝", "pillar": "Pillar Name", "point": "1-2 sentence outcome-focused value statement", "vertical_key": false },\n'
       + '    ...\n'
       + '  ],\n'
       + '  "objections": [\n'
@@ -1002,6 +1010,7 @@ export default function EgnytePlanMatrix() {
       + '- 1-2 sentences per point\n'
       + (scenarioLine ? '- Tailor the language to the specific customer context provided\n' : '')
       + (verticalInfo ? '- Weight outcomes relevant to ' + verticalInfo.desc + ' buyers\n' : '')
+      + (verticalInfo ? '- Set "vertical_key": true on the 1-2 pillars most directly relevant to ' + verticalInfo.label + ' buyers\n' : '- Set "vertical_key": false on all pillars\n')
       + '\n'
       + 'For "objections" — exactly 3. Each "q" is phrased as the customer would actually say it. Each "a" is a confident 1-2 sentence response grounded in specific capability or ROI.';
 
@@ -1258,80 +1267,101 @@ export default function EgnytePlanMatrix() {
                 <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, marginBottom:20, overflow:"hidden" }}>
 
                   {/* Header */}
-                  <div style={{ padding:"18px 24px 0", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                  <div style={{ padding:"18px 24px 14px", display:"flex", alignItems:"center", justifyContent:"space-between", borderBottom:`1px solid ${E.borderSub}` }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                       <div style={{ width:2.5, height:14, borderRadius:2, background:E.teal }}/>
                       <span style={{ fontSize:10, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.12em" }}>Upgrade Value Summary</span>
                       <span style={{ fontSize:10, color:E.textMut }}>— {fp.name} → {tp.name}</span>
                     </div>
                     {valuePillars && !valueLoading && (
-                      <button onClick={generateValue} style={{ background:"transparent", border:"none", color:E.textMut, fontSize:11, cursor:"pointer", fontFamily:"'Inter',sans-serif", padding:0, opacity:0.7 }}>
+                      <button onClick={generateValue} style={{ background:"transparent", border:`1px solid ${E.borderSub}`, borderRadius:6, color:E.textMut, fontSize:11, cursor:"pointer", fontFamily:"'Inter',sans-serif", padding:"4px 10px" }}>
                         ↻ Regenerate
                       </button>
                     )}
                   </div>
 
-                  {/* Step 1 — Customer Industry */}
-                  <div style={{ padding:"16px 24px 0" }}>
-                    <div style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:8, display:"flex", alignItems:"center", gap:8 }}>
-                      <span style={{ width:18, height:18, borderRadius:"50%", background:E.navySurf, border:`1px solid ${E.border}`, fontSize:10, fontWeight:800, color:E.textMut, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>1</span>
-                      Customer Industry
-                      <span style={{ fontSize:9, color:E.textMut, fontWeight:400, background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:4, padding:"1px 6px" }}>optional — tailors AI output + highlights features below</span>
-                    </div>
-                    <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                      <button onClick={()=>setVertical(null)}
-                        style={{ padding:"5px 14px", borderRadius:20, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s",
-                          background: vertical===null ? "rgba(118,162,188,0.15)" : "transparent",
-                          border: `1px solid ${vertical===null ? E.textSub : E.borderSub}`,
-                          color: vertical===null ? E.text : E.textMut }}>
-                        All
-                      </button>
-                      {VERTICALS.map(v=>(
-                        <button key={v.id} onClick={()=>setVertical(prev=>prev===v.id?null:v.id)}
-                          style={{ padding:"5px 14px", borderRadius:20, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s",
-                            background: vertical===v.id ? "rgba(11,197,186,0.12)" : "transparent",
-                            border: `1px solid ${vertical===v.id ? E.teal+"88" : E.borderSub}`,
-                            color: vertical===v.id ? E.teal : E.textMut }}>
-                          {v.icon} {v.label}
-                        </button>
-                      ))}
-                    </div>
-                    {vertical && (
-                      <div style={{ marginTop:10 }}>
-                        {VerticalKeyGains({ vertical, VERTICALS, isUp, fp, tp, E })}
+                  {/* Steps */}
+                  <div style={{ padding:"20px 24px 0", display:"flex", flexDirection:"column", gap:0 }}>
+
+                    {/* Step 1 */}
+                    <div style={{ display:"flex", gap:16, alignItems:"flex-start" }}>
+                      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0 }}>
+                        <div style={{ width:32, height:32, borderRadius:"50%", background: vertical ? E.teal : E.navySurf, border:`2px solid ${vertical ? E.teal : E.border}`, display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.2s" }}>
+                          <span style={{ fontSize:13, fontWeight:800, color: vertical ? E.navy : E.textMut }}>1</span>
+                        </div>
+                        <div style={{ width:2, flex:1, minHeight:20, background: vertical ? `linear-gradient(${E.teal}, ${E.borderSub})` : E.borderSub, marginTop:4, marginBottom:4 }}/>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Step 2 — Customer Context */}
-                  <div style={{ padding:"16px 24px 0" }}>
-                    <div style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:8, display:"flex", alignItems:"center", gap:8 }}>
-                      <span style={{ width:18, height:18, borderRadius:"50%", background:E.navySurf, border:`1px solid ${E.border}`, fontSize:10, fontWeight:800, color:E.textMut, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>2</span>
-                      Customer Context
-                      <span style={{ fontSize:9, color:E.textMut, fontWeight:400, background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:4, padding:"1px 6px" }}>optional</span>
+                      <div style={{ flex:1, paddingBottom:16 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                          <span style={{ fontSize:13, fontWeight:700, color: vertical ? E.text : E.textSub }}>Customer Industry</span>
+                          <span style={{ fontSize:9, color:E.textMut, background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:4, padding:"1px 6px" }}>optional · tailors AI + highlights table</span>
+                        </div>
+                        <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                          <button onClick={()=>setVertical(null)}
+                            style={{ padding:"6px 14px", borderRadius:20, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s",
+                              background: vertical===null ? "rgba(118,162,188,0.15)" : "transparent",
+                              border: `1px solid ${vertical===null ? E.textSub : E.borderSub}`,
+                              color: vertical===null ? E.text : E.textMut }}>
+                            All
+                          </button>
+                          {VERTICALS.map(v=>(
+                            <button key={v.id} onClick={()=>setVertical(prev=>prev===v.id?null:v.id)}
+                              style={{ padding:"6px 14px", borderRadius:20, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s",
+                                background: vertical===v.id ? "rgba(11,197,186,0.15)" : "transparent",
+                                border: `1px solid ${vertical===v.id ? E.teal : E.borderSub}`,
+                                color: vertical===v.id ? E.teal : E.textMut,
+                                boxShadow: vertical===v.id ? `0 0 0 3px rgba(11,197,186,0.1)` : "none" }}>
+                              {v.icon} {v.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <textarea
-                      value={scenario}
-                      onChange={e => setScenario(e.target.value)}
-                      placeholder="e.g. 80-user AEC firm moving off an on-prem file server, field teams on job sites, concerned about ransomware after a recent incident…"
-                      rows={2}
-                      style={{ width:"100%", background:E.navySurf, border:`1px solid ${scenario ? E.teal+"66" : E.borderSub}`, borderRadius:8, padding:"10px 12px", color:E.textSub, fontSize:12, fontFamily:"'Inter',sans-serif", outline:"none", resize:"vertical", lineHeight:1.6, transition:"border-color 0.15s", boxSizing:"border-box" }}
-                    />
-                  </div>
 
-                  {/* Step 3 — Generate */}
-                  <div style={{ padding:"12px 24px 20px" }}>
-                    <div style={{ fontSize:10, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:8, display:"flex", alignItems:"center", gap:8 }}>
-                      <span style={{ width:18, height:18, borderRadius:"50%", background:E.navySurf, border:`1px solid ${E.border}`, fontSize:10, fontWeight:800, color:E.textMut, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>3</span>
-                      Generate
+                    {/* Step 2 */}
+                    <div style={{ display:"flex", gap:16, alignItems:"flex-start" }}>
+                      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0 }}>
+                        <div style={{ width:32, height:32, borderRadius:"50%", background: scenario.trim() ? E.teal : E.navySurf, border:`2px solid ${scenario.trim() ? E.teal : E.border}`, display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.2s" }}>
+                          <span style={{ fontSize:13, fontWeight:800, color: scenario.trim() ? E.navy : E.textMut }}>2</span>
+                        </div>
+                        <div style={{ width:2, flex:1, minHeight:20, background: scenario.trim() ? `linear-gradient(${E.teal}, ${E.borderSub})` : E.borderSub, marginTop:4, marginBottom:4 }}/>
+                      </div>
+                      <div style={{ flex:1, paddingBottom:16 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                          <span style={{ fontSize:13, fontWeight:700, color: scenario.trim() ? E.text : E.textSub }}>Customer Context</span>
+                          <span style={{ fontSize:9, color:E.textMut, background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:4, padding:"1px 6px" }}>optional</span>
+                        </div>
+                        <textarea
+                          value={scenario}
+                          onChange={e => setScenario(e.target.value)}
+                          placeholder="e.g. 80-user AEC firm moving off an on-prem file server, field teams on job sites, concerned about ransomware after a recent incident…"
+                          rows={2}
+                          style={{ width:"100%", background:E.navySurf, border:`1px solid ${scenario ? E.teal+"55" : E.borderSub}`, borderRadius:8, padding:"10px 12px", color:E.textSub, fontSize:12, fontFamily:"'Inter',sans-serif", outline:"none", resize:"vertical", lineHeight:1.6, transition:"border-color 0.15s", boxSizing:"border-box" }}
+                        />
+                      </div>
                     </div>
-                    <button onClick={generateValue} disabled={valueLoading}
-                      style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:"13px 24px", borderRadius:8, border:`1px solid ${E.teal}55`, background: valueLoading ? "rgba(11,197,186,0.05)" : "rgba(11,197,186,0.12)", color: valueLoading ? E.textMut : E.teal, fontSize:13, fontWeight:700, cursor: valueLoading ? "not-allowed" : "pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s" }}>
-                      {valueLoading
-                        ? <><div style={{ width:14, height:14, borderRadius:"50%", border:`2px solid ${E.teal}44`, borderTopColor:E.teal, animation:"spin 0.8s linear infinite" }}/> Generating…</>
-                        : <>✦ Generate Value Summary{vertical ? ` · ${VERTICALS.find(v=>v.id===vertical)?.icon} ${VERTICALS.find(v=>v.id===vertical)?.label}` : ""}{scenario.trim() ? " · with context" : ""}</>}
-                    </button>
-                  </div>
+
+                    {/* Step 3 */}
+                    <div style={{ display:"flex", gap:16, alignItems:"flex-start" }}>
+                      <div style={{ flexShrink:0 }}>
+                        <div style={{ width:32, height:32, borderRadius:"50%", background:`linear-gradient(135deg,${E.teal},#0099A8)`, border:`2px solid ${E.teal}`, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:`0 0 12px rgba(11,197,186,0.35)` }}>
+                          <span style={{ fontSize:13, fontWeight:800, color:E.navy }}>3</span>
+                        </div>
+                      </div>
+                      <div style={{ flex:1, paddingBottom:20 }}>
+                        <div style={{ marginBottom:10 }}>
+                          <span style={{ fontSize:13, fontWeight:700, color:E.text }}>Generate</span>
+                        </div>
+                        <button onClick={generateValue} disabled={valueLoading}
+                          style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"center", gap:8, padding:"13px 24px", borderRadius:8, border:`1px solid ${E.teal}55`, background: valueLoading ? "rgba(11,197,186,0.05)" : "rgba(11,197,186,0.12)", color: valueLoading ? E.textMut : E.teal, fontSize:13, fontWeight:700, cursor: valueLoading ? "not-allowed" : "pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s" }}>
+                          {valueLoading
+                            ? <><div style={{ width:14, height:14, borderRadius:"50%", border:`2px solid ${E.teal}44`, borderTopColor:E.teal, animation:"spin 0.8s linear infinite" }}/> Generating…</>
+                            : <>✦ Generate Value Summary{vertical ? ` · ${VERTICALS.find(v=>v.id===vertical)?.icon} ${VERTICALS.find(v=>v.id===vertical)?.label}` : ""}{scenario.trim() ? " · with context" : ""}</>}
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>{/* end steps */}
 
                   {valueError && (
                     <div style={{ margin:"0 24px 20px", padding:"10px 14px", background:"rgba(255,202,41,0.08)", border:`1px solid rgba(255,202,41,0.2)`, borderRadius:8, fontSize:12, color:E.yellow }}>⚠ {valueError}</div>
@@ -1352,25 +1382,42 @@ export default function EgnytePlanMatrix() {
                   )}
 
                   {/* Pillar cards */}
-                  {valuePillars && !valueLoading && (
-                    <div style={{ borderTop:`1px solid ${E.border}`, padding:"20px 24px", display:"flex", flexDirection:"column", gap:10 }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
-                        <div style={{ width:2.5, height:12, borderRadius:2, background:E.teal }}/>
-                        <span style={{ fontSize:9, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.12em" }}>Value by Pillar</span>
-                      </div>
-                      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(240px, 1fr))", gap:10 }}>
-                        {valuePillars.map((p, i) => (
-                          <div key={i} className="fade-up" style={{ background:E.navySurf, borderRadius:10, padding:"14px 16px", borderLeft:`3px solid ${E.teal}55`, border:`1px solid ${E.borderSub}`, borderLeftWidth:3, borderLeftColor:`${E.teal}55`, animationDelay:`${i*60}ms` }}>
-                            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
-                              <span style={{ fontSize:20, lineHeight:1 }}>{p.icon}</span>
-                              <span style={{ fontSize:10, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.1em" }}>{p.pillar}</span>
+                  {valuePillars && !valueLoading && (() => {
+                    const vertObj = vertical ? VERTICALS.find(v=>v.id===vertical) : null;
+                    return (
+                      <div style={{ borderTop:`1px solid ${E.border}`, padding:"20px 24px", display:"flex", flexDirection:"column", gap:10 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+                          <div style={{ width:2.5, height:12, borderRadius:2, background:E.teal }}/>
+                          <span style={{ fontSize:9, fontWeight:700, color:E.teal, textTransform:"uppercase", letterSpacing:"0.12em" }}>Value by Pillar</span>
+                          {vertObj && <span style={{ fontSize:9, color:E.teal, background:"rgba(11,197,186,0.08)", border:`1px solid rgba(11,197,186,0.2)`, borderRadius:4, padding:"1px 8px" }}>{vertObj.icon} {vertObj.label} context applied</span>}
+                        </div>
+                        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(240px, 1fr))", gap:10 }}>
+                          {valuePillars.map((p, i) => (
+                            <div key={i} className="fade-up" style={{
+                              background: p.vertical_key ? `rgba(11,197,186,0.06)` : E.navySurf,
+                              borderRadius:10, padding:"14px 16px",
+                              border:`1px solid ${p.vertical_key ? E.teal+"55" : E.borderSub}`,
+                              borderLeft:`3px solid ${p.vertical_key ? E.teal : E.borderSub}`,
+                              animationDelay:`${i*60}ms`
+                            }}>
+                              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
+                                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                                  <span style={{ fontSize:20, lineHeight:1 }}>{p.icon}</span>
+                                  <span style={{ fontSize:10, fontWeight:700, color: p.vertical_key ? E.teal : E.textSub, textTransform:"uppercase", letterSpacing:"0.1em" }}>{p.pillar}</span>
+                                </div>
+                                {p.vertical_key && vertObj && (
+                                  <span style={{ fontSize:9, fontWeight:700, color:E.teal, background:"rgba(11,197,186,0.1)", border:`1px solid rgba(11,197,186,0.25)`, borderRadius:4, padding:"2px 7px", whiteSpace:"nowrap" }}>
+                                    KEY · {vertObj.label}
+                                  </span>
+                                )}
+                              </div>
+                              <p style={{ fontSize:13, color:E.text, lineHeight:1.7, margin:0 }}>{p.point}</p>
                             </div>
-                            <p style={{ fontSize:13, color:E.text, lineHeight:1.7, margin:0 }}>{p.point}</p>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   {/* Objections */}
                   {objections && !valueLoading && (
