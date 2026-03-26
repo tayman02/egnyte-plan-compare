@@ -831,6 +831,7 @@ export default function EgnytePlanMatrix() {
   const [builderAnswers, setBuilderAnswers] = useState({});
   const [builderResult, setBuilderResult] = useState(null);
   const [builderShowFeatures, setBuilderShowFeatures] = useState(false);
+  const [builderShowScores, setBuilderShowScores] = useState(false);
 
   const fromIdx = PLAN_ORDER.indexOf(fromPlan);
   const toIdx   = PLAN_ORDER.indexOf(toPlan);
@@ -1076,7 +1077,7 @@ export default function EgnytePlanMatrix() {
             {/* Tabs */}
             <div style={{ display:"flex", gap:2, background:E.navySurf, borderRadius:9, padding:3, border:`1px solid ${E.border}` }}>
               {[{id:"compare",label:"Upgrade Compare"},{id:"matrix",label:"Full Matrix"},{id:"builder",label:"✦ Plan Builder"}].map(tab=>(
-                <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); } }} style={{
+                <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); } }} style={{
                   padding:"7px 20px", borderRadius:7, fontSize:12, fontWeight:600, letterSpacing:"0.01em",
                   background: mode===tab.id ? tab.id==="builder" ? `linear-gradient(135deg,${E.purple},${E.blue2})` : `linear-gradient(135deg,${E.teal},#0099A8)` : "transparent",
                   color: mode===tab.id ? "white" : E.textMut,
@@ -1729,6 +1730,72 @@ export default function EgnytePlanMatrix() {
                             );
                           })}
                         </div>
+
+                        {/* Score breakdown toggle */}
+                        <button onClick={()=>setBuilderShowScores(v=>!v)}
+                          style={{ marginTop:14, display:"flex", alignItems:"center", gap:6, background:"transparent", border:`1px solid ${E.borderSub}`, borderRadius:6, padding:"5px 12px", cursor:"pointer", fontFamily:"'Inter',sans-serif", color:E.textMut, fontSize:11 }}>
+                          <span>{builderShowScores ? "▲" : "▼"}</span>
+                          <span>Show score breakdown</span>
+                        </button>
+
+                        {builderShowScores && (
+                          <div style={{ marginTop:12, background:"rgba(0,0,0,0.2)", borderRadius:10, overflow:"hidden", border:`1px solid ${E.borderSub}` }}>
+                            {/* Header row */}
+                            <div style={{ display:"grid", gridTemplateColumns:"1fr 80px 80px 80px 80px", padding:"8px 14px", borderBottom:`1px solid ${E.borderSub}`, background:"rgba(0,0,0,0.2)" }}>
+                              <div style={{ fontSize:9, fontWeight:700, color:E.textMut, textTransform:"uppercase", letterSpacing:"0.08em" }}>Question / Answer</div>
+                              {["Starter","IFS","Elite","Ultimate"].map(p => (
+                                <div key={p} style={{ fontSize:9, fontWeight:700, color: PLAN_BUILDER_MAP[p.toLowerCase()]?.color, textTransform:"uppercase", letterSpacing:"0.08em", textAlign:"center" }}>{p}</div>
+                              ))}
+                            </div>
+                            {BUILDER_QUESTIONS.map(q => {
+                              const ans = builderAnswers[q.id];
+                              const ids = Array.isArray(ans) ? ans : ans ? [ans] : [];
+                              if (ids.length === 0) return (
+                                <div key={q.id} style={{ display:"grid", gridTemplateColumns:"1fr 80px 80px 80px 80px", padding:"8px 14px", borderBottom:`1px solid ${E.borderSub}`, opacity:0.4 }}>
+                                  <div>
+                                    <div style={{ fontSize:10, color:E.textMut, marginBottom:2 }}>{q.q}</div>
+                                    <div style={{ fontSize:11, color:E.textMut, fontStyle:"italic" }}>skipped</div>
+                                  </div>
+                                  {["starter","ifs","elite","ultimate"].map(p => <div key={p} style={{ textAlign:"center", fontSize:11, color:E.textMut }}>—</div>)}
+                                </div>
+                              );
+                              return ids.map(id => {
+                                const opt = q.options.find(o => o.id === id);
+                                if (!opt) return null;
+                                return (
+                                  <div key={q.id+id} style={{ display:"grid", gridTemplateColumns:"1fr 80px 80px 80px 80px", padding:"8px 14px", borderBottom:`1px solid ${E.borderSub}` }}>
+                                    <div>
+                                      <div style={{ fontSize:10, color:E.textMut, marginBottom:2 }}>{q.q}</div>
+                                      <div style={{ fontSize:12, color:E.text, fontWeight:500 }}>{opt.icon} {opt.label}</div>
+                                    </div>
+                                    {["starter","ifs","elite","ultimate"].map(p => {
+                                      const pts = opt.scores[p] || 0;
+                                      const m = PLAN_BUILDER_MAP[p];
+                                      return (
+                                        <div key={p} style={{ textAlign:"center", fontSize:12, fontWeight: pts > 0 ? 700 : 400, color: pts >= 4 ? m.color : pts > 0 ? `${m.color}99` : E.textMut+"55" }}>
+                                          {pts > 0 ? `+${pts}` : "—"}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                );
+                              });
+                            })}
+                            {/* Totals row */}
+                            <div style={{ display:"grid", gridTemplateColumns:"1fr 80px 80px 80px 80px", padding:"10px 14px", background:"rgba(0,0,0,0.2)" }}>
+                              <div style={{ fontSize:11, fontWeight:700, color:E.textMut, textTransform:"uppercase", letterSpacing:"0.08em" }}>Total</div>
+                              {["starter","ifs","elite","ultimate"].map(p => {
+                                const m = PLAN_BUILDER_MAP[p];
+                                return (
+                                  <div key={p} style={{ textAlign:"center", fontSize:13, fontWeight:800, color: p===winner ? m.color : E.textMut }}>
+                                    {totals[p]}
+                                    {p===winner && <span style={{ fontSize:9, marginLeft:3 }}>★</span>}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -1784,7 +1851,7 @@ export default function EgnytePlanMatrix() {
                         style={{ flex:1, minWidth:200, padding:"14px 24px", borderRadius:10, border:"none", background:`linear-gradient(135deg,${meta.color},${meta.color}cc)`, color: winner==="starter" ? E.navy : "white", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", boxShadow:`0 4px 20px ${meta.color}44` }}>
                         Compare {meta.name} vs Current Plan →
                       </button>
-                      <button onClick={()=>{ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); }}
+                      <button onClick={()=>{ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); }}
                         style={{ padding:"14px 24px", borderRadius:10, border:`1px solid ${E.border}`, background:E.navyCard, color:E.textMut, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
                         Start Over
                       </button>
