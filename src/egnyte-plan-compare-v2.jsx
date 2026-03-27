@@ -711,12 +711,6 @@ function PlanCard({ plan, label, isCurrent, families, selected, onChange }) {
           </span>
         ))}
       </div>
-      {plan?.pricing && (
-        <div style={{ marginTop:10, paddingTop:10, borderTop:`1px solid ${E.borderSub}`, display:"flex", alignItems:"flex-start", gap:6 }}>
-          <span style={{ fontSize:14, color:E.textMut, flexShrink:0, marginTop:1 }}>ⓘ</span>
-          <span style={{ fontSize:10, color:E.textMut, lineHeight:1.5 }}>Pricing reflects current standard entry-level MSP rates. Actual pricing may vary based on license volume, contract terms, or program cohort — confirm with your Partner Manager or invoice.</span>
-        </div>
-      )}
     </div>
   );
 }
@@ -1251,6 +1245,12 @@ export default function EgnytePlanMatrix() {
                     fontSize:18, color: isUp ? E.teal : E.purple }}>→</div>
                 </div>
                 <PlanCard plan={tp} label="Proposed Plan" isCurrent={false} families={families} selected={toPlan} onChange={setToPlan}/>
+              </div>
+
+              {/* Pricing disclaimer — shown once */}
+              <div style={{ display:"flex", alignItems:"flex-start", gap:6, marginBottom:16, padding:"8px 12px", background:E.navySurf, borderRadius:8, border:`1px solid ${E.borderSub}` }}>
+                <span style={{ fontSize:13, color:E.textMut, flexShrink:0 }}>ⓘ</span>
+                <span style={{ fontSize:11, color:E.textMut, lineHeight:1.6 }}>Pricing shown reflects current standard entry-level MSP rates for the 1–100 license tier. Actual pricing may vary based on license volume, contract terms, or program cohort. Confirm with your Partner Manager or refer to your invoice.</span>
               </div>
 
               {!isUp ? (
