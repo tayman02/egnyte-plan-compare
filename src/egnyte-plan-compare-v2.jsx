@@ -141,11 +141,11 @@ const FEATURE_SECTIONS = [
       },
       {
         id: "snapshot_addon",
-        label: "Advanced Snapshot & Recovery (90-day)",
+        label: "Snapshot & Recovery Add-On",
         price: 10.00,
         mspPrice: 8.00,
         priceNote: "per user/mo · 1:1 with platform licenses",
-        desc: "Extends ransomware snapshot retention from 30 to 90 days. Point-in-time snapshots are captured automatically and can be mounted and browsed within 15–30 minutes. Admins can restore individual files or entire folder structures to a pre-attack state without involving IT support. Critical for cyber insurance requirements.",
+        desc: "Adds point-in-time snapshot recovery to your plan. Provides a 30-day lookback window on IFS and Elite, allowing admins to restore individual files or entire folder structures to a pre-attack state. 90-day coverage is natively included in Ultimate and is not available as a separate add-on. Critical for cyber insurance requirements.",
         helpUrl: "https://helpdesk.egnyte.com/hc/en-us/articles/4416718848397-Snapshot-Based-Ransomware-Recovery",
       },
       {
@@ -253,11 +253,11 @@ const PLANS = [
     family: "Gen 3 MSP",
     gen: "Gen 3",
     summary: "Small business collaboration with secure file sharing, basic administration and access governance.",
-    pricing: { msrp: 23, msp: 18 },
+    pricing: { msrp: 25, msp: 20 },
     features: {
       encryption: true, storage_per_user: "200 GB", upload_limit: "100 GB", domains: "1",
       sso: true, mfa: true, external_collab: true, granular_perms: true, compliant_storage: true,
-      audit: true, edge_caching: true, role_admin: true, link_throttling: "optional", migration_tools: true,
+      audit: true, edge_caching: true, role_admin: true, device_controls: true, link_throttling: "optional", migration_tools: true,
       single_doc_qa: true, copilot: "optional", ai_search: "optional", ai_workflows: false,
       text_search: true, ocr_search: false, ai_classification: false, trainable_classifiers: false,
       comments_tasks: true, file_locking: true, metadata: true, desktop_apps: true,
@@ -483,7 +483,7 @@ const PLANS = [
       google_workspace: true, m365: true, dlp: true, app_integrations: true,
       // Add-ons
       project_hub: "optional", doc_portal: "optional",
-      salesforce_integration: "optional", specialized_file_handler: "optional", snapshot_addon: "optional",
+      salesforce_integration: "optional", specialized_file_handler: "optional", snapshot_addon: false,
     },
   },
 ];
@@ -711,6 +711,12 @@ function PlanCard({ plan, label, isCurrent, families, selected, onChange }) {
           </span>
         ))}
       </div>
+      {plan?.pricing && (
+        <div style={{ marginTop:10, paddingTop:10, borderTop:`1px solid ${E.borderSub}`, display:"flex", alignItems:"flex-start", gap:6 }}>
+          <span style={{ fontSize:14, color:E.textMut, flexShrink:0, marginTop:1 }}>ⓘ</span>
+          <span style={{ fontSize:10, color:E.textMut, lineHeight:1.5 }}>Pricing reflects current standard entry-level MSP rates. Actual pricing may vary based on license volume, contract terms, or program cohort — confirm with your Partner Manager or invoice.</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -738,88 +744,83 @@ function VerticalKeyGains({ vertical, VERTICALS, isUp, fp, tp, E }) {
 }
 
 // ─── PLAN BUILDER DATA ───────────────────────────────────────────────────────
-const BUILDER_QUESTIONS = [
+// Checklist model: MSP checks all requirements that apply, scored against Gen 4 plans.
+const BUILDER_CHECKLIST = [
   {
-    id: "infra",
-    q: "How is the customer currently managing files and storage?",
-    sub: "This helps us understand where they're starting from",
-    options: [
-      { id: "fileserver", icon: "🖥", label: "On-premises file servers or NAS devices", desc: "Still running Windows file servers, VPN for remote access, or hardware that's due for refresh", scores: { starter:5, ifs:3, elite:1, ultimate:0 } },
-      { id: "sharepoint", icon: "📎", label: "Heavily reliant on SharePoint or OneDrive", desc: "Using Microsoft 365 but frustrated with SharePoint complexity or governance gaps", scores: { starter:3, ifs:4, elite:2, ultimate:0 } },
-      { id: "scattered",  icon: "📂", label: "Files scattered across multiple tools and silos", desc: "Content split between email, Dropbox, local drives, and file servers with no single source of truth", scores: { starter:2, ifs:4, elite:3, ultimate:1 } },
-      { id: "cloud",      icon: "☁", label: "Already on a cloud platform but outgrowing it", desc: "Current solution lacks governance, compliance controls, or security monitoring they now need", scores: { starter:0, ifs:2, elite:4, ultimate:3 } },
+    category: "Foundation",
+    color: "#76A2BC",
+    items: [
+      { id: "file_server",    icon: "🖥",  label: "Replace file servers, NAS, or VPN-based access",           desc: "Move on-prem or remote-access file storage to a managed cloud platform",                  scores: { starter:4, ifs:3, elite:1, ultimate:0 } },
+      { id: "external_share", icon: "🔗",  label: "Secure external file sharing with clients or vendors",     desc: "Replace email attachments and consumer tools with controlled, auditable link sharing",    scores: { starter:3, ifs:4, elite:2, ultimate:0 } },
+      { id: "remote_sites",   icon: "📡",  label: "Remote offices or job sites needing fast file access",     desc: "Field crews or branch offices with bandwidth issues accessing large files offline",         scores: { starter:0, ifs:4, elite:2, ultimate:0 } },
+      { id: "small_team",     icon: "👤",  label: "Small team (under 25 users), cost is the top priority",    desc: "Budget-conscious deployment, essential capabilities only, no advanced security required",   scores: { starter:5, ifs:0, elite:0, ultimate:0 } },
     ]
   },
   {
-    id: "scale",
-    q: "How many users need access, and how are they distributed?",
-    sub: "Include staff, contractors, and regular external collaborators",
-    options: [
-      { id: "tiny",   icon: "👤", label: "Under 25 users — single location or small remote team", desc: "Small business standardizing on cloud file storage and basic collaboration", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
-      { id: "small",  icon: "👥", label: "25–100 users — growing team, possibly multi-location", desc: "Mid-market company needing consistent access across offices and hybrid workers", scores: { starter:2, ifs:4, elite:2, ultimate:0 } },
-      { id: "mid",    icon: "🏢", label: "100–500 users — multiple departments or job sites", desc: "Organization-wide deployment with role-based admin and advanced workflows", scores: { starter:0, ifs:2, elite:4, ultimate:2 } },
-      { id: "large",  icon: "🏙", label: "500+ users — enterprise, multiple offices or countries", desc: "Enterprise scale requiring data residency, encryption key management, and full governance", scores: { starter:0, ifs:0, elite:3, ultimate:5 } },
+    category: "Collaboration & Workflows",
+    color: "#6E49FF",
+    items: [
+      { id: "esig_pdf",       icon: "✍",  label: "E-signatures and PDF editing within the platform",          desc: "Contracts, proposals, and SOPs require markup and sign-off without leaving Egnyte",         scores: { starter:0, ifs:5, elite:2, ultimate:0 } },
+      { id: "adv_workflows",  icon: "⚙",  label: "Multi-step automated workflows connected to other tools",   desc: "Complex cross-department processes that trigger actions in CRM, ERP, or other systems",    scores: { starter:0, ifs:2, elite:5, ultimate:1 } },
+      { id: "lifecycle",      icon: "🗂",  label: "Content retention, archiving, and defensible deletion",     desc: "Legal or records teams require structured retention schedules and automated disposal",      scores: { starter:0, ifs:0, elite:4, ultimate:3 } },
     ]
   },
   {
-    id: "collab",
-    q: "What best describes their collaboration and workflow needs?",
-    sub: "Think about how content moves through their organization day-to-day",
-    options: [
-      { id: "basic",     icon: "📧", label: "Basic sharing — teams need a clean shared drive with external link sharing", desc: "Replace email attachments and consumer tools with a secure, organized file platform", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
-      { id: "workflows", icon: "✍",  label: "Structured workflows — approvals, e-signatures, and PDF editing", desc: "Contracts, proposals, and SOPs need repeatable review and sign-off with audit trails", scores: { starter:0, ifs:5, elite:3, ultimate:1 } },
-      { id: "advanced",  icon: "⚙",  label: "Advanced workflows — multi-step, automated, integrated with other systems", desc: "Complex cross-department processes that trigger actions in CRM, ERP, or other tools", scores: { starter:0, ifs:2, elite:5, ultimate:2 } },
-      { id: "lifecycle", icon: "🗂",  label: "Full lifecycle — retention policies, archiving, and defensible deletion", desc: "Legal, compliance, or records teams require structured retention and disposal of content", scores: { starter:0, ifs:0, elite:4, ultimate:4 } },
+    category: "Security & Recovery",
+    color: "#3D71EA",
+    items: [
+      { id: "ransomware",     icon: "🚨",  label: "Ransomware detection and snapshot-based recovery",          desc: "Cyber insurance or a past incident requires documented detection and point-in-time recovery", scores: { starter:0, ifs:4, elite:3, ultimate:2 } },
+      { id: "insider_risk",   icon: "🛡",  label: "Insider threat monitoring and auto-remediation",            desc: "Security team needs visibility into anomalous access with automated response and reporting", scores: { starter:0, ifs:1, elite:5, ultimate:2 } },
+      { id: "device_sso",     icon: "🔐",  label: "SSO, device controls, and role-based administration",       desc: "MSP needs centralized identity and device policy enforcement across managed clients",        scores: { starter:0, ifs:3, elite:3, ultimate:2 } },
     ]
   },
   {
-    id: "security",
-    q: "What security and compliance requirements do they have?",
-    sub: "Think about what their IT, legal, or security team is asking for",
-    options: [
-      { id: "standard",   icon: "🔒", label: "Standard — MFA, audit logs, file versioning, and secure link sharing", desc: "Core security controls every business needs. No advanced threat detection required", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
-      { id: "ransomware", icon: "🚨", label: "Ransomware detection, unusual access alerts, and snapshot recovery", desc: "Cyber insurance or a past incident requires documented detection and fast recovery capabilities", scores: { starter:0, ifs:4, elite:4, ultimate:2 } },
-      { id: "governance", icon: "🛡", label: "Full governance — issue remediation, insider risk, and compliance reporting", desc: "Security team needs visibility across all sharing, permissions, and access anomalies with auto-remediation", scores: { starter:0, ifs:1, elite:5, ultimate:3 } },
-      { id: "regulated",  icon: "📋", label: "Regulated data — HIPAA, FINRA, GDPR, SOC 2, or contractual obligations", desc: "Must classify sensitive data, prove where it lives, support audits, and meet data residency requirements", scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
+    category: "Compliance & Governance",
+    color: "#037BBD",
+    items: [
+      { id: "regulated",      icon: "📋",  label: "Regulated industry — HIPAA, FINRA, GDPR, or SOC 2",        desc: "Must support audits, data residency requirements, and prove policy compliance",              scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
+      { id: "sensitive_data", icon: "🔍",  label: "Sensitive data discovery and classification (PII/PHI/PCI)", desc: "Need to automatically locate, tag, and govern regulated content across the entire repository", scores: { starter:0, ifs:0, elite:1, ultimate:5 } },
+      { id: "dlp",            icon: "🔒",  label: "DLP and preventive security control integrations",          desc: "Require Egnyte to feed into an existing security stack for active prevention",               scores: { starter:0, ifs:0, elite:0, ultimate:4 } },
     ]
   },
   {
-    id: "ai",
-    q: "How important is AI and intelligence to this opportunity?",
-    sub: "What level of AI capability is the customer ready to adopt?",
-    options: [
-      { id: "none",     icon: "➖", label: "Not a priority right now — focused on core file management", desc: "Customer wants a solid foundation before thinking about AI features", scores: { starter:3, ifs:1, elite:0, ultimate:0 } },
-      { id: "search",   icon: "🤖", label: "AI Assistant and search — ask questions across documents, get summaries", desc: "Want to reduce time finding information and generate content from stored files", scores: { starter:0, ifs:5, elite:3, ultimate:1 } },
-      { id: "classify", icon: "🧠", label: "AI classification — auto-tag document types and extract data at scale", desc: "Large volumes of unstructured content that need to be organized and acted on automatically", scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
-      { id: "all",      icon: "⚡", label: "Full AI suite — search, assistant, classification, and AI-triggered workflows", desc: "AI is a core part of the business case and they want the most advanced capabilities available", scores: { starter:0, ifs:2, elite:3, ultimate:5 } },
-    ]
-  },
-  {
-    id: "budget",
-    q: "How would you characterize the customer's investment approach?",
-    sub: "This helps calibrate the recommendation to what will actually land",
-    options: [
-      { id: "essential",  icon: "💡", label: "Essential — get the basics right at the lowest cost", desc: "Budget-conscious. They want to solve the core problem without overbuying", scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
-      { id: "value",      icon: "📈", label: "Value — willing to invest more for meaningful capability upgrades", desc: "Will pay more if the ROI is clear. Open to a mid-tier plan with strong features", scores: { starter:1, ifs:4, elite:3, ultimate:0 } },
-      { id: "strategic",  icon: "🚀", label: "Strategic — security and governance are a business priority", desc: "Leadership sees content security and compliance as competitive or regulatory differentiators", scores: { starter:0, ifs:1, elite:4, ultimate:3 } },
-      { id: "enterprise", icon: "🏛", label: "Enterprise — needs the most comprehensive solution available", desc: "Has regulatory, insurance, or contractual requirements that demand an enterprise-grade platform", scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
+    category: "AI & Intelligence",
+    color: "#0BC5BA",
+    items: [
+      { id: "ai_search",      icon: "🤖",  label: "AI Assistant — search across documents, get summaries",    desc: "Reduce time finding information and generate content from files stored in Egnyte",        scores: { starter:0, ifs:5, elite:2, ultimate:0 } },
+      { id: "ai_classify",    icon: "🧠",  label: "AI classification, tagging, and workflow automation",       desc: "Auto-identify document types, extract metadata, and trigger AI-driven workflows at scale",  scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
     ]
   },
 ];
 
-const PLAN_BUILDER_MAP = {
-  starter: { id:"starter", name:"Starter", color:"#76A2BC", bg:"rgba(118,162,188,0.08)", border:"rgba(118,162,188,0.25)" },
-  ifs:     { id:"ifs",     name:"IFS",     color:"#0BC5BA", bg:"rgba(11,197,186,0.08)",  border:"rgba(11,197,186,0.3)"  },
-  elite:   { id:"elite",   name:"Elite",   color:"#3D71EA", bg:"rgba(61,113,234,0.08)",  border:"rgba(61,113,234,0.3)"  },
-  ultimate:{ id:"ultimate",name:"Ultimate",color:"#6E49FF", bg:"rgba(110,73,255,0.08)",  border:"rgba(110,73,255,0.3)"  },
+// Gen 3 equivalent mapping for the toggle
+const GEN3_EQUIVALENT = {
+  starter: { id:"cfs",             name:"CFS",             note:"CFS covers essential cloud file sharing at the Gen 3 entry-level price point." },
+  ifs:     { id:"afs",             name:"AFS",             note:"AFS is the Gen 3 equivalent, covering collaboration and standard workflows." },
+  elite:   { id:"enterprise_lite", name:"Enterprise Lite", note:"Enterprise Lite covers governance and lifecycle management at a Gen 3 price." },
+  ultimate:{ id:"enterprise",      name:"Enterprise",      note:"Enterprise is the most capable Gen 3 option, covering advanced security and compliance." },
 };
 
-const scoreBuilder = (answers) => {
+const PLAN_BUILDER_MAP = {
+  starter: { id:"starter", name:"Starter",  color:"#76A2BC", bg:"rgba(118,162,188,0.08)", border:"rgba(118,162,188,0.25)" },
+  ifs:     { id:"ifs",     name:"IFS",      color:"#0BC5BA", bg:"rgba(11,197,186,0.08)",  border:"rgba(11,197,186,0.3)"  },
+  elite:   { id:"elite",   name:"Elite",    color:"#3D71EA", bg:"rgba(61,113,234,0.08)",  border:"rgba(61,113,234,0.3)"  },
+  ultimate:{ id:"ultimate",name:"Ultimate", color:"#6E49FF", bg:"rgba(110,73,255,0.08)",  border:"rgba(110,73,255,0.3)"  },
+};
+
+const scoreChecklist = (selected) => {
   const totals = { starter:0, ifs:0, elite:0, ultimate:0 };
-  BUILDER_QUESTIONS.forEach(q => {
-    const ans = answers[q.id];
-    if (!ans) return;
-    const ids = Array.isArray(ans) ? ans : [ans];
+  BUILDER_CHECKLIST.forEach(cat => {
+    cat.items.forEach(item => {
+      if (selected[item.id]) {
+        Object.entries(item.scores).forEach(([plan, pts]) => { totals[plan] += pts; });
+      }
+    });
+  });
+  const ranked = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+  return { totals, winner: ranked[0][0], ranked };
+};
+
     ids.forEach(id => {
       const opt = q.options.find(o => o.id === id);
       if (opt) Object.entries(opt.scores).forEach(([plan, pts]) => { totals[plan] += pts; });
@@ -839,11 +840,12 @@ export default function EgnytePlanMatrix() {
   );
 
   // ── Plan Builder state ──
-  const [builderStep, setBuilderStep] = useState(0);
-  const [builderAnswers, setBuilderAnswers] = useState({});
+  const [builderSelected, setBuilderSelected] = useState({});  // checklist: { item_id: true/false }
   const [builderResult, setBuilderResult] = useState(null);
   const [builderShowFeatures, setBuilderShowFeatures] = useState(false);
   const [builderShowScores, setBuilderShowScores] = useState(false);
+  const [builderShowGen3, setBuilderShowGen3] = useState(false);
+  const [builderGen3, setBuilderGen3] = useState(false); // toggle to show Gen 3 equivalent
 
   const fromIdx = PLAN_ORDER.indexOf(fromPlan);
   const toIdx   = PLAN_ORDER.indexOf(toPlan);
@@ -946,7 +948,13 @@ export default function EgnytePlanMatrix() {
   const generateValue = () => {
     if (!isUp || !fp || !tp) return;
     const verticalInfo = vertical ? VERTICALS.find(v=>v.id===vertical) : null;
-    const valueKey = `${fromPlan}→${toPlan}${vertical||""}${scenario.trim().slice(0,40)}`;
+
+    // Extract budget ceiling from scenario before building cache key
+    const budgetMatch = scenario.match(/\$\s*(\d+(?:\.\d+)?)\s*(?:per user|\/user|\/u)?/i)
+      || scenario.match(/(?:under|below|max|maximum|budget.*?)\s*\$?\s*(\d+(?:\.\d+)?)/i);
+    const budgetCeiling = budgetMatch ? parseFloat(budgetMatch[1]) : null;
+
+    const valueKey = `${fromPlan}→${toPlan}${vertical||""}${scenario.trim().slice(0,40)}${budgetCeiling||""}`;
     if (valueCache.current[valueKey]) {
       const c = valueCache.current[valueKey];
       setValuePillars(c.pillars);
@@ -978,6 +986,10 @@ export default function EgnytePlanMatrix() {
       ? "\nCustomer context from the seller: \"" + scenario.trim() + "\""
       : "";
 
+    const budgetLine = budgetCeiling
+      ? "\nHARD CONSTRAINT: The customer's maximum MSP price is $" + budgetCeiling.toFixed(2) + "/user/month. Do NOT generate value points that imply, suggest, or require a plan above this price point. Focus only on the capabilities available within this budget."
+      : "";
+
     const verticalLine = verticalInfo
       ? " Customer industry: " + verticalInfo.desc + "." + (verticalHighlights.length > 0 ? " Key capabilities for this vertical: " + verticalHighlights.join(", ") + "." : "")
       : "";
@@ -989,7 +1001,7 @@ export default function EgnytePlanMatrix() {
 
     const prompt = "You are a senior Egnyte partner sales engineer preparing a concise upgrade brief.\n\n"
       + "Upgrade: " + fp.name + " (" + fp.family + ") → " + tp.name + " (" + tp.family + ")\n"
-      + costLine + verticalLine + scenarioLine + "\n\n"
+      + costLine + verticalLine + scenarioLine + budgetLine + "\n\n"
       + "Net-new capabilities by category:\n" + gainedBySec + "\n\n"
       + "Return ONLY valid JSON (no markdown, no preamble):\n"
       + '{\n'
@@ -1002,17 +1014,19 @@ export default function EgnytePlanMatrix() {
       + '    ...\n'
       + '  ]\n'
       + '}\n\n'
-      + 'For "pillars" — 3 to 5 entries, each covering a DISTINCT business area from the capabilities above. Rules:\n'
-      + '- Choose a relevant emoji icon and short pillar name (e.g. "Security & Recovery", "AI & Search", "Document Workflows", "Governance", "Platform Efficiency")\n'
-      + '- Map each pillar to 1 or more specific capabilities gained in that category\n'
+      + 'For "pillars" — 3 to 5 entries, each covering a DISTINCT business area from the capabilities listed above. Rules:\n'
+      + '- ONLY reference capabilities that are actually listed in "Net-new capabilities by category" above. Do not invent or imply features not in that list.\n'
+      + '- Choose a relevant emoji icon and short pillar name (e.g. "Security & Recovery", "AI & Search", "Document Workflows", "Governance")\n'
       + '- Each "point" leads with the business outcome — what the customer can now do or prevent that they couldn\'t before\n'
       + '- Be concrete. No filler. No generic phrases like "improve productivity"\n'
       + '- 1-2 sentences per point\n'
-      + (scenarioLine ? '- Tailor the language to the specific customer context provided\n' : '')
+      + (budgetLine ? '- CRITICAL: Do not suggest, imply, or reference any plan or capability beyond the stated budget ceiling. Stay strictly within what this upgrade provides.\n' : '')
+      + (scenarioLine ? '- Tailor every point to the specific customer context provided. Address their stated situation directly.\n' : '')
       + (verticalInfo ? '- Weight outcomes relevant to ' + verticalInfo.desc + ' buyers\n' : '')
       + (verticalInfo ? '- Set "vertical_key": true on the 1-2 pillars most directly relevant to ' + verticalInfo.label + ' buyers\n' : '- Set "vertical_key": false on all pillars\n')
       + '\n'
-      + 'For "objections" — exactly 3. Each "q" is phrased as the customer would actually say it. Each "a" is a confident 1-2 sentence response grounded in specific capability or ROI.';
+      + 'For "objections" — exactly 3. Each "q" is phrased as the customer would actually say it (skeptical, casual). Each "a" is a confident 1-2 sentence response grounded in specific capabilities from the list above — no generic answers.\n'
+      + (budgetLine ? 'Objections should reflect realistic pushbacks given the stated budget constraints and customer context.' : '');
 
     fetch("/api/value", {
       method: "POST",
@@ -1115,7 +1129,7 @@ export default function EgnytePlanMatrix() {
             {/* Tabs */}
             <div style={{ display:"flex", gap:2, background:E.navySurf, borderRadius:9, padding:3, border:`1px solid ${E.border}` }}>
               {[{id:"compare",label:"Upgrade Compare"},{id:"matrix",label:"Full Matrix"},{id:"builder",label:"✦ Plan Builder"}].map(tab=>(
-                <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); } }} style={{
+                <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); setBuilderGen3(false); } }} style={{
                   padding:"7px 20px", borderRadius:7, fontSize:12, fontWeight:600, letterSpacing:"0.01em",
                   background: mode===tab.id ? tab.id==="builder" ? `linear-gradient(135deg,${E.purple},${E.blue2})` : `linear-gradient(135deg,${E.teal},#0099A8)` : "transparent",
                   color: mode===tab.id ? "white" : E.textMut,
@@ -1169,106 +1183,95 @@ export default function EgnytePlanMatrix() {
               ) : (<>
 
                 {/* ── Summary Card ── */}
-                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, marginBottom:12, overflow:"hidden" }}>
+                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, marginBottom:12, overflow:"hidden", display:"grid", gridTemplateColumns:"1fr 1px 1fr" }}>
 
-                  {/* Row 1 — Key stats */}
-                  <div style={{ display:"grid", gridTemplateColumns:"repeat(4, 1fr)", borderBottom:`1px solid ${E.border}` }}>
+                  {/* LEFT — Upgrade Summary */}
+                  <div style={{ padding:"20px 24px" }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:14 }}>Upgrade Summary</div>
 
                     {/* Net-new */}
-                    <div style={{ padding:"18px 22px", borderRight:`1px solid ${E.border}` }}>
-                      <div style={{ fontSize:9, fontWeight:700, color:E.purple+"AA", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>Net-New Features</div>
-                      <div style={{ display:"flex", alignItems:"baseline", gap:6 }}>
-                        <span style={{ fontSize:40, fontWeight:900, color:E.purple, letterSpacing:"-0.04em", lineHeight:1 }}>{netNew}</span>
+                    <div style={{ marginBottom:20 }}>
+                      <div style={{ display:"flex", alignItems:"baseline", gap:8 }}>
+                        <span style={{ fontSize:52, fontWeight:900, color:E.purple, letterSpacing:"-0.05em", lineHeight:1 }}>{netNew}</span>
+                        <span style={{ fontSize:14, color:E.textMut, fontWeight:500 }}>net-new features</span>
                       </div>
-                      <div style={{ fontSize:10, color:E.textMut, marginTop:4 }}>unlocked with {tp?.name}</div>
+                      <div style={{ fontSize:11, color:E.textMut, marginTop:4 }}>unlocked moving to {tp?.name}</div>
                     </div>
 
-                    {/* MSP price delta */}
-                    <div style={{ padding:"18px 22px", borderRight:`1px solid ${E.border}` }}>
-                      <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>Price Uplift / User / Mo</div>
-                      <div style={{ display:"flex", alignItems:"baseline", gap:8 }}>
+                    {/* Per-user uplift */}
+                    <div style={{ borderTop:`1px solid ${E.borderSub}`, paddingTop:14 }}>
+                      <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:10 }}>Price Uplift / User / Month</div>
+                      <div style={{ display:"flex", gap:20, alignItems:"flex-end" }}>
                         <div>
-                          <div style={{ fontSize:9, fontWeight:600, color:E.teal+"99", letterSpacing:"0.06em", marginBottom:2 }}>MSP</div>
+                          <div style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.08em", marginBottom:3 }}>MSP</div>
                           <div style={{ fontSize:28, fontWeight:800, color:E.teal, letterSpacing:"-0.03em", lineHeight:1 }}>
                             {dMsp!=null ? fmtD(dMsp) : "—"}
                           </div>
                         </div>
-                        {dMsrp!=null && (
-                          <div style={{ paddingLeft:10, borderLeft:`1px solid ${E.border}`, marginLeft:2 }}>
-                            <div style={{ fontSize:9, fontWeight:600, color:E.textMut, letterSpacing:"0.06em", marginBottom:2 }}>MSRP</div>
-                            <div style={{ fontSize:18, fontWeight:700, color:E.textMut, letterSpacing:"-0.02em", lineHeight:1 }}>
-                              {fmtD(dMsrp)}
-                            </div>
+                        {dMsrp!=null && <>
+                          <div style={{ width:1, height:36, background:E.border, flexShrink:0 }}/>
+                          <div>
+                            <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", marginBottom:3 }}>MSRP</div>
+                            <div style={{ fontSize:20, fontWeight:700, color:E.textMut, letterSpacing:"-0.02em", lineHeight:1 }}>{fmtD(dMsrp)}</div>
                           </div>
-                        )}
+                        </>}
                       </div>
                     </div>
-
-                    {/* Monthly delta */}
-                    <div style={{ padding:"18px 22px", borderRight:`1px solid ${E.border}` }}>
-                      <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>Monthly Impact</div>
-                      <div style={{ fontSize:28, fontWeight:800, color:E.teal, letterSpacing:"-0.03em", lineHeight:1, marginBottom:4 }}>{fmtD(monthlyDelta)}</div>
-                      <div style={{ fontSize:10, color:E.textMut }}>{userCount} users · ${currentMo.toFixed(2)} → ${proposedMo.toFixed(2)}</div>
-                    </div>
-
-                    {/* Annual delta */}
-                    <div style={{ padding:"18px 22px" }}>
-                      <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>Annual Impact</div>
-                      <div style={{ fontSize:28, fontWeight:800, color:E.purple, letterSpacing:"-0.03em", lineHeight:1, marginBottom:4 }}>{fmtD(annualDelta)}</div>
-                      <div style={{ fontSize:10, color:E.textMut }}>based on {userCount} users</div>
-                    </div>
-
                   </div>
 
-                  {/* Row 2 — Deal calculator */}
-                  <div style={{ padding:"14px 22px", display:"flex", alignItems:"center", gap:0, flexWrap:"wrap", background:E.navySurf }}>
-                    <span style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginRight:16, whiteSpace:"nowrap" }}>Adjust Deal</span>
+                  {/* Divider */}
+                  <div style={{ background:E.border }}/>
 
-                    {/* Users */}
-                    <div style={{ display:"flex", alignItems:"center", gap:6, marginRight:10 }}>
-                      <span style={{ fontSize:11, color:E.textMut }}>Users</span>
-                      <input type="number" min="1" value={userCount}
-                        onChange={e => setUserCount(Math.max(1, parseInt(e.target.value)||1))}
-                        style={{ width:64, background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:6, padding:"5px 8px", color:E.text, fontSize:13, fontWeight:700, fontFamily:"'Inter',sans-serif", outline:"none", textAlign:"center" }}/>
-                    </div>
+                  {/* RIGHT — Deal Calculator */}
+                  <div style={{ padding:"20px 24px", background:E.navySurf }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:14 }}>Deal Calculator</div>
 
-                    <span style={{ fontSize:12, color:E.textMut, marginRight:10 }}>×</span>
+                    {/* Inputs row */}
+                    <div style={{ display:"flex", gap:10, alignItems:"flex-end", marginBottom:18, flexWrap:"wrap" }}>
+                      {/* Users */}
+                      <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                        <span style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase" }}>Users</span>
+                        <input type="number" min="1" value={userCount}
+                          onChange={e => setUserCount(Math.max(1, parseInt(e.target.value)||1))}
+                          style={{ width:70, background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:7, padding:"7px 8px", color:E.text, fontSize:14, fontWeight:700, fontFamily:"'Inter',sans-serif", outline:"none", textAlign:"center" }}/>
+                      </div>
 
-                    {/* From price */}
-                    <div style={{ display:"flex", alignItems:"center", gap:6, marginRight:8 }}>
-                      <span style={{ fontSize:10, color:E.textMut, whiteSpace:"nowrap" }}>{fp?.name} $/u</span>
-                      <div style={{ position:"relative" }}>
-                        <span style={{ position:"absolute", left:7, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11, pointerEvents:"none" }}>$</span>
-                        <input type="number" min="0" step="0.01" value={calcFromPrice}
-                          onChange={e => setFromPrice(parseFloat(e.target.value)||0)}
-                          style={{ width:72, background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:6, padding:"5px 6px 5px 16px", color:E.textSub, fontSize:13, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                      {/* From price */}
+                      <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                        <span style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase" }}>{fp?.name} $/user</span>
+                        <div style={{ position:"relative" }}>
+                          <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11, pointerEvents:"none" }}>$</span>
+                          <input type="number" min="0" step="0.01" value={calcFromPrice}
+                            onChange={e => setFromPrice(parseFloat(e.target.value)||0)}
+                            style={{ width:80, background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:7, padding:"7px 8px 7px 18px", color:E.textSub, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                        </div>
+                      </div>
+
+                      <span style={{ color:E.textMut, fontSize:16, paddingBottom:4, flexShrink:0 }}>→</span>
+
+                      {/* To price */}
+                      <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                        <span style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.08em", textTransform:"uppercase" }}>{tp?.name} $/user</span>
+                        <div style={{ position:"relative" }}>
+                          <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.teal+"88", fontSize:11, pointerEvents:"none" }}>$</span>
+                          <input type="number" min="0" step="0.01" value={calcToPrice}
+                            onChange={e => setToPrice(parseFloat(e.target.value)||0)}
+                            style={{ width:80, background:E.navyCard, border:`1px solid ${E.teal}44`, borderRadius:7, padding:"7px 8px 7px 18px", color:E.teal, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                        </div>
                       </div>
                     </div>
 
-                    <span style={{ fontSize:12, color:E.textMut, marginRight:8 }}>→</span>
-
-                    {/* To price */}
-                    <div style={{ display:"flex", alignItems:"center", gap:6, marginRight:16 }}>
-                      <span style={{ fontSize:10, color:E.teal, whiteSpace:"nowrap" }}>{tp?.name} $/u</span>
-                      <div style={{ position:"relative" }}>
-                        <span style={{ position:"absolute", left:7, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11, pointerEvents:"none" }}>$</span>
-                        <input type="number" min="0" step="0.01" value={calcToPrice}
-                          onChange={e => setToPrice(parseFloat(e.target.value)||0)}
-                          style={{ width:72, background:E.navyCard, border:`1px solid ${E.teal}44`, borderRadius:6, padding:"5px 6px 5px 16px", color:E.teal, fontSize:13, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                    {/* Impact output */}
+                    <div style={{ borderTop:`1px solid ${E.border}`, paddingTop:14, display:"grid", gridTemplateColumns:"1fr 1fr", gap:0 }}>
+                      <div style={{ paddingRight:16, borderRight:`1px solid ${E.borderSub}` }}>
+                        <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4 }}>Monthly Δ</div>
+                        <div style={{ fontSize:28, fontWeight:800, color:E.teal, letterSpacing:"-0.03em", lineHeight:1 }}>{fmtD(monthlyDelta)}</div>
+                        <div style={{ fontSize:10, color:E.textMut, marginTop:4 }}>${currentMo.toFixed(2)} → ${proposedMo.toFixed(2)}</div>
                       </div>
-                    </div>
-
-                    <span style={{ fontSize:12, color:E.borderSub, marginRight:16 }}>=</span>
-
-                    {/* Result */}
-                    <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                      <div>
-                        <span style={{ fontSize:9, color:E.textMut, fontWeight:600, letterSpacing:"0.06em", display:"block", marginBottom:1 }}>MO</span>
-                        <span style={{ fontSize:15, fontWeight:800, color:E.teal, letterSpacing:"-0.02em" }}>{fmtD(monthlyDelta)}</span>
-                      </div>
-                      <div>
-                        <span style={{ fontSize:9, color:E.textMut, fontWeight:600, letterSpacing:"0.06em", display:"block", marginBottom:1 }}>YR</span>
-                        <span style={{ fontSize:15, fontWeight:800, color:E.purple, letterSpacing:"-0.02em" }}>{fmtD(annualDelta)}</span>
+                      <div style={{ paddingLeft:16 }}>
+                        <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4 }}>Annual Δ</div>
+                        <div style={{ fontSize:28, fontWeight:800, color:E.purple, letterSpacing:"-0.03em", lineHeight:1 }}>{fmtD(annualDelta)}</div>
+                        <div style={{ fontSize:10, color:E.textMut, marginTop:4 }}>{userCount} users</div>
                       </div>
                     </div>
                   </div>
@@ -1986,13 +1989,51 @@ export default function EgnytePlanMatrix() {
                       )}
                     </div>
 
+                    {/* Gen 3 toggle */}
+                    {(() => {
+                      const gen3 = GEN3_EQUIVALENT[winner];
+                      const gen3plan = gen3 ? PLANS.find(p => p.id === gen3.id) : null;
+                      return gen3 ? (
+                        <div style={{ marginTop:4 }}>
+                          <button onClick={() => setBuilderGen3(v => !v)}
+                            style={{ display:"flex", alignItems:"center", gap:8, background:"transparent", border:`1px solid ${E.borderSub}`, borderRadius:8, padding:"10px 14px", cursor:"pointer", fontFamily:"'Inter',sans-serif", width:"100%", marginBottom: builderGen3 ? 0 : 16 }}>
+                            <span style={{ fontSize:11, color:E.textMut }}>Looking for a Gen 3 equivalent?</span>
+                            <span style={{ fontSize:11, fontWeight:700, color:E.blue2 }}>{gen3.name}</span>
+                            <span style={{ marginLeft:"auto", fontSize:11, color:E.textMut }}>{builderGen3 ? "▲" : "▼"}</span>
+                          </button>
+                          {builderGen3 && gen3plan && (
+                            <div style={{ background:"rgba(55,113,234,0.06)", border:`1px solid rgba(55,113,234,0.2)`, borderRadius:"0 0 10px 10px", padding:"14px 16px", marginBottom:16 }}>
+                              <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:12, flexWrap:"wrap", marginBottom:10 }}>
+                                <div>
+                                  <div style={{ fontSize:9, fontWeight:700, color:E.blue2, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:4 }}>Gen 3 Equivalent</div>
+                                  <div style={{ fontSize:24, fontWeight:800, color:E.blue2 }}>{gen3.name}</div>
+                                </div>
+                                {gen3plan.pricing?.msp && (
+                                  <div style={{ textAlign:"right" }}>
+                                    <div style={{ fontSize:9, color:E.textMut, marginBottom:2 }}>MSP</div>
+                                    <div style={{ fontSize:20, fontWeight:800, color:E.blue2 }}>${gen3plan.pricing.msp.toFixed(2)}<span style={{ fontSize:11, fontWeight:400, color:E.textMut }}>/user/mo</span></div>
+                                    <div style={{ fontSize:10, color:E.textMut }}>MSRP ${gen3plan.pricing.msrp.toFixed(2)}/user/mo</div>
+                                  </div>
+                                )}
+                              </div>
+                              <p style={{ fontSize:12, color:E.textSub, lineHeight:1.6, marginBottom:10 }}>{gen3.note}</p>
+                              <button onClick={() => { setToPlan(gen3.id); setMode("compare"); }}
+                                style={{ padding:"8px 16px", borderRadius:7, border:`1px solid rgba(55,113,234,0.4)`, background:"rgba(55,113,234,0.1)", color:E.blue2, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
+                                Compare {gen3.name} vs Current Plan →
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ) : null;
+                    })()}
+
                     {/* CTAs */}
                     <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
                       <button onClick={()=>{ setToPlan(winner); setMode("compare"); }}
                         style={{ flex:1, minWidth:200, padding:"14px 24px", borderRadius:10, border:"none", background:`linear-gradient(135deg,${meta.color},${meta.color}cc)`, color: winner==="starter" ? E.navy : "white", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", boxShadow:`0 4px 20px ${meta.color}44` }}>
                         Compare {meta.name} vs Current Plan →
                       </button>
-                      <button onClick={()=>{ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); }}
+                      <button onClick={()=>{ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); setBuilderGen3(false); }}
                         style={{ padding:"14px 24px", borderRadius:10, border:`1px solid ${E.border}`, background:E.navyCard, color:E.textMut, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
                         Start Over
                       </button>
