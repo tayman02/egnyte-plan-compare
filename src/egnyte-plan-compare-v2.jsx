@@ -1250,7 +1250,7 @@ export default function EgnytePlanMatrix() {
               {/* Pricing disclaimer — shown once */}
               <div style={{ display:"flex", alignItems:"flex-start", gap:6, marginBottom:16, padding:"8px 12px", background:E.navySurf, borderRadius:8, border:`1px solid ${E.borderSub}` }}>
                 <span style={{ fontSize:13, color:E.textMut, flexShrink:0 }}>ⓘ</span>
-                <span style={{ fontSize:11, color:E.textMut, lineHeight:1.6 }}>Pricing shown reflects current standard entry-level MSP rates for the 1–100 license tier. Actual pricing may vary based on license volume, contract terms, or program cohort. Confirm with your Partner Manager or refer to your invoice.</span>
+                <span style={{ fontSize:11, color:E.textMut, lineHeight:1.6 }}>Pricing shown reflects current standard entry-level MSP rates for the first license tier. Actual pricing may vary based on license volume, contract terms, or program cohort. Confirm with your Partner Manager or refer to your invoice.</span>
               </div>
 
               {!isUp ? (
