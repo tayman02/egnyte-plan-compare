@@ -745,6 +745,77 @@ function VerticalKeyGains({ vertical, VERTICALS, isUp, fp, tp, E }) {
 
 // ─── PLAN BUILDER DATA ───────────────────────────────────────────────────────
 // Checklist model: MSP checks all requirements that apply, scored against Gen 4 plans.
+const BUILDER_QUESTIONS = [
+  {
+    id: "infra",
+    q: "How is the customer currently managing files and storage?",
+    sub: "This helps us understand where they're starting from",
+    options: [
+      { id: "fileserver", icon: "🖥", label: "On-premises file servers or NAS devices",          desc: "Still running Windows file servers, VPN for remote access, or hardware due for refresh",          scores: { starter:5, ifs:3, elite:1, ultimate:0 } },
+      { id: "sharepoint", icon: "📎", label: "Heavily reliant on SharePoint or OneDrive",          desc: "Using Microsoft 365 but frustrated with SharePoint complexity or governance gaps",                scores: { starter:3, ifs:4, elite:2, ultimate:0 } },
+      { id: "scattered",  icon: "📂", label: "Files scattered across multiple tools and silos",    desc: "Content split between email, Dropbox, local drives, and file servers — no single source of truth",scores: { starter:2, ifs:4, elite:3, ultimate:1 } },
+      { id: "cloud",      icon: "☁",  label: "Already on a cloud platform but outgrowing it",     desc: "Current solution lacks governance, compliance controls, or security monitoring they now need",     scores: { starter:0, ifs:2, elite:4, ultimate:3 } },
+    ]
+  },
+  {
+    id: "scale",
+    q: "How many users need access, and how are they distributed?",
+    sub: "Include staff, contractors, and regular external collaborators",
+    options: [
+      { id: "tiny",  icon: "👤", label: "Under 25 users — single location or small remote team", desc: "Small business standardizing on cloud file storage and basic collaboration",                        scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
+      { id: "small", icon: "👥", label: "25–100 users — growing team, possibly multi-location",   desc: "Mid-market company needing consistent access across offices and hybrid workers",                   scores: { starter:2, ifs:4, elite:2, ultimate:0 } },
+      { id: "mid",   icon: "🏢", label: "100–500 users — multiple departments or job sites",      desc: "Organization-wide deployment with role-based admin and advanced workflows",                       scores: { starter:0, ifs:2, elite:4, ultimate:2 } },
+      { id: "large", icon: "🏙", label: "500+ users — enterprise, multiple offices or countries", desc: "Enterprise scale requiring data residency, encryption key management, and full governance",        scores: { starter:0, ifs:0, elite:3, ultimate:5 } },
+    ]
+  },
+  {
+    id: "collab",
+    q: "What best describes their collaboration and workflow needs?",
+    sub: "Select all that apply — someone can need both approvals and lifecycle policies",
+    type: "multi",
+    options: [
+      { id: "basic",     icon: "📧", label: "Basic sharing — teams need a clean shared drive with external link sharing", desc: "Replace email attachments and consumer tools with a secure, organized file platform", scores: { starter:4, ifs:2, elite:0, ultimate:0 } },
+      { id: "workflows", icon: "✍",  label: "Structured workflows — approvals, e-signatures, and PDF editing",          desc: "Contracts, proposals, and SOPs need repeatable review and sign-off with audit trails",    scores: { starter:0, ifs:5, elite:3, ultimate:1 } },
+      { id: "advanced",  icon: "⚙",  label: "Advanced workflows — multi-step, automated, integrated with other systems", desc: "Complex cross-department processes that trigger actions in CRM, ERP, or other tools",    scores: { starter:0, ifs:2, elite:5, ultimate:2 } },
+      { id: "lifecycle", icon: "🗂",  label: "Full lifecycle — retention policies, archiving, and defensible deletion",  desc: "Legal, compliance, or records teams require structured retention and disposal of content", scores: { starter:0, ifs:0, elite:4, ultimate:4 } },
+    ]
+  },
+  {
+    id: "security",
+    q: "What security and compliance requirements do they have?",
+    sub: "Select all that apply — many customers have overlapping needs",
+    type: "multi",
+    options: [
+      { id: "standard",   icon: "🔒", label: "Standard — MFA, audit logs, file versioning, and secure link sharing",       desc: "Core security controls every business needs. No advanced threat detection required",                                          scores: { starter:4, ifs:2, elite:0, ultimate:0 } },
+      { id: "ransomware", icon: "🚨", label: "Ransomware detection, unusual access alerts, and snapshot recovery",          desc: "Cyber insurance or a past incident requires documented detection and fast recovery capabilities",                          scores: { starter:0, ifs:4, elite:4, ultimate:2 } },
+      { id: "governance", icon: "🛡", label: "Full governance — issue remediation, insider risk, and compliance reporting", desc: "Security team needs visibility across all sharing, permissions, and access anomalies with auto-remediation",              scores: { starter:0, ifs:1, elite:5, ultimate:3 } },
+      { id: "regulated",  icon: "📋", label: "Regulated data — HIPAA, FINRA, GDPR, SOC 2, or contractual obligations",    desc: "Must classify sensitive data, prove where it lives, support audits, and meet data residency requirements",                  scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
+    ]
+  },
+  {
+    id: "ai",
+    q: "How important is AI and intelligence to this opportunity?",
+    sub: "What level of AI capability is the customer ready to adopt?",
+    options: [
+      { id: "none",     icon: "➖", label: "Not a priority right now — focused on core file management",                  desc: "Customer wants a solid foundation before thinking about AI features",                                                        scores: { starter:3, ifs:1, elite:0, ultimate:0 } },
+      { id: "search",   icon: "🤖", label: "AI Assistant and search — ask questions across documents, get summaries",     desc: "Want to reduce time finding information and generate content from stored files",                                            scores: { starter:0, ifs:5, elite:3, ultimate:1 } },
+      { id: "classify", icon: "🧠", label: "AI classification — auto-tag document types and extract data at scale",       desc: "Large volumes of unstructured content that need to be organized and acted on automatically",                                scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
+      { id: "all",      icon: "⚡", label: "Full AI suite — search, assistant, classification, and AI-triggered workflows",desc: "AI is a core part of the business case and they want the most advanced capabilities available",                           scores: { starter:0, ifs:2, elite:3, ultimate:5 } },
+    ]
+  },
+  {
+    id: "budget",
+    q: "How would you characterize the customer's investment approach?",
+    sub: "This helps calibrate the recommendation to what will actually land",
+    options: [
+      { id: "essential",  icon: "💡", label: "Essential — get the basics right at the lowest cost",                        desc: "Budget-conscious. They want to solve the core problem without overbuying",                                                      scores: { starter:5, ifs:2, elite:0, ultimate:0 } },
+      { id: "value",      icon: "📈", label: "Value — willing to invest more for meaningful capability upgrades",           desc: "Will pay more if the ROI is clear. Open to a mid-tier plan with strong features",                                            scores: { starter:1, ifs:4, elite:3, ultimate:0 } },
+      { id: "strategic",  icon: "🚀", label: "Strategic — security and governance are a business priority",                desc: "Leadership sees content security and compliance as competitive or regulatory differentiators",                              scores: { starter:0, ifs:1, elite:4, ultimate:3 } },
+      { id: "enterprise", icon: "🏛", label: "Enterprise — needs the most comprehensive solution available",               desc: "Has regulatory, insurance, or contractual requirements that demand an enterprise-grade platform",                            scores: { starter:0, ifs:0, elite:2, ultimate:5 } },
+    ]
+  },
+];
+
 const BUILDER_CHECKLIST = [
   {
     category: "Foundation",
@@ -808,6 +879,21 @@ const PLAN_BUILDER_MAP = {
   ultimate:{ id:"ultimate",name:"Ultimate", color:"#6E49FF", bg:"rgba(110,73,255,0.08)",  border:"rgba(110,73,255,0.3)"  },
 };
 
+const scoreBuilder = (answers) => {
+  const totals = { starter:0, ifs:0, elite:0, ultimate:0 };
+  BUILDER_QUESTIONS.forEach(q => {
+    const ans = answers[q.id];
+    if (!ans) return;
+    const ids = Array.isArray(ans) ? ans : [ans];
+    ids.forEach(id => {
+      const opt = q.options.find(o => o.id === id);
+      if (opt) Object.entries(opt.scores).forEach(([plan, pts]) => { totals[plan] += pts; });
+    });
+  });
+  const ranked = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+  return { totals, winner: ranked[0][0], ranked };
+};
+
 const scoreChecklist = (selected) => {
   const totals = { starter:0, ifs:0, elite:0, ultimate:0 };
   BUILDER_CHECKLIST.forEach(cat => {
@@ -815,15 +901,6 @@ const scoreChecklist = (selected) => {
       if (selected[item.id]) {
         Object.entries(item.scores).forEach(([plan, pts]) => { totals[plan] += pts; });
       }
-    });
-  });
-  const ranked = Object.entries(totals).sort((a,b) => b[1] - a[1]);
-  return { totals, winner: ranked[0][0], ranked };
-};
-
-    ids.forEach(id => {
-      const opt = q.options.find(o => o.id === id);
-      if (opt) Object.entries(opt.scores).forEach(([plan, pts]) => { totals[plan] += pts; });
     });
   });
   const ranked = Object.entries(totals).sort((a,b) => b[1] - a[1]);
@@ -840,12 +917,12 @@ export default function EgnytePlanMatrix() {
   );
 
   // ── Plan Builder state ──
-  const [builderSelected, setBuilderSelected] = useState({});  // checklist: { item_id: true/false }
+  const [builderStep, setBuilderStep] = useState(0);
+  const [builderAnswers, setBuilderAnswers] = useState({});
   const [builderResult, setBuilderResult] = useState(null);
   const [builderShowFeatures, setBuilderShowFeatures] = useState(false);
   const [builderShowScores, setBuilderShowScores] = useState(false);
-  const [builderShowGen3, setBuilderShowGen3] = useState(false);
-  const [builderGen3, setBuilderGen3] = useState(false); // toggle to show Gen 3 equivalent
+  const [builderGen3, setBuilderGen3] = useState(false);
 
   const fromIdx = PLAN_ORDER.indexOf(fromPlan);
   const toIdx   = PLAN_ORDER.indexOf(toPlan);
