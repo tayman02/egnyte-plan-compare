@@ -1168,99 +1168,111 @@ export default function EgnytePlanMatrix() {
                 </div>
               ) : (<>
 
-                {/* ── Unified Summary Bar ── */}
-                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, marginBottom:12, display:"grid", gridTemplateColumns:"auto 1px auto 1px 1fr 1px auto", alignItems:"stretch", overflow:"hidden" }}>
+                {/* ── Summary Card ── */}
+                <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, marginBottom:12, overflow:"hidden" }}>
 
-                  {/* Net-new features */}
-                  <div style={{ padding:"16px 24px", display:"flex", flexDirection:"column", justifyContent:"center", gap:4 }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:"rgba(110,73,255,0.7)", letterSpacing:"0.12em", textTransform:"uppercase" }}>Net-New</div>
-                    <div style={{ display:"flex", alignItems:"baseline", gap:6 }}>
-                      <span style={{ fontSize:36, fontWeight:800, color:E.purple, letterSpacing:"-0.04em", lineHeight:1 }}>{netNew}</span>
-                      <span style={{ fontSize:11, color:E.textMut, fontWeight:500 }}>features</span>
-                    </div>
-                    <div style={{ fontSize:10, color:E.textMut }}>unlocked with {tp?.name}</div>
-                  </div>
+                  {/* Row 1 — Key stats */}
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(4, 1fr)", borderBottom:`1px solid ${E.border}` }}>
 
-                  {/* Divider */}
-                  <div style={{ background:E.border, margin:"12px 0" }}/>
-
-                  {/* Per-user cost */}
-                  <div style={{ padding:"16px 24px", display:"flex", flexDirection:"column", justifyContent:"center", gap:8 }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:2 }}>Per User / Month</div>
-                    <div style={{ display:"flex", gap:16, alignItems:"center" }}>
-                      <div>
-                        <div style={{ fontSize:9, color:E.textMut, marginBottom:2, fontWeight:600, letterSpacing:"0.06em" }}>MSP</div>
-                        <div style={{ fontSize:22, fontWeight:800, color:E.teal, letterSpacing:"-0.03em" }}>
-                          {dMsp!=null ? `+${fmt(dMsp)}` : "—"}
-                        </div>
+                    {/* Net-new */}
+                    <div style={{ padding:"18px 22px", borderRight:`1px solid ${E.border}` }}>
+                      <div style={{ fontSize:9, fontWeight:700, color:E.purple+"AA", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>Net-New Features</div>
+                      <div style={{ display:"flex", alignItems:"baseline", gap:6 }}>
+                        <span style={{ fontSize:40, fontWeight:900, color:E.purple, letterSpacing:"-0.04em", lineHeight:1 }}>{netNew}</span>
                       </div>
-                      {dMsrp!=null && <>
-                        <div style={{ width:1, height:32, background:E.border }}/>
+                      <div style={{ fontSize:10, color:E.textMut, marginTop:4 }}>unlocked with {tp?.name}</div>
+                    </div>
+
+                    {/* MSP price delta */}
+                    <div style={{ padding:"18px 22px", borderRight:`1px solid ${E.border}` }}>
+                      <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>Price Uplift / User / Mo</div>
+                      <div style={{ display:"flex", alignItems:"baseline", gap:8 }}>
                         <div>
-                          <div style={{ fontSize:9, color:E.textMut, marginBottom:2, fontWeight:600, letterSpacing:"0.06em" }}>MSRP</div>
-                          <div style={{ fontSize:22, fontWeight:800, color:`${E.teal}77`, letterSpacing:"-0.03em" }}>{`+${fmt(dMsrp)}`}</div>
+                          <div style={{ fontSize:9, fontWeight:600, color:E.teal+"99", letterSpacing:"0.06em", marginBottom:2 }}>MSP</div>
+                          <div style={{ fontSize:28, fontWeight:800, color:E.teal, letterSpacing:"-0.03em", lineHeight:1 }}>
+                            {dMsp!=null ? fmtD(dMsp) : "—"}
+                          </div>
                         </div>
-                      </>}
-                    </div>
-                  </div>
-
-                  {/* Divider */}
-                  <div style={{ background:E.border, margin:"12px 0" }}/>
-
-                  {/* Calculator inputs */}
-                  <div style={{ padding:"14px 20px", display:"flex", flexDirection:"column", justifyContent:"center", gap:10 }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase" }}>Deal Calculator</div>
-                    <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
-                      {/* Users */}
-                      <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
-                        <span style={{ fontSize:9, color:E.textMut, fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase" }}>Users</span>
-                        <input type="number" min="1" value={userCount}
-                          onChange={e => setUserCount(Math.max(1, parseInt(e.target.value)||1))}
-                          style={{ width:70, background:E.navySurf, border:`1px solid ${E.border}`, borderRadius:6, padding:"6px 8px", color:E.text, fontSize:13, fontWeight:700, fontFamily:"'Inter',sans-serif", outline:"none", textAlign:"center" }}/>
-                      </div>
-                      {/* From price */}
-                      <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
-                        <span style={{ fontSize:9, color:E.textMut, fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase" }}>{fp?.name} $/u</span>
-                        <div style={{ position:"relative", width:80 }}>
-                          <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11 }}>$</span>
-                          <input type="number" min="0" step="0.01" value={calcFromPrice}
-                            onChange={e => setFromPrice(parseFloat(e.target.value)||0)}
-                            style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.border}`, borderRadius:6, padding:"6px 8px 6px 18px", color:E.textSub, fontSize:13, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
-                        </div>
-                      </div>
-                      <span style={{ color:E.textMut, fontSize:14, marginTop:14 }}>→</span>
-                      {/* To price */}
-                      <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
-                        <span style={{ fontSize:9, color:E.teal, fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase" }}>{tp?.name} $/u</span>
-                        <div style={{ position:"relative", width:80 }}>
-                          <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11 }}>$</span>
-                          <input type="number" min="0" step="0.01" value={calcToPrice}
-                            onChange={e => setToPrice(parseFloat(e.target.value)||0)}
-                            style={{ width:"100%", background:E.navySurf, border:`1px solid ${E.teal}44`, borderRadius:6, padding:"6px 8px 6px 18px", color:E.teal, fontSize:13, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
-                        </div>
+                        {dMsrp!=null && (
+                          <div style={{ paddingLeft:10, borderLeft:`1px solid ${E.border}`, marginLeft:2 }}>
+                            <div style={{ fontSize:9, fontWeight:600, color:E.textMut, letterSpacing:"0.06em", marginBottom:2 }}>MSRP</div>
+                            <div style={{ fontSize:18, fontWeight:700, color:E.textMut, letterSpacing:"-0.02em", lineHeight:1 }}>
+                              {fmtD(dMsrp)}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
+
+                    {/* Monthly delta */}
+                    <div style={{ padding:"18px 22px", borderRight:`1px solid ${E.border}` }}>
+                      <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>Monthly Impact</div>
+                      <div style={{ fontSize:28, fontWeight:800, color:E.teal, letterSpacing:"-0.03em", lineHeight:1, marginBottom:4 }}>{fmtD(monthlyDelta)}</div>
+                      <div style={{ fontSize:10, color:E.textMut }}>{userCount} users · ${currentMo.toFixed(2)} → ${proposedMo.toFixed(2)}</div>
+                    </div>
+
+                    {/* Annual delta */}
+                    <div style={{ padding:"18px 22px" }}>
+                      <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:6 }}>Annual Impact</div>
+                      <div style={{ fontSize:28, fontWeight:800, color:E.purple, letterSpacing:"-0.03em", lineHeight:1, marginBottom:4 }}>{fmtD(annualDelta)}</div>
+                      <div style={{ fontSize:10, color:E.textMut }}>based on {userCount} users</div>
+                    </div>
+
                   </div>
 
-                  {/* Divider */}
-                  <div style={{ background:E.border, margin:"12px 0" }}/>
+                  {/* Row 2 — Deal calculator */}
+                  <div style={{ padding:"14px 22px", display:"flex", alignItems:"center", gap:0, flexWrap:"wrap", background:E.navySurf }}>
+                    <span style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginRight:16, whiteSpace:"nowrap" }}>Adjust Deal</span>
 
-                  {/* Totals */}
-                  <div style={{ padding:"14px 20px", display:"flex", flexDirection:"column", justifyContent:"center", gap:8 }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:2 }}>Deal Impact</div>
-                    <div style={{ display:"flex", gap:16 }}>
+                    {/* Users */}
+                    <div style={{ display:"flex", alignItems:"center", gap:6, marginRight:10 }}>
+                      <span style={{ fontSize:11, color:E.textMut }}>Users</span>
+                      <input type="number" min="1" value={userCount}
+                        onChange={e => setUserCount(Math.max(1, parseInt(e.target.value)||1))}
+                        style={{ width:64, background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:6, padding:"5px 8px", color:E.text, fontSize:13, fontWeight:700, fontFamily:"'Inter',sans-serif", outline:"none", textAlign:"center" }}/>
+                    </div>
+
+                    <span style={{ fontSize:12, color:E.textMut, marginRight:10 }}>×</span>
+
+                    {/* From price */}
+                    <div style={{ display:"flex", alignItems:"center", gap:6, marginRight:8 }}>
+                      <span style={{ fontSize:10, color:E.textMut, whiteSpace:"nowrap" }}>{fp?.name} $/u</span>
+                      <div style={{ position:"relative" }}>
+                        <span style={{ position:"absolute", left:7, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11, pointerEvents:"none" }}>$</span>
+                        <input type="number" min="0" step="0.01" value={calcFromPrice}
+                          onChange={e => setFromPrice(parseFloat(e.target.value)||0)}
+                          style={{ width:72, background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:6, padding:"5px 6px 5px 16px", color:E.textSub, fontSize:13, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                      </div>
+                    </div>
+
+                    <span style={{ fontSize:12, color:E.textMut, marginRight:8 }}>→</span>
+
+                    {/* To price */}
+                    <div style={{ display:"flex", alignItems:"center", gap:6, marginRight:16 }}>
+                      <span style={{ fontSize:10, color:E.teal, whiteSpace:"nowrap" }}>{tp?.name} $/u</span>
+                      <div style={{ position:"relative" }}>
+                        <span style={{ position:"absolute", left:7, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11, pointerEvents:"none" }}>$</span>
+                        <input type="number" min="0" step="0.01" value={calcToPrice}
+                          onChange={e => setToPrice(parseFloat(e.target.value)||0)}
+                          style={{ width:72, background:E.navyCard, border:`1px solid ${E.teal}44`, borderRadius:6, padding:"5px 6px 5px 16px", color:E.teal, fontSize:13, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                      </div>
+                    </div>
+
+                    <span style={{ fontSize:12, color:E.borderSub, marginRight:16 }}>=</span>
+
+                    {/* Result */}
+                    <div style={{ display:"flex", alignItems:"center", gap:12 }}>
                       <div>
-                        <div style={{ fontSize:9, color:E.textMut, marginBottom:2, fontWeight:600, letterSpacing:"0.06em" }}>Monthly Δ</div>
-                        <div style={{ fontSize:20, fontWeight:800, color:E.teal, letterSpacing:"-0.03em" }}>{fmtD(monthlyDelta)}</div>
+                        <span style={{ fontSize:9, color:E.textMut, fontWeight:600, letterSpacing:"0.06em", display:"block", marginBottom:1 }}>MO</span>
+                        <span style={{ fontSize:15, fontWeight:800, color:E.teal, letterSpacing:"-0.02em" }}>{fmtD(monthlyDelta)}</span>
                       </div>
-                      <div style={{ width:1, height:32, background:E.border, alignSelf:"center" }}/>
                       <div>
-                        <div style={{ fontSize:9, color:E.textMut, marginBottom:2, fontWeight:600, letterSpacing:"0.06em" }}>Annual Δ</div>
-                        <div style={{ fontSize:20, fontWeight:800, color:E.purple, letterSpacing:"-0.03em" }}>{fmtD(annualDelta)}</div>
+                        <span style={{ fontSize:9, color:E.textMut, fontWeight:600, letterSpacing:"0.06em", display:"block", marginBottom:1 }}>YR</span>
+                        <span style={{ fontSize:15, fontWeight:800, color:E.purple, letterSpacing:"-0.02em" }}>{fmtD(annualDelta)}</span>
                       </div>
                     </div>
-                    <div style={{ fontSize:10, color:E.textMut }}>{userCount} users · ${currentMo.toFixed(2)} → ${proposedMo.toFixed(2)}/mo</div>
                   </div>
+
                 </div>
 
                 {/* ── Upgrade Value + Vertical (unified card) ── */}
