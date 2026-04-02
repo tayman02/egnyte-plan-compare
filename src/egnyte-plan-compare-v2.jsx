@@ -215,7 +215,7 @@ const PLANS = [
       encryption: true, storage_per_user: "Variable", upload_limit: "10 GB", domains: "1",
       sso: true, mfa: false, granular_perms: true, compliant_storage: true,
       audit: false,
-      edge_caching: true, role_admin: true, device_controls: false,
+      edge_caching: false, role_admin: false, device_controls: false,
       data_residency: false, encryption_keys: false, link_throttling: false, migration_tools: false,
       // Intelligence — none
       single_doc_qa: false, copilot: false, ai_search: false, ai_workflows: false,
