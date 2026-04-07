@@ -965,13 +965,7 @@ const USE_CASES = [
     planNotes: { starter: "Modern cloud file server for small businesses that need basic collaboration, SSO and MFA, and simple workflows.", ifs: "For cost-conscious companies that need organization-wide collaboration, advanced workflows, PDF editing, and AI insights." },
     capabilities: ["Cloud File Server with controlled sharing, external users, and global file locking", "Mapped drive and desktop apps for a familiar drive-letter experience", "Granular folder and NTFS-like permissions with unified admin dashboard", "File versioning and file and login audit trails"],
     competitors: ["SharePoint and OneDrive", "Dropbox", "Box", "FileCloud"],
-    whyEgnyte: ["Purpose built as a secure cloud file platform with familiar drive-letter access, not just a web site or documents app", "Better hybrid performance for shared drives than generic SharePoint sites or basic cloud storage tools", "Integrated governance and recovery without requiring multiple additional point products"],
-    customerStories: [
-      { company: "KL Engineering", industry: "Civil Engineering", headline: "Future-Proofs Talent and Wins New Work With Egnyte", url: "https://www.egnyte.com/customers/kl-engineering-case-study" },
-      { company: "A&E Design", industry: "Architecture", headline: "Builds the Hybrid Work Model of Its Dreams", url: "https://www.egnyte.com/customers/aande-design-case-study" },
-      { company: "Choate Construction", industry: "Commercial Construction", headline: "Renders Traditional IT Hardware an Afterthought", url: "https://www.egnyte.com/customers/choate-construction-case-study" },
-      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
-    ],
+    whyEgnyte: ["Purpose built as a secure cloud file platform with familiar drive-letter access, not just a web site or documents app", "Better hybrid performance for shared drives than generic SharePoint sites or basic cloud storage tools", "Integrated governance and recovery without requiring multiple additional point products"]
   },
   {
     id: "sharepoint",
@@ -983,11 +977,7 @@ const USE_CASES = [
     planNotes: { ifs: "For organizations that want straightforward org-wide collaboration with advanced workflows and AI, without SharePoint complexity.", elite: "When the migration must also include lifecycle policies, analytics, and data access governance.", ultimate: "For regulated customers who need SharePoint replacement plus sensitive data discovery and privacy monitoring." },
     capabilities: ["Cloud File Server with familiar drive-letter access and simple folder-based permissions", "Granular admin controls easier to operate than SharePoint site and library structures", "Content Lifecycle and Governance at Elite and Ultimate for retention and classification", "Sensitive Data Discovery at Ultimate for compliance use cases", "Integrations with Microsoft 365 so Egnyte can complement or fully replace SharePoint document libraries"],
     competitors: ["SharePoint and OneDrive", "Box", "Dropbox"],
-    whyEgnyte: ["Built specifically for unstructured file management, not retrofitted from a productivity suite", "Simpler shared drive model that maps directly to how teams and departments are organized", "Consistent permission model without managing separate site collections, libraries, and Teams channels", "Easier for MSPs to deploy and support across multiple customer environments without deep Microsoft expertise"],
-    customerStories: [
-      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
-      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
-    ],
+    whyEgnyte: ["Built specifically for unstructured file management, not retrofitted from a productivity suite", "Simpler shared drive model that maps directly to how teams and departments are organized", "Consistent permission model without managing separate site collections, libraries, and Teams channels", "Easier for MSPs to deploy and support across multiple customer environments without deep Microsoft expertise"]
   },
   {
     id: "consolidation",
@@ -999,12 +989,7 @@ const USE_CASES = [
     planNotes: { ifs: "For consolidating scattered files into a single governed platform with advanced workflows and AI assistance.", elite: "When consolidation must include lifecycle policies, analytics, and governance reporting.", ultimate: "For environments where scattered data includes sensitive or regulated content that must be discovered, classified, and remediated." },
     capabilities: ["Egnyte Connect as a single, governed repository for all unstructured content", "Integrations with Microsoft 365, Google Workspace, Salesforce, and other line of business tools", "Metadata, full-text search, and AI-powered knowledge base Q&A to surface content across repositories", "File versioning and controlled sharing to eliminate version confusion", "Content Lifecycle policies at Elite and Ultimate to clean up and manage sprawl", "Sensitive Data Discovery at Ultimate to locate and classify personal or regulated data"],
     competitors: ["SharePoint and OneDrive", "Box", "Dropbox"],
-    whyEgnyte: ["Designed to sit at the center of a multi-application environment rather than requiring customers to go all-in on a single productivity suite", "Provides a single source of truth for files without forcing teams off the tools they use for communication", "Governance, search, and classification features address not just where files are stored but whether access and content policies are applied consistently", "MSPs can use Egnyte to standardize across diverse customer environments without rebuilding every customer's tool stack"],
-    customerStories: [
-      { company: "Salas O'Brien", industry: "Engineering", headline: "Unifies Rapid M&A Growth and Achieves CMMC Compliance", url: "https://www.egnyte.com/customers/salasobrien-case-study" },
-      { company: "Choate Construction", industry: "Commercial Construction", headline: "Renders Traditional IT Hardware an Afterthought", url: "https://www.egnyte.com/customers/choate-construction-case-study" },
-      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
-    ],
+    whyEgnyte: ["Designed to sit at the center of a multi-application environment rather than requiring customers to go all-in on a single productivity suite", "Provides a single source of truth for files without forcing teams off the tools they use for communication", "Governance, search, and classification features address not just where files are stored but whether access and content policies are applied consistently", "MSPs can use Egnyte to standardize across diverse customer environments without rebuilding every customer's tool stack"]
   },
   {
     id: "internal_sharing",
@@ -1016,12 +1001,7 @@ const USE_CASES = [
     planNotes: { starter: "For small teams standardizing on a single cloud file solution with basic workflows.", ifs: "For organization-wide collaboration and advanced workflows with AI assistance.", elite: "When collaboration must be combined with lifecycle, governance, and additional safeguards." },
     capabilities: ["Unified folder structure for departments, projects, and offices", "Desktop and mobile apps for consistent access to all shares", "Co-editing, comments, and tasks on shared documents", "Role-based administration at higher tiers"],
     competitors: ["SharePoint and OneDrive", "Dropbox", "Box"],
-    whyEgnyte: ["Straightforward shared drive model easier to understand than complex SharePoint site architectures", "Consistent experience across desktop, web, and mobile without multiple disjointed apps", "Clear mapping between organizational structure and folder permissions"],
-    customerStories: [
-      { company: "KL Engineering", industry: "Civil Engineering", headline: "Future-Proofs Talent and Wins New Work With Egnyte", url: "https://www.egnyte.com/customers/kl-engineering-case-study" },
-      { company: "A&E Design", industry: "Architecture", headline: "Builds the Hybrid Work Model of Its Dreams", url: "https://www.egnyte.com/customers/aande-design-case-study" },
-      { company: "Köster GmbH", industry: "Construction", headline: "Simplifies Collaboration by Centralizing Data Management", url: "https://www.egnyte.com/customers/koster-case-study" },
-    ],
+    whyEgnyte: ["Straightforward shared drive model easier to understand than complex SharePoint site architectures", "Consistent experience across desktop, web, and mobile without multiple disjointed apps", "Clear mapping between organizational structure and folder permissions"]
   },
   {
     id: "external_sharing",
@@ -1033,13 +1013,7 @@ const USE_CASES = [
     planNotes: { starter: "For small businesses that need secure sharing with basic workflows and MFA.", ifs: "For organizations that want multi-step workflows, PDF editing, and AI to support external collaboration.", elite: "When external sharing involves sensitive data that also requires governance, watermarking, and issue remediation." },
     capabilities: ["Secure upload and download links with password and expiry options", "External user accounts with full admin visibility and control", "File locking and detailed audit logs for shared content", "Advanced workflows and PDFs with annotation and e-signature at higher tiers"],
     competitors: ["SharePoint and OneDrive", "Dropbox", "Box", "FileCloud"],
-    whyEgnyte: ["All external sharing is managed from a single governed platform rather than a mix of tools", "External users are fully controlled accounts with policy and audit coverage", "Supports both quick ad hoc link sharing and structured, project-based external spaces"],
-    customerStories: [
-      { company: "MOMA Therapeutics", industry: "Life Sciences", headline: "Strengthens CRO Collaboration Through Smarter IT", url: "https://www.egnyte.com/customers/moma-therapeutics-case-study" },
-      { company: "Köster GmbH", industry: "Construction", headline: "Simplifies Collaboration by Centralizing Data Management", url: "https://www.egnyte.com/customers/koster-case-study" },
-      { company: "Tilt Creative", industry: "Media & Production", headline: "Neutralizes Compliance Threats with Egnyte", url: "https://www.egnyte.com/customers/tilt-creative-case-study" },
-      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
-    ],
+    whyEgnyte: ["All external sharing is managed from a single governed platform rather than a mix of tools", "External users are fully controlled accounts with policy and audit coverage", "Supports both quick ad hoc link sharing and structured, project-based external spaces"]
   },
   {
     id: "remote_jobsite",
@@ -1051,13 +1025,7 @@ const USE_CASES = [
     planNotes: { ifs: "Minimum for edge caching and advanced workflows at job sites.", elite: "When remote site collaboration must also include lifecycle or governance.", ultimate: "When remote site collaboration must also include sensitive data protection." },
     capabilities: ["Edge caching via Turbo, SmartCache, or Storage Sync appliances", "Local cache of project data that syncs automatically to the cloud", "Optimized large file access for AEC, manufacturing, media, and similar verticals"],
     competitors: ["SharePoint and OneDrive", "FileCloud", "Nasuni", "Panzura"],
-    whyEgnyte: ["Purpose-built hybrid edge appliances designed for branch and job site use cases", "Keeps a single, authoritative copy of files in the cloud while delivering LAN speed locally", "Less complex and costly than full file gateway re-architecture projects"],
-    customerStories: [
-      { company: "QK", industry: "Civil Engineering", headline: "Gets from Dirt to Data to Decision Faster", url: "https://www.egnyte.com/customers/qk-case-study" },
-      { company: "KL Engineering", industry: "Civil Engineering", headline: "Future-Proofs Talent and Wins New Work With Egnyte", url: "https://www.egnyte.com/customers/kl-engineering-case-study" },
-      { company: "A&E Design", industry: "Architecture", headline: "Builds the Hybrid Work Model of Its Dreams", url: "https://www.egnyte.com/customers/aande-design-case-study" },
-      { company: "Köster GmbH", industry: "Construction", headline: "Simplifies Collaboration by Centralizing Data Management", url: "https://www.egnyte.com/customers/koster-case-study" },
-    ],
+    whyEgnyte: ["Purpose-built hybrid edge appliances designed for branch and job site use cases", "Keeps a single, authoritative copy of files in the cloud while delivering LAN speed locally", "Less complex and costly than full file gateway re-architecture projects"]
   },
   {
     id: "sensitive_data",
@@ -1069,13 +1037,7 @@ const USE_CASES = [
     planNotes: { ultimate: "Required for Sensitive Data Discovery and Governance, privacy and compliance monitoring, and advanced remediation." },
     capabilities: ["Sensitive Data Discovery and Governance to locate and classify personal and regulated content", "Privacy and compliance monitoring across cloud and on-premises repositories", "AI and pattern-based detection tuned for unstructured content", "Auto remediation to quarantine, secure, or delete high-risk data"],
     competitors: ["Microsoft Purview and SharePoint", "FileCloud"],
-    whyEgnyte: ["Single console to inventory sensitive data across Egnyte and connected repositories, not just one productivity suite", "AI-driven detection reduces the amount of manual rule writing and tuning required", "Built-in remediation actions to fix issues, not just report on them"],
-    customerStories: [
-      { company: "Tilt Creative", industry: "Media & Production", headline: "Neutralizes Compliance Threats with Egnyte", url: "https://www.egnyte.com/customers/tilt-creative-case-study" },
-      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
-      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
-      { company: "Salas O'Brien", industry: "Engineering", headline: "Unifies Rapid M&A Growth and Achieves CMMC Compliance", url: "https://www.egnyte.com/customers/salasobrien-case-study" },
-    ],
+    whyEgnyte: ["Single console to inventory sensitive data across Egnyte and connected repositories, not just one productivity suite", "AI-driven detection reduces the amount of manual rule writing and tuning required", "Built-in remediation actions to fix issues, not just report on them"]
   },
   {
     id: "lifecycle",
@@ -1087,10 +1049,7 @@ const USE_CASES = [
     planNotes: { elite: "Minimum plan for full lifecycle policies, analytics, and reports.", ultimate: "For lifecycle initiatives tied to sensitive data discovery, privacy, and advanced governance." },
     capabilities: ["Content Lifecycle Policies, Analytics, and Reports", "Detection of redundant, old, or stale content and usage trends", "Automated retain, archive, and delete actions to enforce policy", "Reporting for audits and records management teams"],
     competitors: ["Microsoft 365 and SharePoint retention", "FileCloud Compliance Center"],
-    whyEgnyte: ["Lifecycle policies designed around shared drives and projects, not only individual workspaces or mailboxes", "Clear visibility into stale and redundant content before enforcing policies", "No separate archive product required to balance compliance and storage cost"],
-    customerStories: [
-      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
-    ],
+    whyEgnyte: ["Lifecycle policies designed around shared drives and projects, not only individual workspaces or mailboxes", "Clear visibility into stale and redundant content before enforcing policies", "No separate archive product required to balance compliance and storage cost"]
   },
   {
     id: "ransomware",
@@ -1102,10 +1061,7 @@ const USE_CASES = [
     planNotes: { ifs: "Introduces probable ransomware detection and remediation via APIs, suitable for cost-conscious customers.", elite: "Adds broader issue detection, auto remediation, and lifecycle reporting for security-focused customers.", ultimate: "Adds extended snapshot-based ransomware recovery and the most advanced detection and governance." },
     capabilities: ["Probable ransomware detection using artifact and behavior-based signals", "Suspicious login and unusual access detection", "Extended snapshot-based ransomware recovery for rapid, point-in-time restore", "Auto remediation and delegation of security issues"],
     competitors: ["Dropbox Rewind", "FileCloud", "Traditional backup vendors such as Veeam"],
-    whyEgnyte: ["Combines ransomware detection and recovery directly on the content platform rather than relying only on backup snapshots", "Behavior and artifact-based analytics help catch new attack patterns earlier", "Faster and more targeted restore than full share or volume recovery from backup"],
-    customerStories: [
-      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
-    ],
+    whyEgnyte: ["Combines ransomware detection and recovery directly on the content platform rather than relying only on backup snapshots", "Behavior and artifact-based analytics help catch new attack patterns earlier", "Faster and more targeted restore than full share or volume recovery from backup"]
   },
   {
     id: "document_room",
@@ -1117,11 +1073,7 @@ const USE_CASES = [
     planNotes: { elite: "Recommended baseline for secure document rooms, including watermarking and advanced workflows.", ultimate: "For highly regulated or high-value deals that also require sensitive data discovery and privacy monitoring." },
     capabilities: ["Document Room and secure, invitation-only domains", "Granular folder permissions with read-only viewer options", "Watermarking and PDF annotation, editing, and e-signature", "Advanced workflows for review and approval"],
     competitors: ["SharePoint and OneDrive", "Dropbox"],
-    whyEgnyte: ["Virtual data rooms are delivered on the same platform used for everyday collaboration", "Simpler permissioning and auditing of external users than generic SharePoint sites or consumer tools", "Lower cost and complexity than maintaining a separate, standalone VDR product"],
-    customerStories: [
-      { company: "Tilt Creative", industry: "Media & Production", headline: "Neutralizes Compliance Threats with Egnyte", url: "https://www.egnyte.com/customers/tilt-creative-case-study" },
-      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
-    ],
+    whyEgnyte: ["Virtual data rooms are delivered on the same platform used for everyday collaboration", "Simpler permissioning and auditing of external users than generic SharePoint sites or consumer tools", "Lower cost and complexity than maintaining a separate, standalone VDR product"]
   },
   {
     id: "single_source",
@@ -1133,12 +1085,7 @@ const USE_CASES = [
     planNotes: { ifs: "Standard plan for organization-wide collaboration, advanced workflows, AI discovery, and PDF editing.", elite: "When centralization must include lifecycle policies, analytics, and data access governance.", ultimate: "When the single source of truth must also support sensitive data discovery and compliance reporting." },
     capabilities: ["Egnyte Connect as a central, governed repository for unstructured content", "Integrations to Microsoft 365, Google Workspace, CRM, and e-signature tools", "Search, metadata, and knowledge base Q&A", "File versioning and controlled sharing for a single source of truth"],
     competitors: ["SharePoint and OneDrive", "Box", "Dropbox"],
-    whyEgnyte: ["Designed to sit at the center of a multi-application environment, not just a single productivity suite", "Keeps one governed copy of files while still integrating with line of business applications", "Easier for MSPs to standardize across diverse customer environments"],
-    customerStories: [
-      { company: "Salas O'Brien", industry: "Engineering", headline: "Unifies Rapid M&A Growth and Achieves CMMC Compliance", url: "https://www.egnyte.com/customers/salasobrien-case-study" },
-      { company: "Professional Assoc. Services", industry: "HOA Management", headline: "Empowers Staff and Delights Clients With AI-Powered Content Intelligence", url: "https://www.egnyte.com/customers/professional-association-services-case-study" },
-      { company: "Pure Financial Advisors", industry: "Financial Services", headline: "Scales Planning Efficiency with Egnyte and AI", url: "https://www.egnyte.com/customers/pure-financial-advisors-case-study" },
-    ],
+    whyEgnyte: ["Designed to sit at the center of a multi-application environment, not just a single productivity suite", "Keeps one governed copy of files while still integrating with line of business applications", "Easier for MSPs to standardize across diverse customer environments"]
   },
   {
     id: "archive",
@@ -1150,10 +1097,7 @@ const USE_CASES = [
     planNotes: { elite: "Baseline for lifecycle policies, reporting, and archive workflows.", ultimate: "When archive requirements are tightly coupled to privacy, sensitive data discovery, and advanced recovery." },
     capabilities: ["Archive domains for cold, low-cost storage of inactive content", "Content lifecycle policies to move content into archive based on age or usage", "Audit-ready access and reporting for legal and compliance teams"],
     competitors: ["SharePoint and OneDrive with retention", "FileCloud", "Archive and backup products"],
-    whyEgnyte: ["Archive is part of the same content platform and lifecycle policies as active data", "Clear separation between user workspaces and tightly controlled archive domains", "Less operational overhead than maintaining a separate archive or backup tier"],
-    customerStories: [
-      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
-    ],
+    whyEgnyte: ["Archive is part of the same content platform and lifecycle policies as active data", "Clear separation between user workspaces and tightly controlled archive domains", "Less operational overhead than maintaining a separate archive or backup tier"]
   },
   {
     id: "inventory_sensitive",
@@ -1165,12 +1109,7 @@ const USE_CASES = [
     planNotes: { ultimate: "Required for sensitive data discovery, classification, management reviews, and privacy monitoring." },
     capabilities: ["Governance and Classification engine for PII, PHI, PCI, and other patterns", "Privacy and compliance monitoring for personal data across repositories", "Risk dashboards and review workflows for high-risk data locations"],
     competitors: ["Microsoft Purview", "FileCloud"],
-    whyEgnyte: ["Focused specifically on unstructured content rather than primarily on email and structured systems", "Supports scans across Egnyte and connected third-party repositories from a single pane of glass", "Turns findings into concrete remediation actions that IT or MSPs can execute"],
-    customerStories: [
-      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
-      { company: "Pure Financial Advisors", industry: "Financial Services", headline: "Scales Planning Efficiency with Egnyte and AI", url: "https://www.egnyte.com/customers/pure-financial-advisors-case-study" },
-      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
-    ],
+    whyEgnyte: ["Focused specifically on unstructured content rather than primarily on email and structured systems", "Supports scans across Egnyte and connected third-party repositories from a single pane of glass", "Turns findings into concrete remediation actions that IT or MSPs can execute"]
   },
   {
     id: "data_loss",
@@ -1182,10 +1121,7 @@ const USE_CASES = [
     planNotes: { starter: "Provides file versioning, unified Trash, and basic security alerts for small environments.", ifs: "For larger organizations that also want advanced workflows and AI assistance around high-value content.", elite: "When accidental loss prevention is part of a broader lifecycle and governance initiative." },
     capabilities: ["File versioning and unified Trash for restoring deleted content", "Permissions viewer and access reporting to identify risky access patterns", "Suspicious login detection and enhanced malware detection at lower tiers"],
     competitors: ["SharePoint and OneDrive", "Dropbox", "FileCloud"],
-    whyEgnyte: ["Central control over who can delete or move critical data across all shared content", "Simple self-service recovery for everyday user mistakes without always involving IT", "Governance and reporting features help prevent repeated issues over time"],
-    customerStories: [
-      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
-    ],
+    whyEgnyte: ["Central control over who can delete or move critical data across all shared content", "Simple self-service recovery for everyday user mistakes without always involving IT", "Governance and reporting features help prevent repeated issues over time"]
   },
   {
     id: "insider_threat",
@@ -1197,11 +1133,7 @@ const USE_CASES = [
     planNotes: { ifs: "Introduces suspicious login detection, external sharing issue detection, and artifact-based ransomware detection.", elite: "Adds unusual access and inactive user detection, malformed permission detection, and auto remediation.", ultimate: "Extends insider risk monitoring with deeper privacy, sensitive data, and recovery capabilities." },
     capabilities: ["Insider risk management with detection of unusual access and inactive accounts", "Monitoring of external sharing, public links, and malformed permissions", "Alerts, audit trails, and auto remediation for risky user actions"],
     competitors: ["Dropbox", "FileCloud", "Microsoft 365 and SharePoint security and audit tools"],
-    whyEgnyte: ["Focuses specifically on risky behavior around sensitive content, not just sign-in events", "Keeps security and governance telemetry in the same platform as the files themselves", "Provides clear, actionable alerts that MSPs and security teams can respond to quickly"],
-    customerStories: [
-      { company: "Tilt Creative", industry: "Media & Production", headline: "Neutralizes Compliance Threats with Egnyte", url: "https://www.egnyte.com/customers/tilt-creative-case-study" },
-      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
-    ],
+    whyEgnyte: ["Focuses specifically on risky behavior around sensitive content, not just sign-in events", "Keeps security and governance telemetry in the same platform as the files themselves", "Provides clear, actionable alerts that MSPs and security teams can respond to quickly"]
   },
 ];
 
@@ -2812,59 +2744,6 @@ export default function EgnytePlanMatrix() {
                                 </ul>
                               </div>
                             </div>
-
-                            {/* Customer stories */}
-                            {(() => {
-                              const stories = CUSTOMER_STORIES.filter(s => s.useCases.includes(uc.id));
-                              if (!stories.length) return null;
-                              return (
-                                <div>
-                                  <div style={{ fontSize:9, fontWeight:700, color:"#FFCA29", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>📖 Customer Stories</div>
-                                  <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-                                    {stories.map(s => (
-                                      <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer"
-                                        style={{ display:"flex", alignItems:"flex-start", gap:10, background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:8, padding:"10px 12px", textDecoration:"none", transition:"border-color 0.15s" }}
-                                        onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,202,41,0.35)"}
-                                        onMouseLeave={e => e.currentTarget.style.borderColor = E.borderSub}>
-                                        <span style={{ fontSize:18, lineHeight:1, flexShrink:0, marginTop:1 }}>{s.icon}</span>
-                                        <div style={{ flex:1, minWidth:0 }}>
-                                          <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:3, flexWrap:"wrap" }}>
-                                            <span style={{ fontSize:12, fontWeight:700, color:E.text }}>{s.company}</span>
-                                            <span style={{ fontSize:9, fontWeight:600, color:E.textMut, background:E.navyCard, borderRadius:4, padding:"2px 7px", letterSpacing:"0.05em" }}>{s.industry}</span>
-                                          </div>
-                                          <div style={{ fontSize:11, color:E.textSub, lineHeight:1.5 }}>{s.headline}</div>
-                                        </div>
-                                        <span style={{ fontSize:11, color:"#FFCA29", flexShrink:0, marginTop:2, whiteSpace:"nowrap" }}>Read →</span>
-                                      </a>
-                                    ))}
-                                  </div>
-                                </div>
-                              );
-                            })()}
-
-                            {/* Customer Stories */}
-                            {uc.customerStories && uc.customerStories.length > 0 && (
-                              <div>
-                                <div style={{ fontSize:9, fontWeight:700, color:"#FFCA29", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>📖 Customer Stories</div>
-                                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-                                  {uc.customerStories.map((s,i) => (
-                                    <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
-                                      style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:10, padding:"8px 12px", background:"rgba(255,202,41,0.06)", border:"1px solid rgba(255,202,41,0.2)", borderRadius:7, textDecoration:"none", transition:"border-color 0.15s" }}
-                                      onMouseEnter={e => e.currentTarget.style.borderColor="rgba(255,202,41,0.5)"}
-                                      onMouseLeave={e => e.currentTarget.style.borderColor="rgba(255,202,41,0.2)"}>
-                                      <div>
-                                        <div style={{ fontSize:12, fontWeight:700, color:"#FFCA29", marginBottom:2 }}>{s.company}</div>
-                                        <div style={{ fontSize:11, color:E.textSub, lineHeight:1.4 }}>{s.headline}</div>
-                                      </div>
-                                      <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:3, flexShrink:0 }}>
-                                        <span style={{ fontSize:9, fontWeight:600, color:E.textMut, background:E.navySurf, padding:"2px 7px", borderRadius:4, whiteSpace:"nowrap" }}>{s.industry}</span>
-                                        <span style={{ fontSize:10, color:"rgba(255,202,41,0.6)" }}>Read story →</span>
-                                      </div>
-                                    </a>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
 
                             {/* Customer stories */}
                             {(() => {
