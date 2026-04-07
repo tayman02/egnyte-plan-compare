@@ -966,6 +966,12 @@ const USE_CASES = [
     capabilities: ["Cloud File Server with controlled sharing, external users, and global file locking", "Mapped drive and desktop apps for a familiar drive-letter experience", "Granular folder and NTFS-like permissions with unified admin dashboard", "File versioning and file and login audit trails"],
     competitors: ["SharePoint and OneDrive", "Dropbox", "Box", "FileCloud"],
     whyEgnyte: ["Purpose built as a secure cloud file platform with familiar drive-letter access, not just a web site or documents app", "Better hybrid performance for shared drives than generic SharePoint sites or basic cloud storage tools", "Integrated governance and recovery without requiring multiple additional point products"],
+    customerStories: [
+      { company: "KL Engineering", industry: "Civil Engineering", headline: "Future-Proofs Talent and Wins New Work With Egnyte", url: "https://www.egnyte.com/customers/kl-engineering-case-study" },
+      { company: "A&E Design", industry: "Architecture", headline: "Builds the Hybrid Work Model of Its Dreams", url: "https://www.egnyte.com/customers/aande-design-case-study" },
+      { company: "Choate Construction", industry: "Commercial Construction", headline: "Renders Traditional IT Hardware an Afterthought", url: "https://www.egnyte.com/customers/choate-construction-case-study" },
+      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
+    ],
   },
   {
     id: "sharepoint",
@@ -978,6 +984,10 @@ const USE_CASES = [
     capabilities: ["Cloud File Server with familiar drive-letter access and simple folder-based permissions", "Granular admin controls easier to operate than SharePoint site and library structures", "Content Lifecycle and Governance at Elite and Ultimate for retention and classification", "Sensitive Data Discovery at Ultimate for compliance use cases", "Integrations with Microsoft 365 so Egnyte can complement or fully replace SharePoint document libraries"],
     competitors: ["SharePoint and OneDrive", "Box", "Dropbox"],
     whyEgnyte: ["Built specifically for unstructured file management, not retrofitted from a productivity suite", "Simpler shared drive model that maps directly to how teams and departments are organized", "Consistent permission model without managing separate site collections, libraries, and Teams channels", "Easier for MSPs to deploy and support across multiple customer environments without deep Microsoft expertise"],
+    customerStories: [
+      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
+      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
+    ],
   },
   {
     id: "consolidation",
@@ -990,6 +1000,11 @@ const USE_CASES = [
     capabilities: ["Egnyte Connect as a single, governed repository for all unstructured content", "Integrations with Microsoft 365, Google Workspace, Salesforce, and other line of business tools", "Metadata, full-text search, and AI-powered knowledge base Q&A to surface content across repositories", "File versioning and controlled sharing to eliminate version confusion", "Content Lifecycle policies at Elite and Ultimate to clean up and manage sprawl", "Sensitive Data Discovery at Ultimate to locate and classify personal or regulated data"],
     competitors: ["SharePoint and OneDrive", "Box", "Dropbox"],
     whyEgnyte: ["Designed to sit at the center of a multi-application environment rather than requiring customers to go all-in on a single productivity suite", "Provides a single source of truth for files without forcing teams off the tools they use for communication", "Governance, search, and classification features address not just where files are stored but whether access and content policies are applied consistently", "MSPs can use Egnyte to standardize across diverse customer environments without rebuilding every customer's tool stack"],
+    customerStories: [
+      { company: "Salas O'Brien", industry: "Engineering", headline: "Unifies Rapid M&A Growth and Achieves CMMC Compliance", url: "https://www.egnyte.com/customers/salasobrien-case-study" },
+      { company: "Choate Construction", industry: "Commercial Construction", headline: "Renders Traditional IT Hardware an Afterthought", url: "https://www.egnyte.com/customers/choate-construction-case-study" },
+      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
+    ],
   },
   {
     id: "internal_sharing",
@@ -1002,6 +1017,11 @@ const USE_CASES = [
     capabilities: ["Unified folder structure for departments, projects, and offices", "Desktop and mobile apps for consistent access to all shares", "Co-editing, comments, and tasks on shared documents", "Role-based administration at higher tiers"],
     competitors: ["SharePoint and OneDrive", "Dropbox", "Box"],
     whyEgnyte: ["Straightforward shared drive model easier to understand than complex SharePoint site architectures", "Consistent experience across desktop, web, and mobile without multiple disjointed apps", "Clear mapping between organizational structure and folder permissions"],
+    customerStories: [
+      { company: "KL Engineering", industry: "Civil Engineering", headline: "Future-Proofs Talent and Wins New Work With Egnyte", url: "https://www.egnyte.com/customers/kl-engineering-case-study" },
+      { company: "A&E Design", industry: "Architecture", headline: "Builds the Hybrid Work Model of Its Dreams", url: "https://www.egnyte.com/customers/aande-design-case-study" },
+      { company: "Köster GmbH", industry: "Construction", headline: "Simplifies Collaboration by Centralizing Data Management", url: "https://www.egnyte.com/customers/koster-case-study" },
+    ],
   },
   {
     id: "external_sharing",
@@ -1014,6 +1034,12 @@ const USE_CASES = [
     capabilities: ["Secure upload and download links with password and expiry options", "External user accounts with full admin visibility and control", "File locking and detailed audit logs for shared content", "Advanced workflows and PDFs with annotation and e-signature at higher tiers"],
     competitors: ["SharePoint and OneDrive", "Dropbox", "Box", "FileCloud"],
     whyEgnyte: ["All external sharing is managed from a single governed platform rather than a mix of tools", "External users are fully controlled accounts with policy and audit coverage", "Supports both quick ad hoc link sharing and structured, project-based external spaces"],
+    customerStories: [
+      { company: "MOMA Therapeutics", industry: "Life Sciences", headline: "Strengthens CRO Collaboration Through Smarter IT", url: "https://www.egnyte.com/customers/moma-therapeutics-case-study" },
+      { company: "Köster GmbH", industry: "Construction", headline: "Simplifies Collaboration by Centralizing Data Management", url: "https://www.egnyte.com/customers/koster-case-study" },
+      { company: "Tilt Creative", industry: "Media & Production", headline: "Neutralizes Compliance Threats with Egnyte", url: "https://www.egnyte.com/customers/tilt-creative-case-study" },
+      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
+    ],
   },
   {
     id: "remote_jobsite",
@@ -1026,6 +1052,12 @@ const USE_CASES = [
     capabilities: ["Edge caching via Turbo, SmartCache, or Storage Sync appliances", "Local cache of project data that syncs automatically to the cloud", "Optimized large file access for AEC, manufacturing, media, and similar verticals"],
     competitors: ["SharePoint and OneDrive", "FileCloud", "Nasuni", "Panzura"],
     whyEgnyte: ["Purpose-built hybrid edge appliances designed for branch and job site use cases", "Keeps a single, authoritative copy of files in the cloud while delivering LAN speed locally", "Less complex and costly than full file gateway re-architecture projects"],
+    customerStories: [
+      { company: "QK", industry: "Civil Engineering", headline: "Gets from Dirt to Data to Decision Faster", url: "https://www.egnyte.com/customers/qk-case-study" },
+      { company: "KL Engineering", industry: "Civil Engineering", headline: "Future-Proofs Talent and Wins New Work With Egnyte", url: "https://www.egnyte.com/customers/kl-engineering-case-study" },
+      { company: "A&E Design", industry: "Architecture", headline: "Builds the Hybrid Work Model of Its Dreams", url: "https://www.egnyte.com/customers/aande-design-case-study" },
+      { company: "Köster GmbH", industry: "Construction", headline: "Simplifies Collaboration by Centralizing Data Management", url: "https://www.egnyte.com/customers/koster-case-study" },
+    ],
   },
   {
     id: "sensitive_data",
@@ -1038,6 +1070,12 @@ const USE_CASES = [
     capabilities: ["Sensitive Data Discovery and Governance to locate and classify personal and regulated content", "Privacy and compliance monitoring across cloud and on-premises repositories", "AI and pattern-based detection tuned for unstructured content", "Auto remediation to quarantine, secure, or delete high-risk data"],
     competitors: ["Microsoft Purview and SharePoint", "FileCloud"],
     whyEgnyte: ["Single console to inventory sensitive data across Egnyte and connected repositories, not just one productivity suite", "AI-driven detection reduces the amount of manual rule writing and tuning required", "Built-in remediation actions to fix issues, not just report on them"],
+    customerStories: [
+      { company: "Tilt Creative", industry: "Media & Production", headline: "Neutralizes Compliance Threats with Egnyte", url: "https://www.egnyte.com/customers/tilt-creative-case-study" },
+      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
+      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
+      { company: "Salas O'Brien", industry: "Engineering", headline: "Unifies Rapid M&A Growth and Achieves CMMC Compliance", url: "https://www.egnyte.com/customers/salasobrien-case-study" },
+    ],
   },
   {
     id: "lifecycle",
@@ -1050,6 +1088,9 @@ const USE_CASES = [
     capabilities: ["Content Lifecycle Policies, Analytics, and Reports", "Detection of redundant, old, or stale content and usage trends", "Automated retain, archive, and delete actions to enforce policy", "Reporting for audits and records management teams"],
     competitors: ["Microsoft 365 and SharePoint retention", "FileCloud Compliance Center"],
     whyEgnyte: ["Lifecycle policies designed around shared drives and projects, not only individual workspaces or mailboxes", "Clear visibility into stale and redundant content before enforcing policies", "No separate archive product required to balance compliance and storage cost"],
+    customerStories: [
+      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
+    ],
   },
   {
     id: "ransomware",
@@ -1062,6 +1103,9 @@ const USE_CASES = [
     capabilities: ["Probable ransomware detection using artifact and behavior-based signals", "Suspicious login and unusual access detection", "Extended snapshot-based ransomware recovery for rapid, point-in-time restore", "Auto remediation and delegation of security issues"],
     competitors: ["Dropbox Rewind", "FileCloud", "Traditional backup vendors such as Veeam"],
     whyEgnyte: ["Combines ransomware detection and recovery directly on the content platform rather than relying only on backup snapshots", "Behavior and artifact-based analytics help catch new attack patterns earlier", "Faster and more targeted restore than full share or volume recovery from backup"],
+    customerStories: [
+      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
+    ],
   },
   {
     id: "document_room",
@@ -1074,6 +1118,10 @@ const USE_CASES = [
     capabilities: ["Document Room and secure, invitation-only domains", "Granular folder permissions with read-only viewer options", "Watermarking and PDF annotation, editing, and e-signature", "Advanced workflows for review and approval"],
     competitors: ["SharePoint and OneDrive", "Dropbox"],
     whyEgnyte: ["Virtual data rooms are delivered on the same platform used for everyday collaboration", "Simpler permissioning and auditing of external users than generic SharePoint sites or consumer tools", "Lower cost and complexity than maintaining a separate, standalone VDR product"],
+    customerStories: [
+      { company: "Tilt Creative", industry: "Media & Production", headline: "Neutralizes Compliance Threats with Egnyte", url: "https://www.egnyte.com/customers/tilt-creative-case-study" },
+      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
+    ],
   },
   {
     id: "single_source",
@@ -1086,6 +1134,11 @@ const USE_CASES = [
     capabilities: ["Egnyte Connect as a central, governed repository for unstructured content", "Integrations to Microsoft 365, Google Workspace, CRM, and e-signature tools", "Search, metadata, and knowledge base Q&A", "File versioning and controlled sharing for a single source of truth"],
     competitors: ["SharePoint and OneDrive", "Box", "Dropbox"],
     whyEgnyte: ["Designed to sit at the center of a multi-application environment, not just a single productivity suite", "Keeps one governed copy of files while still integrating with line of business applications", "Easier for MSPs to standardize across diverse customer environments"],
+    customerStories: [
+      { company: "Salas O'Brien", industry: "Engineering", headline: "Unifies Rapid M&A Growth and Achieves CMMC Compliance", url: "https://www.egnyte.com/customers/salasobrien-case-study" },
+      { company: "Professional Assoc. Services", industry: "HOA Management", headline: "Empowers Staff and Delights Clients With AI-Powered Content Intelligence", url: "https://www.egnyte.com/customers/professional-association-services-case-study" },
+      { company: "Pure Financial Advisors", industry: "Financial Services", headline: "Scales Planning Efficiency with Egnyte and AI", url: "https://www.egnyte.com/customers/pure-financial-advisors-case-study" },
+    ],
   },
   {
     id: "archive",
@@ -1098,6 +1151,9 @@ const USE_CASES = [
     capabilities: ["Archive domains for cold, low-cost storage of inactive content", "Content lifecycle policies to move content into archive based on age or usage", "Audit-ready access and reporting for legal and compliance teams"],
     competitors: ["SharePoint and OneDrive with retention", "FileCloud", "Archive and backup products"],
     whyEgnyte: ["Archive is part of the same content platform and lifecycle policies as active data", "Clear separation between user workspaces and tightly controlled archive domains", "Less operational overhead than maintaining a separate archive or backup tier"],
+    customerStories: [
+      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
+    ],
   },
   {
     id: "inventory_sensitive",
@@ -1110,6 +1166,11 @@ const USE_CASES = [
     capabilities: ["Governance and Classification engine for PII, PHI, PCI, and other patterns", "Privacy and compliance monitoring for personal data across repositories", "Risk dashboards and review workflows for high-risk data locations"],
     competitors: ["Microsoft Purview", "FileCloud"],
     whyEgnyte: ["Focused specifically on unstructured content rather than primarily on email and structured systems", "Supports scans across Egnyte and connected third-party repositories from a single pane of glass", "Turns findings into concrete remediation actions that IT or MSPs can execute"],
+    customerStories: [
+      { company: "Wintrust Financial", industry: "Financial Services", headline: "Transcends Secure Sharing to Achieve True Data Governance", url: "https://www.egnyte.com/customers/wintrust-case-study" },
+      { company: "Pure Financial Advisors", industry: "Financial Services", headline: "Scales Planning Efficiency with Egnyte and AI", url: "https://www.egnyte.com/customers/pure-financial-advisors-case-study" },
+      { company: "Neuren Pharmaceuticals", industry: "Life Sciences", headline: "Implements Egnyte as eQMS in Record Time", url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study" },
+    ],
   },
   {
     id: "data_loss",
@@ -1122,6 +1183,9 @@ const USE_CASES = [
     capabilities: ["File versioning and unified Trash for restoring deleted content", "Permissions viewer and access reporting to identify risky access patterns", "Suspicious login detection and enhanced malware detection at lower tiers"],
     competitors: ["SharePoint and OneDrive", "Dropbox", "FileCloud"],
     whyEgnyte: ["Central control over who can delete or move critical data across all shared content", "Simple self-service recovery for everyday user mistakes without always involving IT", "Governance and reporting features help prevent repeated issues over time"],
+    customerStories: [
+      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
+    ],
   },
   {
     id: "insider_threat",
@@ -1134,6 +1198,176 @@ const USE_CASES = [
     capabilities: ["Insider risk management with detection of unusual access and inactive accounts", "Monitoring of external sharing, public links, and malformed permissions", "Alerts, audit trails, and auto remediation for risky user actions"],
     competitors: ["Dropbox", "FileCloud", "Microsoft 365 and SharePoint security and audit tools"],
     whyEgnyte: ["Focuses specifically on risky behavior around sensitive content, not just sign-in events", "Keeps security and governance telemetry in the same platform as the files themselves", "Provides clear, actionable alerts that MSPs and security teams can respond to quickly"],
+    customerStories: [
+      { company: "Tilt Creative", industry: "Media & Production", headline: "Neutralizes Compliance Threats with Egnyte", url: "https://www.egnyte.com/customers/tilt-creative-case-study" },
+      { company: "Campbell University", industry: "Higher Education", headline: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration", url: "https://www.egnyte.com/customers/campbell-university-case-study" },
+    ],
+  },
+];
+
+// ─── CUSTOMER STORIES ─────────────────────────────────────────────────────────
+const CUSTOMER_STORIES = [
+  {
+    id: "tilt",
+    company: "Tilt Creative + Production",
+    industry: "Media & Advertising",
+    title: "Neutralizes Compliance Threats with Egnyte",
+    summary: "Ad production studio serving Audi, Walmart and others replaced their file provider after high-profile clients demanded stricter data security compliance and governed content access.",
+    url: "https://www.egnyte.com/customers/tilt-creative-case-study",
+    useCases: ["sensitive_data", "inventory_sensitive", "external_sharing"],
+  },
+  {
+    id: "wintrust",
+    company: "Wintrust Financial",
+    industry: "Financial Services",
+    title: "Transcends Secure Sharing to Achieve True Data Governance",
+    summary: "$64B financial holding company replaced ShareFile across 16 community banks — gaining SSO, governed external sharing, and a real data governance strategy.",
+    url: "https://www.egnyte.com/customers/wintrust-case-study",
+    useCases: ["external_sharing", "single_source", "sensitive_data", "document_room"],
+  },
+  {
+    id: "moma",
+    company: "MOMA Therapeutics",
+    industry: "Life Sciences",
+    title: "Strengthens CRO Collaboration Through Smarter IT",
+    summary: "Clinical-stage biotech uses Egnyte to securely share sensitive lab data with CRO partners during Phase I trials, replacing ad hoc transfer methods with governed, auditable collaboration.",
+    url: "https://www.egnyte.com/customers/moma-therapeutics-case-study",
+    useCases: ["external_sharing", "sensitive_data"],
+  },
+  {
+    id: "qk",
+    company: "QK",
+    industry: "AEC / Civil Engineering",
+    title: "Gets from Dirt to Data to Decision Faster",
+    summary: "Civil engineering firm with siloed per-office file servers tried Panzura and Azure Files before landing on Egnyte — solving CAD file access and cross-office collaboration in one move.",
+    url: "https://www.egnyte.com/customers/qk-case-study",
+    useCases: ["file_server", "remote_jobsite", "consolidation"],
+  },
+  {
+    id: "salasobrien",
+    company: "Salas O'Brien",
+    industry: "AEC / Engineering",
+    title: "Unifies Rapid M&A Growth and Achieves CMMC Compliance",
+    summary: "Engineering firm with 50+ acquisitions across 105 offices replaced a tangle of per-location file servers and drive letters with a single governed platform — also achieving CMMC compliance.",
+    url: "https://www.egnyte.com/customers/salasobrien-case-study",
+    useCases: ["consolidation", "file_server", "single_source"],
+  },
+  {
+    id: "kl_engineering",
+    company: "KL Engineering",
+    industry: "AEC / Civil Engineering",
+    title: "Future-Proofs Talent and Wins New Work With Egnyte",
+    summary: "100-person civil engineering firm replaced legacy file servers and remote access workarounds with Egnyte — enabling hybrid work and handling Civil 3D files across five Upper Midwest offices.",
+    url: "https://www.egnyte.com/customers/kl-engineering-case-study",
+    useCases: ["file_server", "remote_jobsite"],
+  },
+  {
+    id: "pure_financial",
+    company: "Pure Financial Advisors",
+    industry: "Financial Services",
+    title: "Scales Planning Efficiency with Egnyte and AI",
+    summary: "Leading RIA firm uses Egnyte as a secure document foundation and layered AI to automate extraction of investment data from thousands of client statements per year.",
+    url: "https://www.egnyte.com/customers/pure-financial-advisors-case-study",
+    useCases: ["sensitive_data", "single_source", "consolidation"],
+  },
+  {
+    id: "pas",
+    company: "Professional Association Services",
+    industry: "Property Management",
+    title: "Empowers Staff and Delights Clients With AI-Powered Content Intelligence",
+    summary: "HOA management firm for 150+ communities replaced a single-location file server with Egnyte, then added AI Assistant to let staff instantly find answers across a massive document library.",
+    url: "https://www.egnyte.com/customers/professional-association-services-case-study",
+    useCases: ["file_server", "single_source", "consolidation"],
+  },
+  {
+    id: "koster",
+    company: "Köster GmbH",
+    industry: "Construction",
+    title: "Simplifies Collaboration by Centralizing Data Management",
+    summary: "Century-old German construction company with 20+ branches and dozens of subcontractors replaced a clunky FTP-based system with Egnyte for real-time external file sharing and permissions management.",
+    url: "https://www.egnyte.com/customers/koster-case-study",
+    useCases: ["external_sharing", "remote_jobsite", "internal_sharing"],
+  },
+  {
+    id: "neuren",
+    company: "Neuren Pharmaceuticals",
+    industry: "Life Sciences",
+    title: "Implements Egnyte as eQMS in Record Time",
+    summary: "Pharmaceutical company deployed a complete electronic Quality Management System in 12 weeks using Egnyte's life sciences solution — meeting regulatory compliance without a lengthy validation project.",
+    url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study",
+    useCases: ["sensitive_data", "inventory_sensitive"],
+  },
+  {
+    id: "aande",
+    company: "A&E Design",
+    industry: "AEC / Architecture",
+    title: "Builds the Hybrid Work Model of Its Dreams",
+    summary: "Montana architecture firm replaced on-prem storage that had become unmanageable for multi-office hybrid work, eliminating data silos and enabling real-time collaboration on large project files.",
+    url: "https://www.egnyte.com/customers/aande-design-case-study",
+    useCases: ["file_server", "consolidation", "internal_sharing"],
+  },
+  {
+    id: "choate",
+    company: "Choate Construction",
+    industry: "Construction",
+    title: "Renders Traditional IT Hardware an Afterthought",
+    summary: "National commercial construction company outgrew AWS-hosted infrastructure as it scaled — switching to Egnyte to solve permissions complexity, folder structure, accessibility, and storage performance.",
+    url: "https://www.egnyte.com/customers/choate-construction-case-study",
+    useCases: ["file_server", "consolidation", "data_loss"],
+  },
+  {
+    id: "campbell",
+    company: "Campbell University",
+    industry: "Education",
+    title: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration",
+    summary: "Private university migrated from fragmented on-prem storage to Egnyte — gaining ransomware detection, self-service permissions, and data governance while simplifying a lean IT team's workload.",
+    url: "https://www.egnyte.com/customers/campbell-university-case-study",
+    useCases: ["file_server", "ransomware", "consolidation", "sensitive_data"],
+  },
+  {
+    id: "redbull",
+    company: "Red Bull",
+    industry: "Media & Consumer Goods",
+    title: "Unifies Global File Sharing for 20,000+ Users Across 170 Countries",
+    summary: "Red Bull replaced fragmented per-region file servers, email attachments, and consumer cloud tools with a single governed platform — rolling out to 10,000 users globally in three months.",
+    url: "https://www.egnyte.com/customers",
+    useCases: ["consolidation", "internal_sharing", "file_server", "single_source"],
+  },
+  {
+    id: "sme",
+    company: "S&ME",
+    industry: "AEC / Engineering",
+    title: "Transforms 90TB of Chaotic Data Across 35 Offices Into a Governed Platform",
+    summary: "Engineering firm managing 90TB across 35 offices replaced a chaotic multi-server environment with Egnyte — eliminating version conflicts, cutting storage costs, and unlocking federal contract eligibility.",
+    url: "https://www.egnyte.com/customers",
+    useCases: ["consolidation", "lifecycle", "single_source"],
+  },
+  {
+    id: "alta",
+    company: "ALTA Planning + Design",
+    industry: "AEC / Planning",
+    title: "Achieves $220K in Annual Savings by Replacing Legacy IT Systems",
+    summary: "Global planning and design firm replaced costly legacy on-prem systems and disjointed data silos with Egnyte — saving over $220K annually and improving project efficiency by 10%.",
+    url: "https://www.egnyte.com/customers",
+    useCases: ["consolidation", "file_server"],
+  },
+  {
+    id: "buzzfeed",
+    company: "BuzzFeed",
+    industry: "Media",
+    title: "Balances Agile Media Production with Enterprise-Grade Data Governance",
+    summary: "Digital media company deployed Egnyte's content classification and governance tools to protect sensitive content and enforce data policies without slowing down fast-moving creative workflows.",
+    url: "https://www.egnyte.com/customers",
+    useCases: ["sensitive_data", "inventory_sensitive"],
+  },
+  {
+    id: "waionoka",
+    company: "The Waionoka Group",
+    industry: "Professional Services",
+    title: "Boosts Data Security and Cuts Backup Support Tickets by 60%",
+    summary: "Professional services firm moved sensitive client data off on-premises servers and tape backups to Egnyte — dramatically improving security posture and reducing backup-related IT burden.",
+    url: "https://www.egnyte.com/customers",
+    useCases: ["file_server", "data_loss"],
   },
 ];
 
@@ -1144,6 +1378,127 @@ const PLAN_COLORS = {
   ultimate:{ color:"#6E49FF", bg:"rgba(110,73,255,0.15)",  border:"rgba(110,73,255,0.35)" },
 };
 const PLAN_LABELS = { starter:"Starter", ifs:"IFS", elite:"Elite", ultimate:"Ultimate" };
+
+// ─── CUSTOMER STORIES ─────────────────────────────────────────────────────────
+const CUSTOMER_STORIES = [
+  {
+    id: "tilt_creative",
+    company: "Tilt Creative + Production",
+    industry: "Media & Entertainment",
+    icon: "🎬",
+    headline: "Ad production studio governing confidential data access for high-profile clients including Audi and Walmart.",
+    url: "https://www.egnyte.com/customers/tilt-creative-case-study",
+    useCases: ["sensitive_data", "inventory_sensitive"],
+  },
+  {
+    id: "wintrust",
+    company: "Wintrust Financial",
+    industry: "Financial Services",
+    icon: "🏦",
+    headline: "$64B financial holding company replaced ShareFile with Egnyte for SSO, secure sharing, and data governance across 16 banks.",
+    url: "https://www.egnyte.com/customers/wintrust-case-study",
+    useCases: ["external_sharing", "sensitive_data", "single_source"],
+  },
+  {
+    id: "moma",
+    company: "MOMA Therapeutics",
+    industry: "Life Sciences",
+    icon: "🧬",
+    headline: "Clinical-stage biotech securely sharing sensitive lab data with CRO partners during Phase I trials.",
+    url: "https://www.egnyte.com/customers/moma-therapeutics-case-study",
+    useCases: ["external_sharing", "sensitive_data"],
+  },
+  {
+    id: "qk",
+    company: "QK",
+    industry: "Civil Engineering",
+    icon: "🏗",
+    headline: "Replaced siloed office file servers — previously tried Panzura and Azure Files — to get CAD files moving across offices.",
+    url: "https://www.egnyte.com/customers/qk-case-study",
+    useCases: ["file_server", "remote_jobsite", "consolidation"],
+  },
+  {
+    id: "salasobrien",
+    company: "Salas O'Brien",
+    industry: "Engineering",
+    icon: "🏛",
+    headline: "Engineering firm with 50+ acquisitions and 105 offices replaced individual file servers and achieved CMMC compliance.",
+    url: "https://www.egnyte.com/customers/salasobrien-case-study",
+    useCases: ["consolidation", "file_server", "single_source"],
+  },
+  {
+    id: "kl_engineering",
+    company: "KL Engineering",
+    industry: "Civil Engineering (AEC)",
+    icon: "🛣",
+    headline: "Civil engineering firm replaced old-school file servers to support remote work and large Civil 3D files across five offices.",
+    url: "https://www.egnyte.com/customers/kl-engineering-case-study",
+    useCases: ["file_server", "remote_jobsite"],
+  },
+  {
+    id: "pure_financial",
+    company: "Pure Financial Advisors",
+    industry: "Financial Services (RIA)",
+    icon: "📊",
+    headline: "RIA using Egnyte as secure document foundation with AI layered on top to automate processing of thousands of client statements.",
+    url: "https://www.egnyte.com/customers/pure-financial-advisors-case-study",
+    useCases: ["single_source", "sensitive_data"],
+  },
+  {
+    id: "pas",
+    company: "Professional Association Services",
+    industry: "Property Management",
+    icon: "🏘",
+    headline: "HOA management company for 150+ communities uses Egnyte AI Assistant to answer questions across a massive document library instantly.",
+    url: "https://www.egnyte.com/customers/professional-association-services-case-study",
+    useCases: ["single_source", "consolidation"],
+  },
+  {
+    id: "koster",
+    company: "Köster GmbH",
+    industry: "Construction",
+    icon: "🏗",
+    headline: "German construction company with 20+ branches replaced a clunky file transfer process to collaborate with subcontractors and field teams.",
+    url: "https://www.egnyte.com/customers/koster-case-study",
+    useCases: ["external_sharing", "remote_jobsite", "internal_sharing"],
+  },
+  {
+    id: "neuren",
+    company: "Neuren Pharmaceuticals",
+    industry: "Life Sciences / Pharma",
+    icon: "💊",
+    headline: "Pharmaceutical company implemented a compliant eQMS in just 12 weeks, replacing a legacy quality management system.",
+    url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study",
+    useCases: ["sensitive_data", "inventory_sensitive"],
+  },
+  {
+    id: "aande",
+    company: "A&E Design",
+    industry: "Architecture",
+    icon: "📐",
+    headline: "Architecture firm eliminated data silos across Montana offices to enable hybrid work and collaboration on large AEC project files.",
+    url: "https://www.egnyte.com/customers/aande-design-case-study",
+    useCases: ["file_server", "remote_jobsite", "internal_sharing"],
+  },
+  {
+    id: "choate",
+    company: "Choate Construction",
+    industry: "Commercial Construction",
+    icon: "🏢",
+    headline: "Commercial construction company eliminated traditional file server hardware as growth created complex permission and folder structure challenges.",
+    url: "https://www.egnyte.com/customers/choate-construction-case-study",
+    useCases: ["file_server", "consolidation", "internal_sharing"],
+  },
+  {
+    id: "campbell",
+    company: "Campbell University",
+    industry: "Higher Education",
+    icon: "🎓",
+    headline: "Private university migrated from fragmented on-prem storage to Egnyte for ransomware detection, data governance, and campus-wide collaboration.",
+    url: "https://www.egnyte.com/customers/campbell-university-case-study",
+    useCases: ["file_server", "ransomware", "sensitive_data"],
+  },
+];
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function EgnytePlanMatrix() {
@@ -2529,6 +2884,87 @@ export default function EgnytePlanMatrix() {
                                 </ul>
                               </div>
                             </div>
+
+                            {/* Customer stories */}
+                            {(() => {
+                              const stories = CUSTOMER_STORIES.filter(s => s.useCases.includes(uc.id));
+                              if (!stories.length) return null;
+                              return (
+                                <div>
+                                  <div style={{ fontSize:9, fontWeight:700, color:"#FFCA29", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>📖 Customer Stories</div>
+                                  <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                                    {stories.map(s => (
+                                      <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer"
+                                        style={{ display:"flex", alignItems:"flex-start", gap:10, background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:8, padding:"10px 12px", textDecoration:"none", transition:"border-color 0.15s" }}
+                                        onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,202,41,0.35)"}
+                                        onMouseLeave={e => e.currentTarget.style.borderColor = E.borderSub}>
+                                        <span style={{ fontSize:18, lineHeight:1, flexShrink:0, marginTop:1 }}>{s.icon}</span>
+                                        <div style={{ flex:1, minWidth:0 }}>
+                                          <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:3, flexWrap:"wrap" }}>
+                                            <span style={{ fontSize:12, fontWeight:700, color:E.text }}>{s.company}</span>
+                                            <span style={{ fontSize:9, fontWeight:600, color:E.textMut, background:E.navyCard, borderRadius:4, padding:"2px 7px", letterSpacing:"0.05em" }}>{s.industry}</span>
+                                          </div>
+                                          <div style={{ fontSize:11, color:E.textSub, lineHeight:1.5 }}>{s.headline}</div>
+                                        </div>
+                                        <span style={{ fontSize:11, color:"#FFCA29", flexShrink:0, marginTop:2, whiteSpace:"nowrap" }}>Read →</span>
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })()}
+
+                            {/* Customer Stories */}
+                            {uc.customerStories && uc.customerStories.length > 0 && (
+                              <div>
+                                <div style={{ fontSize:9, fontWeight:700, color:"#FFCA29", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>📖 Customer Stories</div>
+                                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                                  {uc.customerStories.map((s,i) => (
+                                    <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
+                                      style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:10, padding:"8px 12px", background:"rgba(255,202,41,0.06)", border:"1px solid rgba(255,202,41,0.2)", borderRadius:7, textDecoration:"none", transition:"border-color 0.15s" }}
+                                      onMouseEnter={e => e.currentTarget.style.borderColor="rgba(255,202,41,0.5)"}
+                                      onMouseLeave={e => e.currentTarget.style.borderColor="rgba(255,202,41,0.2)"}>
+                                      <div>
+                                        <div style={{ fontSize:12, fontWeight:700, color:"#FFCA29", marginBottom:2 }}>{s.company}</div>
+                                        <div style={{ fontSize:11, color:E.textSub, lineHeight:1.4 }}>{s.headline}</div>
+                                      </div>
+                                      <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:3, flexShrink:0 }}>
+                                        <span style={{ fontSize:9, fontWeight:600, color:E.textMut, background:E.navySurf, padding:"2px 7px", borderRadius:4, whiteSpace:"nowrap" }}>{s.industry}</span>
+                                        <span style={{ fontSize:10, color:"rgba(255,202,41,0.6)" }}>Read story →</span>
+                                      </div>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Customer stories */}
+                            {(() => {
+                              const stories = CUSTOMER_STORIES.filter(s => s.useCases.includes(uc.id));
+                              if (!stories.length) return null;
+                              return (
+                                <div>
+                                  <div style={{ fontSize:9, fontWeight:700, color:"#FFCA29", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>⭐ Customer Stories</div>
+                                  <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
+                                    {stories.map(s => (
+                                      <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer"
+                                        style={{ display:"block", textDecoration:"none", background:E.navySurf, border:`1px solid ${E.borderSub}`, borderRadius:8, padding:"10px 12px", transition:"border-color 0.15s" }}
+                                        onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,202,41,0.4)"}
+                                        onMouseLeave={e => e.currentTarget.style.borderColor = E.borderSub}>
+                                        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
+                                          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                                            <span style={{ fontSize:11, fontWeight:700, color:"#FFCA29" }}>{s.company}</span>
+                                            <span style={{ fontSize:9, color:E.textMut, background:"rgba(255,255,255,0.06)", borderRadius:4, padding:"1px 6px" }}>{s.industry}</span>
+                                          </div>
+                                          <span style={{ fontSize:10, color:E.textMut }}>↗</span>
+                                        </div>
+                                        <div style={{ fontSize:11, color:E.textSub, lineHeight:1.5 }}>{s.summary}</div>
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })()}
 
                             {/* CTA — compare the top plan */}
                             <div style={{ display:"flex", gap:8, paddingTop:4 }}>
