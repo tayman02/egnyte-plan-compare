@@ -1214,7 +1214,7 @@ const CUSTOMER_STORIES = [
     title: "Neutralizes Compliance Threats with Egnyte",
     summary: "Ad production studio serving Audi, Walmart and others replaced their file provider after high-profile clients demanded stricter data security compliance and governed content access.",
     url: "https://www.egnyte.com/customers/tilt-creative-case-study",
-    useCases: ["sensitive_data", "inventory_sensitive", "external_sharing"],
+    useCases: ["sensitive_data"],
   },
   {
     id: "wintrust",
@@ -1223,7 +1223,7 @@ const CUSTOMER_STORIES = [
     title: "Transcends Secure Sharing to Achieve True Data Governance",
     summary: "$64B financial holding company replaced ShareFile across 16 community banks — gaining SSO, governed external sharing, and a real data governance strategy.",
     url: "https://www.egnyte.com/customers/wintrust-case-study",
-    useCases: ["external_sharing", "single_source", "sensitive_data", "document_room"],
+    useCases: ["sensitive_data", "document_room"],
   },
   {
     id: "moma",
@@ -1232,7 +1232,7 @@ const CUSTOMER_STORIES = [
     title: "Strengthens CRO Collaboration Through Smarter IT",
     summary: "Clinical-stage biotech uses Egnyte to securely share sensitive lab data with CRO partners during Phase I trials, replacing ad hoc transfer methods with governed, auditable collaboration.",
     url: "https://www.egnyte.com/customers/moma-therapeutics-case-study",
-    useCases: ["external_sharing", "sensitive_data"],
+    useCases: ["external_sharing"],
   },
   {
     id: "qk",
@@ -1241,7 +1241,7 @@ const CUSTOMER_STORIES = [
     title: "Gets from Dirt to Data to Decision Faster",
     summary: "Civil engineering firm with siloed per-office file servers tried Panzura and Azure Files before landing on Egnyte — solving CAD file access and cross-office collaboration in one move.",
     url: "https://www.egnyte.com/customers/qk-case-study",
-    useCases: ["file_server", "remote_jobsite", "consolidation"],
+    useCases: ["file_server", "remote_jobsite"],
   },
   {
     id: "salasobrien",
@@ -1250,7 +1250,7 @@ const CUSTOMER_STORIES = [
     title: "Unifies Rapid M&A Growth and Achieves CMMC Compliance",
     summary: "Engineering firm with 50+ acquisitions across 105 offices replaced a tangle of per-location file servers and drive letters with a single governed platform — also achieving CMMC compliance.",
     url: "https://www.egnyte.com/customers/salasobrien-case-study",
-    useCases: ["consolidation", "file_server", "single_source"],
+    useCases: ["consolidation"],
   },
   {
     id: "kl_engineering",
@@ -1268,7 +1268,7 @@ const CUSTOMER_STORIES = [
     title: "Scales Planning Efficiency with Egnyte and AI",
     summary: "Leading RIA firm uses Egnyte as a secure document foundation and layered AI to automate extraction of investment data from thousands of client statements per year.",
     url: "https://www.egnyte.com/customers/pure-financial-advisors-case-study",
-    useCases: ["sensitive_data", "single_source", "consolidation"],
+    useCases: ["single_source"],
   },
   {
     id: "pas",
@@ -1277,7 +1277,7 @@ const CUSTOMER_STORIES = [
     title: "Empowers Staff and Delights Clients With AI-Powered Content Intelligence",
     summary: "HOA management firm for 150+ communities replaced a single-location file server with Egnyte, then added AI Assistant to let staff instantly find answers across a massive document library.",
     url: "https://www.egnyte.com/customers/professional-association-services-case-study",
-    useCases: ["file_server", "single_source", "consolidation"],
+    useCases: ["single_source"],
   },
   {
     id: "koster",
@@ -1286,7 +1286,7 @@ const CUSTOMER_STORIES = [
     title: "Simplifies Collaboration by Centralizing Data Management",
     summary: "Century-old German construction company with 20+ branches and dozens of subcontractors replaced a clunky FTP-based system with Egnyte for real-time external file sharing and permissions management.",
     url: "https://www.egnyte.com/customers/koster-case-study",
-    useCases: ["external_sharing", "remote_jobsite", "internal_sharing"],
+    useCases: ["external_sharing"],
   },
   {
     id: "neuren",
@@ -1295,7 +1295,7 @@ const CUSTOMER_STORIES = [
     title: "Implements Egnyte as eQMS in Record Time",
     summary: "Pharmaceutical company deployed a complete electronic Quality Management System in 12 weeks using Egnyte's life sciences solution — meeting regulatory compliance without a lengthy validation project.",
     url: "https://www.egnyte.com/customers/neuren-pharmaceuticals-case-study",
-    useCases: ["sensitive_data", "inventory_sensitive"],
+    useCases: ["inventory_sensitive"],
   },
   {
     id: "aande",
@@ -1304,7 +1304,7 @@ const CUSTOMER_STORIES = [
     title: "Builds the Hybrid Work Model of Its Dreams",
     summary: "Montana architecture firm replaced on-prem storage that had become unmanageable for multi-office hybrid work, eliminating data silos and enabling real-time collaboration on large project files.",
     url: "https://www.egnyte.com/customers/aande-design-case-study",
-    useCases: ["file_server", "consolidation", "internal_sharing"],
+    useCases: ["internal_sharing"],
   },
   {
     id: "choate",
@@ -1313,7 +1313,7 @@ const CUSTOMER_STORIES = [
     title: "Renders Traditional IT Hardware an Afterthought",
     summary: "National commercial construction company outgrew AWS-hosted infrastructure as it scaled — switching to Egnyte to solve permissions complexity, folder structure, accessibility, and storage performance.",
     url: "https://www.egnyte.com/customers/choate-construction-case-study",
-    useCases: ["file_server", "consolidation", "data_loss"],
+    useCases: ["data_loss"],
   },
   {
     id: "campbell",
@@ -1322,7 +1322,7 @@ const CUSTOMER_STORIES = [
     title: "Secures Data, Simplifies IT, and Drives Campus-Wide Collaboration",
     summary: "Private university migrated from fragmented on-prem storage to Egnyte — gaining ransomware detection, self-service permissions, and data governance while simplifying a lean IT team's workload.",
     url: "https://www.egnyte.com/customers/campbell-university-case-study",
-    useCases: ["file_server", "ransomware", "consolidation", "sensitive_data"],
+    useCases: ["ransomware"],
   },
   {
     id: "redbull",
@@ -1331,7 +1331,7 @@ const CUSTOMER_STORIES = [
     title: "Unifies Global File Sharing for 20,000+ Users Across 170 Countries",
     summary: "Red Bull replaced fragmented per-region file servers, email attachments, and consumer cloud tools with a single governed platform — rolling out to 10,000 users globally in three months.",
     url: "https://www.egnyte.com/customers",
-    useCases: ["consolidation", "internal_sharing", "file_server", "single_source"],
+    useCases: ["internal_sharing"],
   },
   {
     id: "sme",
@@ -1340,7 +1340,7 @@ const CUSTOMER_STORIES = [
     title: "Transforms 90TB of Chaotic Data Across 35 Offices Into a Governed Platform",
     summary: "Engineering firm managing 90TB across 35 offices replaced a chaotic multi-server environment with Egnyte — eliminating version conflicts, cutting storage costs, and unlocking federal contract eligibility.",
     url: "https://www.egnyte.com/customers",
-    useCases: ["consolidation", "lifecycle", "single_source"],
+    useCases: ["lifecycle"],
   },
   {
     id: "alta",
@@ -1349,7 +1349,7 @@ const CUSTOMER_STORIES = [
     title: "Achieves $220K in Annual Savings by Replacing Legacy IT Systems",
     summary: "Global planning and design firm replaced costly legacy on-prem systems and disjointed data silos with Egnyte — saving over $220K annually and improving project efficiency by 10%.",
     url: "https://www.egnyte.com/customers",
-    useCases: ["consolidation", "file_server"],
+    useCases: ["consolidation"],
   },
   {
     id: "buzzfeed",
@@ -1358,7 +1358,7 @@ const CUSTOMER_STORIES = [
     title: "Balances Agile Media Production with Enterprise-Grade Data Governance",
     summary: "Digital media company deployed Egnyte's content classification and governance tools to protect sensitive content and enforce data policies without slowing down fast-moving creative workflows.",
     url: "https://www.egnyte.com/customers",
-    useCases: ["sensitive_data", "inventory_sensitive"],
+    useCases: ["inventory_sensitive"],
   },
   {
     id: "waionoka",
@@ -1367,7 +1367,7 @@ const CUSTOMER_STORIES = [
     title: "Boosts Data Security and Cuts Backup Support Tickets by 60%",
     summary: "Professional services firm moved sensitive client data off on-premises servers and tape backups to Egnyte — dramatically improving security posture and reducing backup-related IT burden.",
     url: "https://www.egnyte.com/customers",
-    useCases: ["file_server", "data_loss"],
+    useCases: ["data_loss"],
   },
 ];
 
