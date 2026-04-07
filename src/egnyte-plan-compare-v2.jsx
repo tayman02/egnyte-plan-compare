@@ -953,6 +953,198 @@ const scoreChecklist = (selected) => {
   return { totals, winner: ranked[0][0], ranked };
 };
 
+// ─── USE CASE DATA ────────────────────────────────────────────────────────────
+const USE_CASES = [
+  {
+    id: "file_server",
+    icon: "🖥",
+    title: "Replacing an On-Premises File Server",
+    example: "Customer still has Windows file servers/NAS or uses VPN for file access and wants to move that to the cloud.",
+    triggers: ["Still on Windows file servers or NAS", "VPN pain or remote access issues", "Upcoming server or NAS hardware refresh", "Shadow IT use of Dropbox or personal OneDrive for file sharing"],
+    plans: ["starter", "ifs"],
+    planNotes: { starter: "Modern cloud file server for small businesses that need basic collaboration, SSO and MFA, and simple workflows.", ifs: "For cost-conscious companies that need organization-wide collaboration, advanced workflows, PDF editing, and AI insights." },
+    capabilities: ["Cloud File Server with controlled sharing, external users, and global file locking", "Mapped drive and desktop apps for a familiar drive-letter experience", "Granular folder and NTFS-like permissions with unified admin dashboard", "File versioning and file and login audit trails"],
+    competitors: ["SharePoint and OneDrive", "Dropbox", "Box", "FileCloud"],
+    whyEgnyte: ["Purpose built as a secure cloud file platform with familiar drive-letter access, not just a web site or documents app", "Better hybrid performance for shared drives than generic SharePoint sites or basic cloud storage tools", "Integrated governance and recovery without requiring multiple additional point products"],
+  },
+  {
+    id: "sharepoint",
+    icon: "📎",
+    title: "SharePoint Replacement",
+    example: "Customer is frustrated with SharePoint complexity, governance overhead, or poor user adoption and wants a simpler, more intuitive cloud file platform.",
+    triggers: ["Complaints about SharePoint being too complex or hard to manage", "Low adoption or staff still emailing files instead of using SharePoint", "Confusion between Teams, OneDrive, and SharePoint sites", "Concerns about Microsoft licensing costs at E3 or E5", "IT spending too much time on SharePoint architecture, permissions, or migrations"],
+    plans: ["ifs", "elite", "ultimate"],
+    planNotes: { ifs: "For organizations that want straightforward org-wide collaboration with advanced workflows and AI, without SharePoint complexity.", elite: "When the migration must also include lifecycle policies, analytics, and data access governance.", ultimate: "For regulated customers who need SharePoint replacement plus sensitive data discovery and privacy monitoring." },
+    capabilities: ["Cloud File Server with familiar drive-letter access and simple folder-based permissions", "Granular admin controls easier to operate than SharePoint site and library structures", "Content Lifecycle and Governance at Elite and Ultimate for retention and classification", "Sensitive Data Discovery at Ultimate for compliance use cases", "Integrations with Microsoft 365 so Egnyte can complement or fully replace SharePoint document libraries"],
+    competitors: ["SharePoint and OneDrive", "Box", "Dropbox"],
+    whyEgnyte: ["Built specifically for unstructured file management, not retrofitted from a productivity suite", "Simpler shared drive model that maps directly to how teams and departments are organized", "Consistent permission model without managing separate site collections, libraries, and Teams channels", "Easier for MSPs to deploy and support across multiple customer environments without deep Microsoft expertise"],
+  },
+  {
+    id: "consolidation",
+    icon: "📂",
+    title: "Consolidating Scattered Data",
+    example: "Customer has files spread across local drives, legacy file servers, personal cloud storage, and multiple SaaS tools with no consistent standard for where content lives.",
+    triggers: ["Files split across Dropbox, Google Drive, OneDrive, and email", "No clear standard for where to save documents or which version is current", "Staff duplicating files across systems to ensure access", "IT unable to answer where sensitive or regulated content is stored", "Multiple acquired or merged businesses each using different file tools"],
+    plans: ["ifs", "elite", "ultimate"],
+    planNotes: { ifs: "For consolidating scattered files into a single governed platform with advanced workflows and AI assistance.", elite: "When consolidation must include lifecycle policies, analytics, and governance reporting.", ultimate: "For environments where scattered data includes sensitive or regulated content that must be discovered, classified, and remediated." },
+    capabilities: ["Egnyte Connect as a single, governed repository for all unstructured content", "Integrations with Microsoft 365, Google Workspace, Salesforce, and other line of business tools", "Metadata, full-text search, and AI-powered knowledge base Q&A to surface content across repositories", "File versioning and controlled sharing to eliminate version confusion", "Content Lifecycle policies at Elite and Ultimate to clean up and manage sprawl", "Sensitive Data Discovery at Ultimate to locate and classify personal or regulated data"],
+    competitors: ["SharePoint and OneDrive", "Box", "Dropbox"],
+    whyEgnyte: ["Designed to sit at the center of a multi-application environment rather than requiring customers to go all-in on a single productivity suite", "Provides a single source of truth for files without forcing teams off the tools they use for communication", "Governance, search, and classification features address not just where files are stored but whether access and content policies are applied consistently", "MSPs can use Egnyte to standardize across diverse customer environments without rebuilding every customer's tool stack"],
+  },
+  {
+    id: "internal_sharing",
+    icon: "🤝",
+    title: "Internal File Sharing",
+    example: "Departments need shared drives for day-to-day work, remote/hybrid staff need consistent access, and they want to standardize \"where files live.\"",
+    triggers: ["Team and department silos built on separate file servers or cloud folders", "Remote or hybrid workers struggling with consistent access", "Lack of a clear standard for where documents should live"],
+    plans: ["starter", "ifs", "elite"],
+    planNotes: { starter: "For small teams standardizing on a single cloud file solution with basic workflows.", ifs: "For organization-wide collaboration and advanced workflows with AI assistance.", elite: "When collaboration must be combined with lifecycle, governance, and additional safeguards." },
+    capabilities: ["Unified folder structure for departments, projects, and offices", "Desktop and mobile apps for consistent access to all shares", "Co-editing, comments, and tasks on shared documents", "Role-based administration at higher tiers"],
+    competitors: ["SharePoint and OneDrive", "Dropbox", "Box"],
+    whyEgnyte: ["Straightforward shared drive model easier to understand than complex SharePoint site architectures", "Consistent experience across desktop, web, and mobile without multiple disjointed apps", "Clear mapping between organizational structure and folder permissions"],
+  },
+  {
+    id: "external_sharing",
+    icon: "🔗",
+    title: "External File Sharing",
+    example: "They regularly send/receive files with customers, partners, vendors and are worried about uncontrolled links/attachments.",
+    triggers: ["Heavy reliance on email attachments for client or vendor collaboration", "Use of public links from consumer tools such as Dropbox or WeTransfer", "Questions about secure link expirations, passwords, or domain restrictions"],
+    plans: ["starter", "ifs", "elite"],
+    planNotes: { starter: "For small businesses that need secure sharing with basic workflows and MFA.", ifs: "For organizations that want multi-step workflows, PDF editing, and AI to support external collaboration.", elite: "When external sharing involves sensitive data that also requires governance, watermarking, and issue remediation." },
+    capabilities: ["Secure upload and download links with password and expiry options", "External user accounts with full admin visibility and control", "File locking and detailed audit logs for shared content", "Advanced workflows and PDFs with annotation and e-signature at higher tiers"],
+    competitors: ["SharePoint and OneDrive", "Dropbox", "Box", "FileCloud"],
+    whyEgnyte: ["All external sharing is managed from a single governed platform rather than a mix of tools", "External users are fully controlled accounts with policy and audit coverage", "Supports both quick ad hoc link sharing and structured, project-based external spaces"],
+  },
+  {
+    id: "remote_jobsite",
+    icon: "📡",
+    title: "Remote Job Site Collaboration",
+    example: "They have job sites, plants, or branches with poor internet that still need LAN-speed access to large CAD/BIM/media files.",
+    triggers: ["Field or job site workers who frequently lose connectivity or have poor bandwidth", "Large CAD, BIM, or media files that are slow to open directly from the cloud", "Existing on-site file servers that are difficult to manage but still needed for performance"],
+    plans: ["ifs", "elite", "ultimate"],
+    planNotes: { ifs: "Minimum for edge caching and advanced workflows at job sites.", elite: "When remote site collaboration must also include lifecycle or governance.", ultimate: "When remote site collaboration must also include sensitive data protection." },
+    capabilities: ["Edge caching via Turbo, SmartCache, or Storage Sync appliances", "Local cache of project data that syncs automatically to the cloud", "Optimized large file access for AEC, manufacturing, media, and similar verticals"],
+    competitors: ["SharePoint and OneDrive", "FileCloud", "Nasuni", "Panzura"],
+    whyEgnyte: ["Purpose-built hybrid edge appliances designed for branch and job site use cases", "Keeps a single, authoritative copy of files in the cloud while delivering LAN speed locally", "Less complex and costly than full file gateway re-architecture projects"],
+  },
+  {
+    id: "sensitive_data",
+    icon: "🔍",
+    title: "Discovery and Classification of Sensitive Content",
+    example: "Customer needs to find PII/PHI/PCI across shares for GDPR/CCPA/HIPAA/SOC 2 and prove it to auditors.",
+    triggers: ["Unclear location of PII, PHI, PCI, or other regulated data", "Audit or compliance pressure such as GDPR, CCPA, HIPAA, or SOC 2", "Need to inventory and classify sensitive data across multiple repositories"],
+    plans: ["ultimate"],
+    planNotes: { ultimate: "Required for Sensitive Data Discovery and Governance, privacy and compliance monitoring, and advanced remediation." },
+    capabilities: ["Sensitive Data Discovery and Governance to locate and classify personal and regulated content", "Privacy and compliance monitoring across cloud and on-premises repositories", "AI and pattern-based detection tuned for unstructured content", "Auto remediation to quarantine, secure, or delete high-risk data"],
+    competitors: ["Microsoft Purview and SharePoint", "FileCloud"],
+    whyEgnyte: ["Single console to inventory sensitive data across Egnyte and connected repositories, not just one productivity suite", "AI-driven detection reduces the amount of manual rule writing and tuning required", "Built-in remediation actions to fix issues, not just report on them"],
+  },
+  {
+    id: "lifecycle",
+    icon: "🗂",
+    title: "Content Lifecycle Management",
+    example: "Customer's storage is exploding and legal/IT want defensible retention, archive, and deletion policies.",
+    triggers: ["Storage growth and cost concerns driven by keeping all files forever", "Records or legal teams asking for defensible retention, archival, and deletion policies", "Desire to systematically remove redundant, obsolete, and trivial content"],
+    plans: ["elite", "ultimate"],
+    planNotes: { elite: "Minimum plan for full lifecycle policies, analytics, and reports.", ultimate: "For lifecycle initiatives tied to sensitive data discovery, privacy, and advanced governance." },
+    capabilities: ["Content Lifecycle Policies, Analytics, and Reports", "Detection of redundant, old, or stale content and usage trends", "Automated retain, archive, and delete actions to enforce policy", "Reporting for audits and records management teams"],
+    competitors: ["Microsoft 365 and SharePoint retention", "FileCloud Compliance Center"],
+    whyEgnyte: ["Lifecycle policies designed around shared drives and projects, not only individual workspaces or mailboxes", "Clear visibility into stale and redundant content before enforcing policies", "No separate archive product required to balance compliance and storage cost"],
+  },
+  {
+    id: "ransomware",
+    icon: "🚨",
+    title: "Ransomware Detection and Recovery",
+    example: "They care about ransomware specifically and need both early detection and a fast, guided recovery story for cyber insurance/security.",
+    triggers: ["History of ransomware incidents or close calls", "Questions from cyber insurance or security teams about detection and recovery capabilities", "Concerns that backup alone is not sufficient for fast recovery"],
+    plans: ["ifs", "elite", "ultimate"],
+    planNotes: { ifs: "Introduces probable ransomware detection and remediation via APIs, suitable for cost-conscious customers.", elite: "Adds broader issue detection, auto remediation, and lifecycle reporting for security-focused customers.", ultimate: "Adds extended snapshot-based ransomware recovery and the most advanced detection and governance." },
+    capabilities: ["Probable ransomware detection using artifact and behavior-based signals", "Suspicious login and unusual access detection", "Extended snapshot-based ransomware recovery for rapid, point-in-time restore", "Auto remediation and delegation of security issues"],
+    competitors: ["Dropbox Rewind", "FileCloud", "Traditional backup vendors such as Veeam"],
+    whyEgnyte: ["Combines ransomware detection and recovery directly on the content platform rather than relying only on backup snapshots", "Behavior and artifact-based analytics help catch new attack patterns earlier", "Faster and more targeted restore than full share or volume recovery from backup"],
+  },
+  {
+    id: "document_room",
+    icon: "🔐",
+    title: "Secure Document Control (Document Room)",
+    example: "They run M&A, investor portals, board packs, or client deal rooms and need tight, auditable access control.",
+    triggers: ["Needs for M&A data rooms, investor portals, loan or diligence packages, or board materials", "Requirement for invitation-only project or deal workspaces", "Stakeholders asking for detailed visibility into who viewed or downloaded documents"],
+    plans: ["elite", "ultimate"],
+    planNotes: { elite: "Recommended baseline for secure document rooms, including watermarking and advanced workflows.", ultimate: "For highly regulated or high-value deals that also require sensitive data discovery and privacy monitoring." },
+    capabilities: ["Document Room and secure, invitation-only domains", "Granular folder permissions with read-only viewer options", "Watermarking and PDF annotation, editing, and e-signature", "Advanced workflows for review and approval"],
+    competitors: ["SharePoint and OneDrive", "Dropbox"],
+    whyEgnyte: ["Virtual data rooms are delivered on the same platform used for everyday collaboration", "Simpler permissioning and auditing of external users than generic SharePoint sites or consumer tools", "Lower cost and complexity than maintaining a separate, standalone VDR product"],
+  },
+  {
+    id: "single_source",
+    icon: "☁",
+    title: "Single Source of Truth",
+    example: "Content is scattered across email, SharePoint, file servers, and they want one governed place for \"the real version.\"",
+    triggers: ["Files scattered across CRM systems, email, Slack, local drives, and file servers", "Frequent confusion about which version of a document is current", "Multiple file servers or repositories across different offices"],
+    plans: ["ifs", "elite", "ultimate"],
+    planNotes: { ifs: "Standard plan for organization-wide collaboration, advanced workflows, AI discovery, and PDF editing.", elite: "When centralization must include lifecycle policies, analytics, and data access governance.", ultimate: "When the single source of truth must also support sensitive data discovery and compliance reporting." },
+    capabilities: ["Egnyte Connect as a central, governed repository for unstructured content", "Integrations to Microsoft 365, Google Workspace, CRM, and e-signature tools", "Search, metadata, and knowledge base Q&A", "File versioning and controlled sharing for a single source of truth"],
+    competitors: ["SharePoint and OneDrive", "Box", "Dropbox"],
+    whyEgnyte: ["Designed to sit at the center of a multi-application environment, not just a single productivity suite", "Keeps one governed copy of files while still integrating with line of business applications", "Easier for MSPs to standardize across diverse customer environments"],
+  },
+  {
+    id: "archive",
+    icon: "🗃",
+    title: "Archive",
+    example: "They must keep data 7–10+ years for legal/compliance but rarely access it, and want a cheaper, safer place to park it.",
+    triggers: ["Long-term retention needs of seven to ten years or more", "Desire to reduce storage spend on inactive but legally required data", "Concerns about users accidentally changing or deleting archival records"],
+    plans: ["elite", "ultimate"],
+    planNotes: { elite: "Baseline for lifecycle policies, reporting, and archive workflows.", ultimate: "When archive requirements are tightly coupled to privacy, sensitive data discovery, and advanced recovery." },
+    capabilities: ["Archive domains for cold, low-cost storage of inactive content", "Content lifecycle policies to move content into archive based on age or usage", "Audit-ready access and reporting for legal and compliance teams"],
+    competitors: ["SharePoint and OneDrive with retention", "FileCloud", "Archive and backup products"],
+    whyEgnyte: ["Archive is part of the same content platform and lifecycle policies as active data", "Clear separation between user workspaces and tightly controlled archive domains", "Less operational overhead than maintaining a separate archive or backup tier"],
+  },
+  {
+    id: "inventory_sensitive",
+    icon: "📋",
+    title: "Inventory and Secure Sensitive Data",
+    example: "Privacy/compliance ask: \"Where is customer/patient data stored?\" and they need DSAR/right-to-be-forgotten workflows.",
+    triggers: ["Privacy or compliance officers requesting reports on where personal data is stored", "Requirements to support data subject access requests or right to be forgotten", "Concern about regulator fines tied to unmanaged personal data"],
+    plans: ["ultimate"],
+    planNotes: { ultimate: "Required for sensitive data discovery, classification, management reviews, and privacy monitoring." },
+    capabilities: ["Governance and Classification engine for PII, PHI, PCI, and other patterns", "Privacy and compliance monitoring for personal data across repositories", "Risk dashboards and review workflows for high-risk data locations"],
+    competitors: ["Microsoft Purview", "FileCloud"],
+    whyEgnyte: ["Focused specifically on unstructured content rather than primarily on email and structured systems", "Supports scans across Egnyte and connected third-party repositories from a single pane of glass", "Turns findings into concrete remediation actions that IT or MSPs can execute"],
+  },
+  {
+    id: "data_loss",
+    icon: "🛡",
+    title: "Preventing Accidental Data Loss",
+    example: "Users constantly delete/move/overwrite files and IT spends time restoring.",
+    triggers: ["Frequent tickets to restore deleted or overwritten files and folders", "Users unintentionally moving or reorganizing key shared folders", "Administrators spending significant time on manual file recovery"],
+    plans: ["starter", "ifs", "elite"],
+    planNotes: { starter: "Provides file versioning, unified Trash, and basic security alerts for small environments.", ifs: "For larger organizations that also want advanced workflows and AI assistance around high-value content.", elite: "When accidental loss prevention is part of a broader lifecycle and governance initiative." },
+    capabilities: ["File versioning and unified Trash for restoring deleted content", "Permissions viewer and access reporting to identify risky access patterns", "Suspicious login detection and enhanced malware detection at lower tiers"],
+    competitors: ["SharePoint and OneDrive", "Dropbox", "FileCloud"],
+    whyEgnyte: ["Central control over who can delete or move critical data across all shared content", "Simple self-service recovery for everyday user mistakes without always involving IT", "Governance and reporting features help prevent repeated issues over time"],
+  },
+  {
+    id: "insider_threat",
+    icon: "👁",
+    title: "Protection Against Malicious Insiders",
+    example: "They're worried about staff/contractors walking out with data and want behavior/anomaly monitoring tied to files.",
+    triggers: ["Concerns about staff or contractors exfiltrating sensitive data", "High employee turnover or heavy use of temporary and external accounts", "Security teams asking for user behavior or anomaly detection tied to content access"],
+    plans: ["ifs", "elite", "ultimate"],
+    planNotes: { ifs: "Introduces suspicious login detection, external sharing issue detection, and artifact-based ransomware detection.", elite: "Adds unusual access and inactive user detection, malformed permission detection, and auto remediation.", ultimate: "Extends insider risk monitoring with deeper privacy, sensitive data, and recovery capabilities." },
+    capabilities: ["Insider risk management with detection of unusual access and inactive accounts", "Monitoring of external sharing, public links, and malformed permissions", "Alerts, audit trails, and auto remediation for risky user actions"],
+    competitors: ["Dropbox", "FileCloud", "Microsoft 365 and SharePoint security and audit tools"],
+    whyEgnyte: ["Focuses specifically on risky behavior around sensitive content, not just sign-in events", "Keeps security and governance telemetry in the same platform as the files themselves", "Provides clear, actionable alerts that MSPs and security teams can respond to quickly"],
+  },
+];
+
+const PLAN_COLORS = {
+  starter: { color:"#76A2BC", bg:"rgba(118,162,188,0.15)", border:"rgba(118,162,188,0.3)" },
+  ifs:     { color:"#0BC5BA", bg:"rgba(11,197,186,0.15)",  border:"rgba(11,197,186,0.35)" },
+  elite:   { color:"#3D71EA", bg:"rgba(61,113,234,0.15)",  border:"rgba(61,113,234,0.35)" },
+  ultimate:{ color:"#6E49FF", bg:"rgba(110,73,255,0.15)",  border:"rgba(110,73,255,0.35)" },
+};
+const PLAN_LABELS = { starter:"Starter", ifs:"IFS", elite:"Elite", ultimate:"Ultimate" };
+
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function EgnytePlanMatrix() {
   const [fromPlan, setFromPlan] = useState("afs");
@@ -969,6 +1161,11 @@ export default function EgnytePlanMatrix() {
   const [builderShowFeatures, setBuilderShowFeatures] = useState(false);
   const [builderShowScores, setBuilderShowScores] = useState(false);
   const [builderGen3, setBuilderGen3] = useState(false);
+
+  // Use Cases state
+  const [ucSearch, setUcSearch] = useState("");
+  const [ucFilter, setUcFilter] = useState("all"); // all | starter | ifs | elite | ultimate
+  const [ucExpanded, setUcExpanded] = useState({});
 
   const fromIdx = PLAN_ORDER.indexOf(fromPlan);
   const toIdx   = PLAN_ORDER.indexOf(toPlan);
@@ -1251,12 +1448,12 @@ export default function EgnytePlanMatrix() {
             </div>
             {/* Tabs */}
             <div style={{ display:"flex", gap:2, background:E.navySurf, borderRadius:9, padding:3, border:`1px solid ${E.border}` }}>
-              {[{id:"compare",label:"Upgrade Compare"},{id:"matrix",label:"Full Matrix"},{id:"builder",label:"✦ Plan Builder"}].map(tab=>(
+              {[{id:"compare",label:"Upgrade Compare"},{id:"matrix",label:"Full Matrix"},{id:"builder",label:"✦ Plan Builder"},{id:"usecases",label:"🎯 Use Cases"}].map(tab=>(
                 <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); setBuilderGen3(false); } }} style={{
                   padding:"7px 20px", borderRadius:7, fontSize:12, fontWeight:600, letterSpacing:"0.01em",
-                  background: mode===tab.id ? tab.id==="builder" ? `linear-gradient(135deg,${E.purple},${E.blue2})` : `linear-gradient(135deg,${E.teal},#0099A8)` : "transparent",
+                  background: mode===tab.id ? tab.id==="builder" ? `linear-gradient(135deg,${E.purple},${E.blue2})` : tab.id==="usecases" ? `linear-gradient(135deg,${E.blue},${E.blue2})` : `linear-gradient(135deg,${E.teal},#0099A8)` : "transparent",
                   color: mode===tab.id ? "white" : E.textMut,
-                  boxShadow: mode===tab.id ? tab.id==="builder" ? `0 2px 14px rgba(110,73,255,0.4)` : `0 2px 14px rgba(11,197,186,0.3)` : "none",
+                  boxShadow: mode===tab.id ? tab.id==="builder" ? `0 2px 14px rgba(110,73,255,0.4)` : tab.id==="usecases" ? `0 2px 14px rgba(3,123,189,0.4)` : `0 2px 14px rgba(11,197,186,0.3)` : "none",
                 }}>{tab.label}</button>
               ))}
             </div>
@@ -2176,6 +2373,194 @@ export default function EgnytePlanMatrix() {
               })()}
             </div>
           )}
+          {/* ── USE CASES ── */}
+          {mode==="usecases" && (() => {
+            const filtered = USE_CASES.filter(uc => {
+              const matchesPlan = ucFilter === "all" || uc.plans.includes(ucFilter);
+              const q = ucSearch.toLowerCase();
+              const matchesSearch = !q || uc.title.toLowerCase().includes(q) || uc.example.toLowerCase().includes(q) || uc.triggers.some(t => t.toLowerCase().includes(q)) || uc.competitors.some(c => c.toLowerCase().includes(q));
+              return matchesPlan && matchesSearch;
+            });
+
+            return (
+              <div>
+                {/* Header */}
+                <div style={{ marginBottom:28 }}>
+                  <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(3,123,189,0.1)", border:"1px solid rgba(3,123,189,0.25)", borderRadius:20, padding:"4px 14px", marginBottom:14 }}>
+                    <span style={{ fontSize:9, fontWeight:700, color:E.blue, letterSpacing:"0.12em", textTransform:"uppercase" }}>● Sales Discovery Guide</span>
+                  </div>
+                  <h1 style={{ fontSize:32, fontWeight:900, color:E.text, margin:"0 0 10px", letterSpacing:"-0.02em" }}>
+                    Use Case <span style={{ color:E.blue }}>Library</span>
+                  </h1>
+                  <p style={{ fontSize:14, color:E.textSub, lineHeight:1.6, maxWidth:600, margin:0 }}>
+                    Start from the customer's problem, not the plan. Find the use case that matches your conversation, then get the right plan, key capabilities, and competitive win themes.
+                  </p>
+                </div>
+
+                {/* Search + Filter bar */}
+                <div style={{ display:"flex", gap:10, marginBottom:24, flexWrap:"wrap", alignItems:"center" }}>
+                  <div style={{ position:"relative", flex:1, minWidth:220 }}>
+                    <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:14, pointerEvents:"none" }}>🔍</span>
+                    <input
+                      type="text"
+                      placeholder="Search use cases, triggers, competitors…"
+                      value={ucSearch}
+                      onChange={e => setUcSearch(e.target.value)}
+                      style={{ width:"100%", boxSizing:"border-box", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:9, padding:"10px 12px 10px 36px", color:E.text, fontSize:13, fontFamily:"'Inter',sans-serif", outline:"none" }}
+                    />
+                  </div>
+                  <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                    {[
+                      { id:"all",     label:"All Plans" },
+                      { id:"starter", label:"Starter" },
+                      { id:"ifs",     label:"IFS" },
+                      { id:"elite",   label:"Elite" },
+                      { id:"ultimate",label:"Ultimate" },
+                    ].map(f => {
+                      const pc = f.id === "all" ? null : PLAN_COLORS[f.id];
+                      const active = ucFilter === f.id;
+                      return (
+                        <button key={f.id} onClick={() => setUcFilter(f.id)} style={{
+                          padding:"7px 14px", borderRadius:8, fontSize:12, fontWeight:600, cursor:"pointer",
+                          fontFamily:"'Inter',sans-serif", transition:"all 0.15s",
+                          background: active ? (pc ? pc.bg : "rgba(11,197,186,0.15)") : "transparent",
+                          border: active ? `1px solid ${pc ? pc.border : E.border}` : `1px solid ${E.borderSub}`,
+                          color: active ? (pc ? pc.color : E.teal) : E.textMut,
+                        }}>{f.label}</button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Count */}
+                <div style={{ fontSize:11, color:E.textMut, marginBottom:16 }}>
+                  {filtered.length} of {USE_CASES.length} use cases
+                  {ucFilter !== "all" && <span style={{ color:PLAN_COLORS[ucFilter]?.color }}> · filtered by {PLAN_LABELS[ucFilter]}</span>}
+                  {ucSearch && <span> · matching "{ucSearch}"</span>}
+                </div>
+
+                {/* Cards grid */}
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(440px, 1fr))", gap:14 }}>
+                  {filtered.map(uc => {
+                    const isOpen = !!ucExpanded[uc.id];
+                    return (
+                      <div key={uc.id} style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, overflow:"hidden", transition:"border-color 0.15s", borderColor: isOpen ? "rgba(3,123,189,0.4)" : E.border }}>
+
+                        {/* Card header — always visible */}
+                        <button onClick={() => setUcExpanded(p => ({...p, [uc.id]: !p[uc.id]}))}
+                          style={{ width:"100%", textAlign:"left", background:"transparent", border:"none", cursor:"pointer", padding:"18px 20px", fontFamily:"'Inter',sans-serif" }}>
+                          <div style={{ display:"flex", alignItems:"flex-start", gap:12 }}>
+                            <span style={{ fontSize:24, lineHeight:1, marginTop:2, flexShrink:0 }}>{uc.icon}</span>
+                            <div style={{ flex:1, minWidth:0 }}>
+                              <div style={{ fontSize:14, fontWeight:700, color:E.text, marginBottom:6, lineHeight:1.3 }}>{uc.title}</div>
+                              <div style={{ fontSize:12, color:E.textSub, lineHeight:1.5, marginBottom:10 }}>{uc.example}</div>
+                              {/* Plan badges */}
+                              <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
+                                {uc.plans.map(p => {
+                                  const pc = PLAN_COLORS[p];
+                                  return (
+                                    <span key={p} style={{ fontSize:10, fontWeight:700, padding:"3px 9px", borderRadius:5, background:pc.bg, border:`1px solid ${pc.border}`, color:pc.color, letterSpacing:"0.04em" }}>
+                                      {PLAN_LABELS[p]}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            <span style={{ color:E.textMut, fontSize:14, flexShrink:0, marginTop:2 }}>{isOpen ? "▲" : "▼"}</span>
+                          </div>
+                        </button>
+
+                        {/* Expanded detail */}
+                        {isOpen && (
+                          <div style={{ borderTop:`1px solid ${E.borderSub}`, padding:"16px 20px", display:"flex", flexDirection:"column", gap:16 }}>
+
+                            {/* Discovery triggers */}
+                            <div>
+                              <div style={{ fontSize:9, fontWeight:700, color:E.blue, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>🎯 What to Listen For</div>
+                              <ul style={{ margin:0, paddingLeft:16, display:"flex", flexDirection:"column", gap:4 }}>
+                                {uc.triggers.map((t,i) => (
+                                  <li key={i} style={{ fontSize:12, color:E.textSub, lineHeight:1.5 }}>{t}</li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Plan notes */}
+                            <div>
+                              <div style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>📦 Recommended Plans</div>
+                              <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                                {uc.plans.map(p => {
+                                  const pc = PLAN_COLORS[p];
+                                  return (
+                                    <div key={p} style={{ display:"flex", gap:10, alignItems:"flex-start", background:pc.bg, border:`1px solid ${pc.border}`, borderRadius:7, padding:"8px 12px" }}>
+                                      <span style={{ fontSize:11, fontWeight:800, color:pc.color, flexShrink:0, marginTop:1, minWidth:48 }}>{PLAN_LABELS[p]}</span>
+                                      <span style={{ fontSize:12, color:E.textSub, lineHeight:1.5 }}>{uc.planNotes[p]}</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {/* Key capabilities */}
+                            <div>
+                              <div style={{ fontSize:9, fontWeight:700, color:E.purple, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>✦ Key Capabilities</div>
+                              <ul style={{ margin:0, paddingLeft:16, display:"flex", flexDirection:"column", gap:4 }}>
+                                {uc.capabilities.map((c,i) => (
+                                  <li key={i} style={{ fontSize:12, color:E.textSub, lineHeight:1.5 }}>{c}</li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Competitors + why we win — side by side */}
+                            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                              <div>
+                                <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>⚔ Competitors</div>
+                                <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                                  {uc.competitors.map((c,i) => (
+                                    <div key={i} style={{ fontSize:11, color:E.textSub, background:E.navySurf, borderRadius:5, padding:"4px 9px" }}>{c}</div>
+                                  ))}
+                                </div>
+                              </div>
+                              <div>
+                                <div style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>🏆 Why Egnyte Wins</div>
+                                <ul style={{ margin:0, paddingLeft:14, display:"flex", flexDirection:"column", gap:4 }}>
+                                  {uc.whyEgnyte.map((w,i) => (
+                                    <li key={i} style={{ fontSize:11, color:E.textSub, lineHeight:1.5 }}>{w}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+
+                            {/* CTA — compare the top plan */}
+                            <div style={{ display:"flex", gap:8, paddingTop:4 }}>
+                              <button
+                                onClick={() => { setToPlan(uc.plans[uc.plans.length - 1]); setMode("compare"); }}
+                                style={{ flex:1, padding:"10px 16px", borderRadius:8, border:"none", background:`linear-gradient(135deg,${E.blue},${E.blue2})`, color:"white", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", boxShadow:`0 3px 12px rgba(3,123,189,0.35)` }}>
+                                Compare {PLAN_LABELS[uc.plans[uc.plans.length - 1]]} →
+                              </button>
+                              <button
+                                onClick={() => { setMode("builder"); setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderGen3(false); }}
+                                style={{ padding:"10px 16px", borderRadius:8, border:`1px solid ${E.border}`, background:E.navySurf, color:E.textMut, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
+                                Plan Builder
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {filtered.length === 0 && (
+                  <div style={{ textAlign:"center", padding:"60px 20px", color:E.textMut }}>
+                    <div style={{ fontSize:32, marginBottom:12 }}>🔍</div>
+                    <div style={{ fontSize:14, fontWeight:600, marginBottom:6 }}>No use cases match</div>
+                    <div style={{ fontSize:12 }}>Try a different search term or clear the plan filter.</div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
         </main>
       </div>
     </>
