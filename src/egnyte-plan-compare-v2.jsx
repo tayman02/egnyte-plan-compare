@@ -1717,9 +1717,8 @@ export default function EgnytePlanMatrix() {
               </div>
             </div>
 
-            {/* Right — nav prompt + tabs */}
+            {/* Right — tabs */}
             <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:5 }}>
-              <span style={{ fontSize:9, fontWeight:600, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase" }}>What would you like to do?</span>
               <div style={{ display:"flex", gap:2, background:E.navySurf, borderRadius:9, padding:3, border:`1px solid ${E.border}` }}>
                 {[
                   {id:"compare",  label:"Compare Plans"},
@@ -2666,8 +2665,12 @@ export default function EgnytePlanMatrix() {
               <div>
                 {/* Header */}
                 <div style={{ marginBottom:28 }}>
-                  <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(3,123,189,0.1)", border:"1px solid rgba(3,123,189,0.25)", borderRadius:20, padding:"4px 14px", marginBottom:14 }}>
-                    <span style={{ fontSize:9, fontWeight:700, color:E.blue, letterSpacing:"0.12em", textTransform:"uppercase" }}>● Sales Discovery Guide</span>
+                  <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(3,123,189,0.08)", border:"1px solid rgba(3,123,189,0.2)", borderRadius:999, padding:"5px 14px", marginBottom:14, boxShadow:"0 2px 12px rgba(3,123,189,0.08)" }}>
+                    <div style={{ position:"relative", width:7, height:7 }}>
+                      <div style={{ position:"absolute", inset:0, borderRadius:"50%", background:E.blue, opacity:0.4, animation:"spin 2s linear infinite" }}/>
+                      <div style={{ width:7, height:7, borderRadius:"50%", background:E.blue }}/>
+                    </div>
+                    <span style={{ fontSize:11, fontWeight:700, color:E.blue, letterSpacing:"0.12em", textTransform:"uppercase" }}>Use Cases</span>
                   </div>
                   <h1 style={{ fontSize:32, fontWeight:900, color:E.text, margin:"0 0 10px", letterSpacing:"-0.02em" }}>
                     Use Case <span style={{ color:E.blue }}>Library</span>
@@ -2720,7 +2723,7 @@ export default function EgnytePlanMatrix() {
                 </div>
 
                 {/* Cards grid */}
-                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(440px, 1fr))", gap:14 }}>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(440px, 1fr))", gap:14, alignItems:"start" }}>
                   {filtered.map(uc => {
                     const isOpen = !!ucExpanded[uc.id];
                     return (
