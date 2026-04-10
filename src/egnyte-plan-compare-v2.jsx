@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 
 // ─── TYPES: true = included, "optional" = paid add-on, "addon-included" = add-on bundled in plan, false/undefined = not available
@@ -1525,19 +1525,57 @@ const PLAN_COLORS = {
 };
 const PLAN_LABELS = { starter:"Starter", ifs:"IFS", elite:"Elite", ultimate:"Ultimate" };
 
+// ─── URL ROUTING HELPERS ──────────────────────────────────────────────────────
+const VALID_MODES = ["compare", "matrix", "builder", "usecases", "battlecards"];
+
+function parseUrl() {
+  const hash = window.location.hash.replace(/^#\/?/, "");
+  const parts = hash.split("/");
+  const tabPart = parts[0];
+  const subPart = parts[1] || null;
+  const mode = VALID_MODES.includes(tabPart) ? tabPart : "compare";
+
+  // Battlecard sub-route
+  const bc = mode === "battlecards" && subPart ? subPart : null;
+
+  // Builder sub-route: #builder/2 or #builder/result
+  const builderIsResult = mode === "builder" && subPart === "result";
+  const builderStep = mode === "builder" && subPart && !isNaN(parseInt(subPart))
+    ? parseInt(subPart) : 0;
+
+  return { mode, bc, builderStep, builderIsResult };
+}
+
+function pushUrl(mode, bc = null, builderStep = null, builderIsResult = false) {
+  let hash;
+  if (mode === "battlecards" && bc) {
+    hash = `#battlecards/${bc}`;
+  } else if (mode === "builder" && builderIsResult) {
+    hash = `#builder/result`;
+  } else if (mode === "builder" && builderStep > 0) {
+    hash = `#builder/${builderStep}`;
+  } else {
+    hash = `#${mode}`;
+  }
+  if (window.location.hash !== hash) {
+    history.pushState({ mode, bc, builderStep, builderIsResult }, "", hash);
+  }
+}
+
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function EgnytePlanMatrix() {
+  // Initialise from URL so there's no flash of wrong state on load
   const [fromPlan, setFromPlan] = useState("afs");
   const [toPlan,   setToPlan]   = useState("ifs");
-  const [mode, setMode] = useState("compare");
+  const [mode, setMode] = useState(() => parseUrl().mode);
   const [expanded, setExpanded] = useState(
     Object.fromEntries(FEATURE_SECTIONS.map(s=>[s.id,true]))
   );
 
   // ── Plan Builder state ──
-  const [builderStep, setBuilderStep] = useState(0);
+  const [builderStep, setBuilderStep] = useState(() => parseUrl().builderStep);
   const [builderAnswers, setBuilderAnswers] = useState({});
-  const [builderResult, setBuilderResult] = useState(null);
+  const [builderResult, setBuilderResult] = useState(() => parseUrl().builderIsResult ? true : null);
   const [builderShowFeatures, setBuilderShowFeatures] = useState(false);
   const [builderShowScores, setBuilderShowScores] = useState(false);
   const [builderGen3, setBuilderGen3] = useState(false);
@@ -1547,9 +1585,36 @@ export default function EgnytePlanMatrix() {
   const [ucFilter, setUcFilter] = useState("all"); // all | starter | ifs | elite | ultimate
   const [ucExpanded, setUcExpanded] = useState({});
 
-  // Battlecard state
-  const [bcSelected, setBcSelected] = useState(null); // competitor id or null
+  // Battlecard state — initialise from URL
+  const [bcSelected, setBcSelected] = useState(() => parseUrl().bc);
   const [bcSearch, setBcSearch] = useState("");
+
+  // ── URL routing: push state when tab, competitor, or builder step changes ──
+  useEffect(() => {
+    pushUrl(mode, bcSelected, builderStep, !!builderResult);
+  }, [mode, bcSelected, builderStep, builderResult]);
+
+  // ── URL routing: restore state on browser back/forward ──
+  useEffect(() => {
+    const onPop = () => {
+      const { mode: m, bc, builderStep: bs, builderIsResult } = parseUrl();
+      setMode(m);
+      setBcSelected(bc);
+      if (m === "builder") {
+        setBuilderStep(bs);
+        // If going back to a step from result, clear result
+        if (!builderIsResult) setBuilderResult(null);
+      }
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  // ── Scroll to top when tab changes ──
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [mode]);
 
   const fromIdx = PLAN_ORDER.indexOf(fromPlan);
   const toIdx   = PLAN_ORDER.indexOf(toPlan);
@@ -1870,7 +1935,15 @@ export default function EgnytePlanMatrix() {
                   {id:"usecases", label:"Use Cases"},
                   {id:"battlecards", label:"⚔ Battlecards"},
                 ].map(tab=>(
-                  <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); setBuilderGen3(false); } }} style={{
+                  <button key={tab.id} className="mode-btn" onClick={()=>{
+                    setMode(tab.id);
+                    if(tab.id !== "battlecards") setBcSelected(null);
+                    if(tab.id==="builder"){
+                      setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null);
+                      setBuilderShowFeatures(false); setBuilderShowScores(false); setBuilderGen3(false);
+                      history.pushState({mode:"builder"}, "", "#builder");
+                    }
+                  }} style={{
                     padding:"7px 16px", borderRadius:7, fontSize:12, fontWeight:600, letterSpacing:"0.01em",
                     background: mode===tab.id
                       ? tab.id==="builder"     ? `linear-gradient(135deg,${E.purple},${E.blue2})`
@@ -2495,7 +2568,7 @@ export default function EgnytePlanMatrix() {
                 };
 
                 const back = () => {
-                  if (builderStep > 0) setBuilderStep(s => s-1);
+                  if (builderStep > 0) history.back();
                 };
 
                 return (
@@ -2792,7 +2865,11 @@ export default function EgnytePlanMatrix() {
                         style={{ flex:1, minWidth:200, padding:"14px 24px", borderRadius:10, border:"none", background:`linear-gradient(135deg,${meta.color},${meta.color}cc)`, color: winner==="starter" ? E.navy : "white", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"'Inter',sans-serif", boxShadow:`0 4px 20px ${meta.color}44` }}>
                         Compare {meta.name} vs Current Plan →
                       </button>
-                      <button onClick={()=>{ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); setBuilderGen3(false); }}
+                      <button onClick={()=>{
+                        setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null);
+                        setBuilderShowFeatures(false); setBuilderShowScores(false); setBuilderGen3(false);
+                        history.pushState({mode:"builder"}, "", "#builder");
+                      }}
                         style={{ padding:"14px 24px", borderRadius:10, border:`1px solid ${E.border}`, background:E.navyCard, color:E.textMut, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
                         Start Over
                       </button>
