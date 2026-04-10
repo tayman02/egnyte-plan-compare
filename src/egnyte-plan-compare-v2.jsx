@@ -1303,6 +1303,220 @@ const CUSTOMER_STORIES = [
   },
 ];
 
+// ─── BATTLECARD DATA ──────────────────────────────────────────────────────────
+const BATTLECARDS = [
+  {
+    id: "sharepoint",
+    name: "SharePoint / OneDrive",
+    vendor: "Microsoft",
+    icon: "🪟",
+    color: "#0078D4",
+    bg: "rgba(0,120,212,0.08)",
+    border: "rgba(0,120,212,0.25)",
+    tagline: "Already included in M365 — why add another tool?",
+    mostCommonIn: ["AEC", "Financial Services", "Any M365 customer"],
+    theirPitch: [
+      "You already pay for it with Microsoft 365 — SharePoint and OneDrive are included.",
+      "Teams + SharePoint gives you collaboration, file storage, and co-editing in one ecosystem.",
+      "Microsoft Purview handles compliance and governance for regulated industries.",
+    ],
+    trapQuestions: [
+      { q: "If you needed to prove to an auditor today exactly who has access to your sensitive files across all SharePoint sites, how long would that take?", why: "SharePoint's permission model across sites, libraries, and Teams channels is notoriously hard to audit." },
+      { q: "How do your field teams or remote offices access large CAD or project files — do they experience any slowness or have to download before working?", why: "SharePoint has no edge caching. Large files over VPN or slow connections are a known pain point." },
+      { q: "When an employee leaves, how confident are you that every file in their OneDrive is properly transferred and governed?", why: "OneDrive personal storage creates data governance gaps that persist after offboarding." },
+      { q: "If ransomware hit a SharePoint library today, how quickly could you recover to a specific point in time — say, 4 hours before the attack?", why: "SharePoint versioning is not a ransomware recovery solution. Point-in-time restore at file granularity doesn't exist." },
+      { q: "How much time does your IT team spend each month managing SharePoint site permissions, broken inheritance, and Teams channel governance?", why: "This surfaces the hidden admin burden that erodes the 'it's already included' argument." },
+    ],
+    objections: [
+      { q: "We already have it with M365 — it's essentially free.", a: "SharePoint comes with M365, but governing it doesn't. Most clients with SharePoint still email files and save to desktops because SharePoint is too complex to use consistently. Egnyte sits alongside M365 — your Office co-authoring keeps working, but now you have a governed file platform people actually use." },
+      { q: "Microsoft Purview handles our compliance.", a: "Purview is a separate purchase that requires a dedicated compliance engineer to implement and operate. It's built for Fortune 500 compliance teams, not your typical MSP client. Egnyte delivers governance that actually works without a specialist." },
+      { q: "We're standardized on Microsoft — we don't want another vendor.", a: "Egnyte integrates natively with M365 co-editing and Teams. Think of it as the file governance layer that makes your Microsoft investment more defensible — especially when an auditor or cyber insurer starts asking questions." },
+    ],
+    whyEgnyte: [
+      "Purpose-built for file management — not retrofitted from a productivity suite.",
+      "Single, consistent permission model that maps to org structure — no site collections, no broken inheritance.",
+      "Hybrid edge caching (SmartCache, Turbo) delivers LAN-speed access for field teams with large files.",
+      "Built-in ransomware detection and point-in-time snapshot recovery — not an add-on.",
+      "MSP multi-tenant management without deep Microsoft expertise required.",
+    ],
+    relatedUseCases: ["sharepoint", "file_server", "remote_jobsite"],
+  },
+  {
+    id: "dropbox",
+    name: "Dropbox",
+    vendor: "Dropbox",
+    icon: "📦",
+    color: "#0061FF",
+    bg: "rgba(0,97,255,0.08)",
+    border: "rgba(0,97,255,0.25)",
+    tagline: "Simple and familiar — everyone knows how to use it.",
+    mostCommonIn: ["SMB", "Creative agencies", "Teams moving off consumer tools"],
+    theirPitch: [
+      "Dead simple to use — no training required, high adoption.",
+      "Business plans include admin controls, team folders, and audit logs.",
+      "Dropbox Rewind can restore files and folders after ransomware or accidental deletion.",
+    ],
+    trapQuestions: [
+      { q: "What happens when a team member uses their personal Dropbox account instead of the business account — can you detect and govern that?", why: "Shadow Dropbox usage is endemic. Business admins have no visibility or control over personal account activity." },
+      { q: "If you needed to demonstrate HIPAA or SOC 2 compliance to an auditor today, what does Dropbox give you as evidence?", why: "Dropbox's compliance story is thin. HIPAA BAA requires Business+ or higher. Audit logs are limited." },
+      { q: "Has your cyber insurance provider asked specifically about ransomware detection capabilities — not just recovery?", why: "Insurers increasingly differentiate between detection and recovery. Dropbox Rewind is recovery-only." },
+      { q: "When a key employee leaves, what's your process to ensure their Dropbox files are transferred without any gaps or personal-account leakage?", why: "Offboarding with Dropbox is a governance gap that creates real data loss risk." },
+    ],
+    objections: [
+      { q: "Our team already uses Dropbox — switching would be disruptive.", a: "That's exactly when to make the move — before a compliance audit or ransomware event reveals the gaps. Migration from Dropbox to Egnyte is straightforward, and Egnyte's familiar folder experience means adoption isn't a major hurdle." },
+      { q: "Dropbox Business has the admin controls we need.", a: "Dropbox's admin controls were built after the consumer product. Egnyte's were built from day one for IT-managed environments. The difference shows up the moment you need granular folder permissions, role-based administration, or compliance-grade audit trails." },
+      { q: "Dropbox Rewind covers ransomware recovery.", a: "Rewind restores files — but it doesn't tell you when the ransomware started, which backup is clean, or what was actually encrypted. Egnyte detects ransomware while it's happening using behavioral signals, so you catch it before it spreads." },
+    ],
+    whyEgnyte: [
+      "Governance built-in from the ground up, not bolted on after a consumer product.",
+      "Compliance-grade audit trails, role-based admin, and HIPAA/FINRA/SOC2 certifications.",
+      "Ransomware detection (artifact + behavioral) — not just recovery.",
+      "MSP-grade multi-tenant admin without the shadow IT risk.",
+      "NTFS-like folder permissions that Dropbox's flat structure can't replicate.",
+    ],
+    relatedUseCases: ["external_sharing", "data_loss", "ransomware"],
+  },
+  {
+    id: "box",
+    name: "Box",
+    vendor: "Box",
+    icon: "📋",
+    color: "#0061D5",
+    bg: "rgba(0,97,213,0.08)",
+    border: "rgba(0,97,213,0.25)",
+    tagline: "Enterprise content management with compliance built in.",
+    mostCommonIn: ["Mid-market to enterprise", "Legal & financial services", "Regulated industries"],
+    theirPitch: [
+      "Enterprise-grade security, compliance certifications, and extensive admin controls.",
+      "Box Shield provides threat detection and smart access controls.",
+      "Deep integrations with Salesforce, Microsoft 365, and 1,500+ apps.",
+    ],
+    trapQuestions: [
+      { q: "What's your total per-user cost for Box at scale, including Shield, governance, and any add-ons for the capabilities you actually use?", why: "Box's base pricing looks competitive until you add Shield, Relay, Governance, and other modules. Total cost is often 2–3x the headline number." },
+      { q: "How long did the Box implementation take, and was professional services involved?", why: "Box implementations are notoriously complex. Professional services cost and timeline are real objections from Box customers." },
+      { q: "How do your remote workers or field teams access large project files with Box — do they work offline or have any connectivity issues?", why: "Box has no hybrid edge caching. This is a hard gap for AEC, manufacturing, or any field-heavy customer." },
+      { q: "How does your IT team manage permissions across multiple Box instances for different clients?", why: "Box is not architected for MSP multi-tenancy. Each client is a separate Box tenant with separate management overhead." },
+    ],
+    objections: [
+      { q: "Box has enterprise compliance features we need.", a: "Box does have strong compliance features — but at a price point that often doesn't fit MSP clients. Egnyte delivers comparable governance, HIPAA/FINRA/SOC2 compliance, and lifecycle management at MSP pricing that makes it deployable across your entire client base." },
+      { q: "Box integrates with everything we use.", a: "Egnyte integrates with M365, Google Workspace, Salesforce, and 150+ industry applications — including AEC tools like Autodesk and Procore that Box doesn't prioritize. And Egnyte's MSP multi-tenant model means you manage all clients from one pane of glass." },
+      { q: "We've already invested in Box.", a: "That investment makes the conversation worth having — the question is whether Box is delivering on the compliance and governance promise without requiring a dedicated admin. For many MSP clients, the answer is that the complexity outweighs the capability." },
+    ],
+    whyEgnyte: [
+      "Comparable enterprise governance at MSP-friendly pricing — deployable across your full client base.",
+      "Hybrid edge caching for remote workers and field teams — Box has no equivalent.",
+      "Ransomware detection built in, not an add-on (Box Shield is an additional cost).",
+      "Purpose-built MSP multi-tenant management vs. managing separate Box tenants per client.",
+      "Simpler implementation — no professional services dependency.",
+    ],
+    relatedUseCases: ["sensitive_data", "document_room", "lifecycle"],
+  },
+  {
+    id: "filecloud",
+    name: "FileCloud",
+    vendor: "FileCloud",
+    icon: "☁",
+    color: "#00A3E0",
+    bg: "rgba(0,163,224,0.08)",
+    border: "rgba(0,163,224,0.25)",
+    tagline: "On-prem or private cloud file sharing — MSP and data sovereignty focused.",
+    mostCommonIn: ["MSPs", "Data sovereignty concerns", "Budget-sensitive mid-market"],
+    theirPitch: [
+      "On-premises or private cloud deployment — full data sovereignty and control.",
+      "MSP-friendly licensing model with multi-tenant management.",
+      "Lower per-user price point than Egnyte.",
+    ],
+    trapQuestions: [
+      { q: "With FileCloud on-premises, who manages the server infrastructure — and what's your plan when there's a hardware failure or security patch needed?", why: "On-prem means the MSP owns the infrastructure burden. This erodes the margin advantage of the lower per-user price." },
+      { q: "When a client asks for AI-powered search or document Q&A across their files, what does FileCloud offer today?", why: "FileCloud has limited or no native AI capabilities. This is a growing client expectation that FileCloud can't meet." },
+      { q: "If a client needed to demonstrate ransomware detection capability to their cyber insurance provider, what does FileCloud provide?", why: "FileCloud has no behavioral ransomware detection. This is a direct gap vs Egnyte IFS and above." },
+      { q: "What does FileCloud provide for content lifecycle management — automated retention, archiving, and deletion policies?", why: "FileCloud's governance and lifecycle features are limited compared to Egnyte Elite/Ultimate." },
+    ],
+    objections: [
+      { q: "FileCloud is cheaper.", a: "The per-user price is lower — but that's before you factor in the infrastructure costs your team absorbs for on-prem deployments. Egnyte is fully cloud-native, so there's no hardware to manage, patch, or replace. And when clients start asking about AI features or ransomware detection, you won't be going back to FileCloud for answers." },
+      { q: "FileCloud gives clients data sovereignty.", a: "Data residency is important, and Egnyte supports regional cloud storage options (US, EU, and others) for clients that need it — without requiring on-prem infrastructure. You get sovereignty without the operational burden." },
+      { q: "Our clients are comfortable with FileCloud.", a: "Comfort comes from familiarity. What changes that conversation is when a client has a ransomware incident, fails a compliance audit, or asks why their AI features aren't working. Egnyte gives you the answer to those questions before they're asked." },
+    ],
+    whyEgnyte: [
+      "Cloud-native with no infrastructure burden — better margin for MSPs.",
+      "AI features built in across IFS, Elite, and Ultimate — FileCloud has no equivalent.",
+      "Behavioral ransomware detection built in — not available in FileCloud.",
+      "Stronger governance, lifecycle, and compliance monitoring at higher tiers.",
+      "Egnyte's MSP Partner Program is significantly more mature and resourced.",
+    ],
+    relatedUseCases: ["file_server", "sensitive_data", "ransomware"],
+  },
+  {
+    id: "nasuni_panzura",
+    name: "Nasuni / Panzura",
+    vendor: "Nasuni · Panzura",
+    icon: "🏗",
+    color: "#059669",
+    bg: "rgba(5,150,105,0.08)",
+    border: "rgba(5,150,105,0.25)",
+    tagline: "Enterprise cloud file gateway with LAN-speed performance at edge locations.",
+    mostCommonIn: ["AEC / Construction", "Manufacturing", "Multi-site with large files"],
+    theirPitch: [
+      "Enterprise-grade hybrid cloud file storage with LAN-speed access at every edge location.",
+      "Global file locking and a single namespace across all sites.",
+      "Purpose-built for large file workflows — CAD, BIM, media.",
+    ],
+    trapQuestions: [
+      { q: "What's your current fully-loaded cost per user for Nasuni or Panzura, including infrastructure, licensing, and implementation?", why: "Enterprise file gateway pricing is significant. Total cost often exceeds $50–100/user when infrastructure is included — vs Egnyte IFS at $26/user MSP." },
+      { q: "Beyond file performance, what does your current solution provide for ransomware detection, governance, or compliance monitoring?", why: "Nasuni and Panzura are storage/performance platforms — not governance platforms. This gap is significant for regulated or security-conscious clients." },
+      { q: "How long did the implementation take, and was there a professional services engagement involved?", why: "Implementation complexity and cost is a known weakness. This surfaces total-cost-of-ownership concerns." },
+      { q: "When your clients start asking about AI search or document Q&A across their project files, what's your roadmap for that?", why: "Neither Nasuni nor Panzura have meaningful AI features. This is a growing expectation in AEC and other verticals." },
+    ],
+    objections: [
+      { q: "Our clients need enterprise-grade edge performance that Egnyte can't match.", a: "Egnyte's SmartCache and Turbo appliances deliver the same LAN-speed edge caching for large file workflows — CAD, BIM, media. The difference is that Egnyte combines that performance with governance, ransomware detection, and AI features on the same platform at a price point that works for mid-market clients." },
+      { q: "We've standardized our AEC clients on Nasuni.", a: "That makes the conversation worth having — because the next question from those clients will be about ransomware recovery, compliance, or AI capabilities. Egnyte lets you answer all three without swapping out the edge performance story." },
+    ],
+    whyEgnyte: [
+      "Comparable edge caching (SmartCache, Turbo) at a fraction of the enterprise gateway cost.",
+      "Governance, ransomware detection, and lifecycle management built on the same platform.",
+      "AI features for knowledge worker productivity alongside the file performance story.",
+      "MSP pricing and multi-tenant management — not enterprise-only licensing.",
+      "Simpler implementation with less professional services dependency.",
+    ],
+    relatedUseCases: ["remote_jobsite", "file_server"],
+  },
+  {
+    id: "veeam",
+    name: "Veeam / Backup Vendors",
+    vendor: "Veeam · Acronis · Datto",
+    icon: "💾",
+    color: "#7C3AED",
+    bg: "rgba(124,58,237,0.08)",
+    border: "rgba(124,58,237,0.25)",
+    tagline: "Comprehensive backup and recovery protects your data from ransomware.",
+    mostCommonIn: ["Any client with a 'we have backup' mindset", "Post-ransomware conversations"],
+    theirPitch: [
+      "Comprehensive backup protects all data from ransomware, hardware failure, and accidental deletion.",
+      "Recovery point objectives and recovery time objectives are clearly defined.",
+      "Immutable backups prevent ransomware from encrypting backup data.",
+    ],
+    trapQuestions: [
+      { q: "After a ransomware event, how long would it take to recover from your last clean backup — and how much data would you lose in that window?", why: "Recovery from backup after ransomware typically takes 24–72 hours or more. The data loss window (RPO) is often 24 hours. That's a devastating conversation to have after the fact." },
+      { q: "How does your backup solution tell you WHEN the ransomware started encrypting files — so you know which backup is actually clean?", why: "Backup doesn't detect ransomware. Without detection, you don't know when to restore TO. You might restore to an already-infected backup." },
+      { q: "Does your cyber insurance provider see your backup solution as ransomware DETECTION or only RECOVERY?", why: "Insurers increasingly require behavioral detection capabilities, not just backup. This distinction is worth surfacing explicitly." },
+      { q: "If ransomware encrypted 10,000 files across 50 shared folders, would you restore the entire server or individual files — and how long does each approach take?", why: "Full volume restore vs. granular file recovery is a major pain point. Backup vendors typically do volume-level restore, not file-granular." },
+    ],
+    objections: [
+      { q: "We have immutable backup — ransomware can't touch it.", a: "Immutable backup protects the backup copy — but the production files are still encrypted. Recovery still takes days. Egnyte detects ransomware while it's encrypting files using behavioral signals, so you catch it before it spreads — then restore a small number of files from snapshot rather than waiting for a full backup restore." },
+      { q: "Backup is our ransomware strategy.", a: "Backup is your last line of defense. It's like having fire insurance but no smoke detectors. Egnyte adds the smoke detector — behavioral detection that catches ransomware in the act, so you restore 500 files in an hour instead of rebuilding the entire server from a 48-hour-old backup." },
+      { q: "We already pay for Veeam — we're not adding another product cost.", a: "Egnyte isn't replacing Veeam — it's adding detection to the recovery you already have. And for clients who don't have a governed cloud file platform yet, Egnyte delivers the storage, collaboration, governance, AND ransomware detection in one solution at MSP pricing." },
+    ],
+    whyEgnyte: [
+      "Detects ransomware WHILE it's happening — artifact and behavioral signals — before it spreads.",
+      "Point-in-time snapshot recovery at file granularity — not full volume restore.",
+      "Knowing exactly when encryption started means you restore to a confirmed clean point.",
+      "Complements backup — dramatically reduces blast radius so backup is the last resort, not the first call.",
+      "Cyber insurance increasingly requires detection capability, not just recovery.",
+    ],
+    relatedUseCases: ["ransomware", "data_loss"],
+  },
+];
+
 const PLAN_COLORS = {
   starter: { color:"#76A2BC", bg:"rgba(118,162,188,0.15)", border:"rgba(118,162,188,0.3)" },
   ifs:     { color:"#0BC5BA", bg:"rgba(11,197,186,0.15)",  border:"rgba(11,197,186,0.35)" },
@@ -1332,6 +1546,10 @@ export default function EgnytePlanMatrix() {
   const [ucSearch, setUcSearch] = useState("");
   const [ucFilter, setUcFilter] = useState("all"); // all | starter | ifs | elite | ultimate
   const [ucExpanded, setUcExpanded] = useState({});
+
+  // Battlecard state
+  const [bcSelected, setBcSelected] = useState(null); // competitor id or null
+  const [bcSearch, setBcSearch] = useState("");
 
   const fromIdx = PLAN_ORDER.indexOf(fromPlan);
   const toIdx   = PLAN_ORDER.indexOf(toPlan);
@@ -1650,12 +1868,23 @@ export default function EgnytePlanMatrix() {
                   {id:"matrix",   label:"Feature Matrix"},
                   {id:"builder",  label:"Plan Builder"},
                   {id:"usecases", label:"Use Cases"},
+                  {id:"battlecards", label:"⚔ Battlecards"},
                 ].map(tab=>(
                   <button key={tab.id} className="mode-btn" onClick={()=>{ setMode(tab.id); if(tab.id==="builder"){ setBuilderStep(0); setBuilderAnswers({}); setBuilderResult(null); setBuilderShowFeatures(false); setBuilderShowScores(false); setBuilderGen3(false); } }} style={{
                     padding:"7px 16px", borderRadius:7, fontSize:12, fontWeight:600, letterSpacing:"0.01em",
-                    background: mode===tab.id ? tab.id==="builder" ? `linear-gradient(135deg,${E.purple},${E.blue2})` : tab.id==="usecases" ? `linear-gradient(135deg,${E.blue},${E.blue2})` : `linear-gradient(135deg,${E.teal},#0099A8)` : "transparent",
-                    color: mode===tab.id ? "white" : E.textMut,
-                    boxShadow: mode===tab.id ? tab.id==="builder" ? `0 2px 14px rgba(110,73,255,0.4)` : tab.id==="usecases" ? `0 2px 14px rgba(3,123,189,0.4)` : `0 2px 14px rgba(11,197,186,0.3)` : "none",
+                    background: mode===tab.id
+                      ? tab.id==="builder"     ? `linear-gradient(135deg,${E.purple},${E.blue2})`
+                      : tab.id==="usecases"    ? `linear-gradient(135deg,${E.blue},${E.blue2})`
+                      : tab.id==="battlecards" ? `linear-gradient(135deg,#D97706,#F59E0B)`
+                      : `linear-gradient(135deg,${E.teal},#0099A8)`
+                      : "transparent",
+                    color: mode===tab.id ? (tab.id==="battlecards" ? "#0C2340" : "white") : E.textMut,
+                    boxShadow: mode===tab.id
+                      ? tab.id==="builder"     ? `0 2px 14px rgba(110,73,255,0.4)`
+                      : tab.id==="usecases"    ? `0 2px 14px rgba(3,123,189,0.4)`
+                      : tab.id==="battlecards" ? `0 2px 14px rgba(217,119,6,0.45)`
+                      : `0 2px 14px rgba(11,197,186,0.3)`
+                      : "none",
                   }}>{tab.label}</button>
                 ))}
               </div>
@@ -2791,6 +3020,185 @@ export default function EgnytePlanMatrix() {
                     <div style={{ fontSize:32, marginBottom:12 }}>🔍</div>
                     <div style={{ fontSize:14, fontWeight:600, marginBottom:6 }}>No use cases match</div>
                     <div style={{ fontSize:12 }}>Try a different search term or clear the plan filter.</div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* ── BATTLECARDS ── */}
+          {mode==="battlecards" && (() => {
+            const amber = "#F59E0B";
+            const amberDark = "#D97706";
+            const bc = bcSelected ? BATTLECARDS.find(b => b.id === bcSelected) : null;
+
+            // Search filter across all cards when no competitor selected
+            const filtered = BATTLECARDS.filter(b => {
+              if (!bcSearch) return true;
+              const q = bcSearch.toLowerCase();
+              return b.name.toLowerCase().includes(q) || b.vendor.toLowerCase().includes(q) ||
+                b.theirPitch.some(p => p.toLowerCase().includes(q)) ||
+                b.trapQuestions.some(t => t.q.toLowerCase().includes(q)) ||
+                b.whyEgnyte.some(w => w.toLowerCase().includes(q));
+            });
+
+            return (
+              <div>
+                {/* Header */}
+                <div style={{ marginBottom:28 }}>
+                  <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.25)", borderRadius:999, padding:"5px 14px", marginBottom:14, boxShadow:"0 2px 12px rgba(245,158,11,0.1)" }}>
+                    <div style={{ position:"relative", width:7, height:7 }}>
+                      <div style={{ position:"absolute", inset:0, borderRadius:"50%", background:amber, opacity:0.4, animation:"spin 2s linear infinite" }}/>
+                      <div style={{ width:7, height:7, borderRadius:"50%", background:amber }}/>
+                    </div>
+                    <span style={{ fontSize:11, fontWeight:700, color:amber, letterSpacing:"0.12em", textTransform:"uppercase" }}>Competitive Battlecards</span>
+                  </div>
+                  <h1 style={{ fontSize:32, fontWeight:900, color:E.text, margin:"0 0 10px", letterSpacing:"-0.02em" }}>
+                    Win the <span style={{ color:amber }}>Competitive Deal</span>
+                  </h1>
+                  <p style={{ fontSize:14, color:E.textSub, lineHeight:1.6, maxWidth:620, margin:0 }}>
+                    Select a competitor to get trap-setting discovery questions, objection responses, and win themes — ready to use in a live conversation.
+                  </p>
+                </div>
+
+                {!bc ? (
+                  // ── GRID VIEW ──
+                  <div>
+                    {/* Search */}
+                    <div style={{ position:"relative", maxWidth:420, marginBottom:24 }}>
+                      <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:14, pointerEvents:"none" }}>🔍</span>
+                      <input type="text" placeholder="Search competitors, objections, win themes…"
+                        value={bcSearch} onChange={e => setBcSearch(e.target.value)}
+                        style={{ width:"100%", boxSizing:"border-box", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:9, padding:"10px 12px 10px 36px", color:E.text, fontSize:13, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
+                    </div>
+
+                    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(340px, 1fr))", gap:14 }}>
+                      {filtered.map(b => (
+                        <button key={b.id} onClick={() => setBcSelected(b.id)}
+                          style={{ textAlign:"left", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"20px 22px", cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s", display:"block", width:"100%" }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = b.border; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = E.border; e.currentTarget.style.transform = "none"; }}>
+
+                          <div style={{ display:"flex", alignItems:"flex-start", gap:14, marginBottom:14 }}>
+                            <div style={{ width:44, height:44, borderRadius:10, background:b.bg, border:`1px solid ${b.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{b.icon}</div>
+                            <div>
+                              <div style={{ fontSize:15, fontWeight:800, color:E.text, marginBottom:3 }}>{b.name}</div>
+                              <div style={{ fontSize:11, color:E.textMut }}>{b.vendor}</div>
+                            </div>
+                          </div>
+
+                          <div style={{ fontSize:12, color:E.textSub, lineHeight:1.5, marginBottom:14, fontStyle:"italic" }}>"{b.tagline}"</div>
+
+                          <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:14 }}>
+                            {b.mostCommonIn.map((t,i) => (
+                              <span key={i} style={{ fontSize:10, fontWeight:600, color:E.textMut, background:E.navySurf, borderRadius:4, padding:"2px 8px" }}>{t}</span>
+                            ))}
+                          </div>
+
+                          <div style={{ display:"flex", alignItems:"center", gap:6, color:amber, fontSize:12, fontWeight:700 }}>
+                            <span>View Battlecard</span>
+                            <span>→</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  // ── FULL BATTLECARD VIEW ──
+                  <div>
+                    {/* Back button */}
+                    <button onClick={() => setBcSelected(null)}
+                      style={{ display:"inline-flex", alignItems:"center", gap:6, background:"transparent", border:`1px solid ${E.borderSub}`, borderRadius:7, padding:"7px 14px", color:E.textMut, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", marginBottom:20 }}>
+                      ← All Competitors
+                    </button>
+
+                    {/* Competitor header */}
+                    <div style={{ background:bc.bg, border:`1px solid ${bc.border}`, borderRadius:14, padding:"24px 28px", marginBottom:20, display:"flex", alignItems:"center", gap:20, flexWrap:"wrap" }}>
+                      <div style={{ width:56, height:56, borderRadius:12, background:`rgba(${bc.color === '#0078D4' ? '0,120,212' : bc.color === '#0061FF' ? '0,97,255' : bc.color === '#0061D5' ? '0,97,213' : bc.color === '#00A3E0' ? '0,163,224' : bc.color === '#059669' ? '5,150,105' : '124,58,237'},0.2)`, border:`1.5px solid ${bc.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28 }}>{bc.icon}</div>
+                      <div style={{ flex:1, minWidth:200 }}>
+                        <div style={{ fontSize:22, fontWeight:900, color:E.text, marginBottom:4 }}>{bc.name}</div>
+                        <div style={{ fontSize:13, color:E.textSub, fontStyle:"italic" }}>"{bc.tagline}"</div>
+                      </div>
+                      <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                        {bc.mostCommonIn.map((t,i) => (
+                          <span key={i} style={{ fontSize:10, fontWeight:600, color:E.textMut, background:"rgba(255,255,255,0.06)", borderRadius:5, padding:"3px 10px" }}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14, marginBottom:14 }}>
+
+                      {/* Their Pitch */}
+                      <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"18px 20px" }}>
+                        <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>👂 Their Pitch</div>
+                        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                          {bc.theirPitch.map((p,i) => (
+                            <div key={i} style={{ display:"flex", gap:8, alignItems:"flex-start" }}>
+                              <span style={{ color:E.textMut, fontSize:11, marginTop:1, flexShrink:0 }}>•</span>
+                              <span style={{ fontSize:12, color:E.textSub, lineHeight:1.55 }}>{p}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Why Egnyte Wins */}
+                      <div style={{ background:E.navyCard, border:`1px solid rgba(11,197,186,0.2)`, borderRadius:12, padding:"18px 20px" }}>
+                        <div style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>🏆 Why Egnyte Wins</div>
+                        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                          {bc.whyEgnyte.map((w,i) => (
+                            <div key={i} style={{ display:"flex", gap:8, alignItems:"flex-start" }}>
+                              <span style={{ color:E.teal, fontSize:11, marginTop:1, flexShrink:0 }}>✓</span>
+                              <span style={{ fontSize:12, color:E.textSub, lineHeight:1.55 }}>{w}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Trap-Setting Questions — full width, prominent */}
+                    <div style={{ background:E.navyCard, border:`1px solid rgba(245,158,11,0.3)`, borderRadius:12, padding:"20px 22px", marginBottom:14 }}>
+                      <div style={{ fontSize:9, fontWeight:700, color:amber, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:4 }}>🎯 Trap-Setting Discovery Questions</div>
+                      <div style={{ fontSize:11, color:E.textMut, marginBottom:16 }}>Ask these in discovery to expose gaps — written as you'd actually say them on a call.</div>
+                      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                        {bc.trapQuestions.map((t,i) => (
+                          <div key={i} style={{ background:E.navySurf, border:`1px solid rgba(245,158,11,0.15)`, borderRadius:9, padding:"12px 14px" }}>
+                            <div style={{ fontSize:13, fontWeight:600, color:E.text, lineHeight:1.5, marginBottom:6 }}>"{t.q}"</div>
+                            <div style={{ fontSize:11, color:E.textMut, lineHeight:1.5 }}>
+                              <span style={{ color:amber, fontWeight:600 }}>Why it works: </span>{t.why}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Objection Handling — full width */}
+                    <div style={{ background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"20px 22px", marginBottom:20 }}>
+                      <div style={{ fontSize:9, fontWeight:700, color:E.purple, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:16 }}>💬 Handle the Objection</div>
+                      <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                        {bc.objections.map((o,i) => (
+                          <div key={i} style={{ borderLeft:`3px solid ${E.border}`, paddingLeft:14 }}>
+                            <div style={{ fontSize:12, fontWeight:700, color:"#FBBF24", marginBottom:6 }}>"{o.q}"</div>
+                            <div style={{ fontSize:12, color:E.textSub, lineHeight:1.6 }}>{o.a}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Related use cases CTA */}
+                    {bc.relatedUseCases.length > 0 && (
+                      <div style={{ display:"flex", alignItems:"center", gap:10, padding:"14px 18px", background:E.navySurf, borderRadius:10, border:`1px solid ${E.borderSub}` }}>
+                        <span style={{ fontSize:12, color:E.textMut }}>Related use cases:</span>
+                        {bc.relatedUseCases.map(ucId => {
+                          const uc = USE_CASES.find(u => u.id === ucId);
+                          return uc ? (
+                            <button key={ucId} onClick={() => { setMode("usecases"); setUcExpanded(p => ({...p, [ucId]: true})); setBcSelected(null); }}
+                              style={{ padding:"5px 12px", borderRadius:6, border:`1px solid ${E.border}`, background:E.navyCard, color:E.textSub, fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif" }}>
+                              {uc.icon} {uc.title}
+                            </button>
+                          ) : null;
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
