@@ -734,6 +734,134 @@ const HexBg = () => (
 );
 
 // ─── PLAN CARD ────────────────────────────────────────────────────────────────
+// ─── PASSWORD GATE ────────────────────────────────────────────────────────────
+function PasswordGate({ onSuccess }) {
+  const [value, setValue] = useState("");
+  const [error, setError] = useState(false);
+  const [shaking, setShaking] = useState(false);
+
+  const attempt = () => {
+    const correct = import.meta.env.VITE_COMPASS_PASSWORD;
+    if (!correct || value === correct) {
+      onSuccess();
+    } else {
+      setError(true);
+      setShaking(true);
+      setValue("");
+      setTimeout(() => setShaking(false), 500);
+    }
+  };
+
+  const handleKey = (e) => {
+    if (e.key === "Enter") attempt();
+    if (error) setError(false);
+  };
+
+  return (
+    <div style={{
+      minHeight:"100vh", background:E.navySurf,
+      display:"flex", alignItems:"center", justifyContent:"center",
+      fontFamily:"'Inter',sans-serif", padding:24,
+      backgroundImage:`radial-gradient(ellipse at 30% 20%, rgba(11,197,186,0.06) 0%, transparent 60%),
+                       radial-gradient(ellipse at 70% 80%, rgba(61,113,234,0.05) 0%, transparent 60%)`,
+    }}>
+      <div style={{
+        width:"100%", maxWidth:400,
+        animation: shaking ? "shake 0.4s ease" : "none",
+      }}>
+        {/* Compass logo */}
+        <div style={{ display:"flex", alignItems:"center", gap:12, justifyContent:"center", marginBottom:40 }}>
+          <svg width="44" height="44" viewBox="0 0 34 34" fill="none">
+            <circle cx="17" cy="17" r="15.5" stroke="#0BC5BA" strokeWidth="1.25" strokeOpacity="0.6"/>
+            <circle cx="17" cy="17" r="10" stroke="#0BC5BA" strokeWidth="0.5" strokeOpacity="0.2"/>
+            <line x1="17" y1="2.5" x2="17" y2="5.5" stroke="#0BC5BA" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="17" y1="28.5" x2="17" y2="31.5" stroke="#0BC5BA" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
+            <line x1="28.5" y1="17" x2="31.5" y2="17" stroke="#0BC5BA" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
+            <line x1="2.5" y1="17" x2="5.5" y2="17" stroke="#0BC5BA" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
+            <path d="M17 6 L20 17 L17 14.5 L14 17 Z" fill="#0BC5BA"/>
+            <path d="M17 28 L20 17 L17 19.5 L14 17 Z" fill="#0BC5BA" fillOpacity="0.28"/>
+            <circle cx="17" cy="17" r="2.2" fill="#0BC5BA"/>
+            <circle cx="17" cy="17" r="1" fill="#0C2340"/>
+          </svg>
+          <div>
+            <div style={{ fontSize:24, fontWeight:900, color:"white", letterSpacing:"0.08em", textTransform:"uppercase", lineHeight:1 }}>Compass</div>
+            <div style={{ fontSize:10, fontWeight:600, color:E.teal, letterSpacing:"0.14em", textTransform:"uppercase" }}>MSP Partner Tool</div>
+          </div>
+        </div>
+
+        {/* Card */}
+        <div style={{
+          background:E.navyCard, border:`1px solid ${error ? "rgba(239,68,68,0.4)" : E.border}`,
+          borderRadius:16, padding:"36px 32px",
+          boxShadow:`0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px ${error ? "rgba(239,68,68,0.1)" : "rgba(11,197,186,0.04)"}`,
+          transition:"border-color 0.2s",
+        }}>
+          <div style={{ textAlign:"center", marginBottom:28 }}>
+            <div style={{ fontSize:18, fontWeight:800, color:E.text, marginBottom:8 }}>Partner Access Required</div>
+            <div style={{ fontSize:13, color:E.textSub, lineHeight:1.6 }}>
+              Enter the access password provided by your Egnyte Partner Manager.
+            </div>
+          </div>
+
+          <div style={{ position:"relative", marginBottom:16 }}>
+            <div style={{ fontSize:11, fontWeight:600, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:8 }}>Password</div>
+            <input
+              type="password"
+              value={value}
+              onChange={e => { setValue(e.target.value); setError(false); }}
+              onKeyDown={handleKey}
+              autoFocus
+              placeholder="Enter access password"
+              style={{
+                width:"100%", boxSizing:"border-box",
+                background:E.navySurf,
+                border:`1px solid ${error ? "rgba(239,68,68,0.5)" : E.border}`,
+                borderRadius:10, padding:"13px 16px",
+                color:E.text, fontSize:14, fontFamily:"'Inter',sans-serif",
+                outline:"none", transition:"border-color 0.15s",
+                letterSpacing: value ? "0.15em" : "normal",
+              }}
+            />
+            {error && (
+              <div style={{ position:"absolute", right:0, top:0, fontSize:10, fontWeight:600, color:"#EF4444", letterSpacing:"0.06em", textTransform:"uppercase" }}>
+                Incorrect
+              </div>
+            )}
+          </div>
+
+          <button onClick={attempt} style={{
+            width:"100%", padding:"13px",
+            background: value ? `linear-gradient(135deg,${E.teal},#0099A8)` : E.navySurf,
+            border:`1px solid ${value ? "transparent" : E.border}`,
+            borderRadius:10, color: value ? E.navy : E.textMut,
+            fontSize:14, fontWeight:700, cursor: value ? "pointer" : "default",
+            fontFamily:"'Inter',sans-serif",
+            boxShadow: value ? `0 4px 20px rgba(11,197,186,0.3)` : "none",
+            transition:"all 0.2s",
+          }}>
+            Access Compass →
+          </button>
+        </div>
+
+        <div style={{ textAlign:"center", marginTop:20, fontSize:11, color:E.textMut }}>
+          Egnyte Partner Program · Confidential · Internal Use Only
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes shake {
+          0%,100%{transform:translateX(0)}
+          20%{transform:translateX(-8px)}
+          40%{transform:translateX(8px)}
+          60%{transform:translateX(-6px)}
+          80%{transform:translateX(6px)}
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ─── PLAN CARD ────────────────────────────────────────────────────────────────
 function PlanCard({ plan, label, isCurrent, families, selected, onChange }) {
   const accent = isCurrent ? E.textSub : E.teal;
   return (
@@ -1313,33 +1441,42 @@ const BATTLECARDS = [
     color: "#0078D4",
     bg: "rgba(0,120,212,0.08)",
     border: "rgba(0,120,212,0.25)",
-    tagline: "Already included in M365 — why add another tool?",
-    mostCommonIn: ["AEC", "Financial Services", "Any M365 customer"],
+    tagline: "Already included in M365 — why pay for another tool?",
+    stats: "1B+ users · Bundled with Microsoft 365",
+    mostCommonIn: ["Any M365 customer", "AEC", "Financial Services", "SMB to Enterprise"],
     theirPitch: [
-      "You already pay for it with Microsoft 365 — SharePoint and OneDrive are included.",
-      "Teams + SharePoint gives you collaboration, file storage, and co-editing in one ecosystem.",
-      "Microsoft Purview handles compliance and governance for regulated industries.",
+      "Already paid for in your Microsoft 365 subscription — zero incremental cost.",
+      "Teams + SharePoint gives you collaboration, file storage, and real-time co-editing in one ecosystem.",
+      "Microsoft Purview handles compliance and data governance for regulated industries.",
+      "Familiar Microsoft UX means zero training required.",
+    ],
+    whereTheyWin: [
+      "Device controls are very robust, especially for Chromebook environments.",
+      "Native Google Forms, Surveys, and whiteboard/diagram tools (Drawings, Jamboard).",
+      "1B+ users means zero adoption friction — employees already know it.",
+      "Bundled pricing makes it appear 'free' to budget-conscious buyers.",
     ],
     trapQuestions: [
-      { q: "If you needed to prove to an auditor today exactly who has access to your sensitive files across all SharePoint sites, how long would that take?", why: "SharePoint's permission model across sites, libraries, and Teams channels is notoriously hard to audit." },
-      { q: "How do your field teams or remote offices access large CAD or project files — do they experience any slowness or have to download before working?", why: "SharePoint has no edge caching. Large files over VPN or slow connections are a known pain point." },
-      { q: "When an employee leaves, how confident are you that every file in their OneDrive is properly transferred and governed?", why: "OneDrive personal storage creates data governance gaps that persist after offboarding." },
-      { q: "If ransomware hit a SharePoint library today, how quickly could you recover to a specific point in time — say, 4 hours before the attack?", why: "SharePoint versioning is not a ransomware recovery solution. Point-in-time restore at file granularity doesn't exist." },
-      { q: "How much time does your IT team spend each month managing SharePoint site permissions, broken inheritance, and Teams channel governance?", why: "This surfaces the hidden admin burden that erodes the 'it's already included' argument." },
+      { q: "If you needed to prove to an auditor today exactly who has access to your sensitive files across all SharePoint sites and Teams channels, how long would that take?", why: "SharePoint's permission model across sites, libraries, and Teams channels is notoriously inconsistent and hard to audit at scale." },
+      { q: "When your engineers work with Excel files that reference other files by path — do those macros work correctly for every user, or only for the person who created them?", why: "Box and OneDrive don't expose a true drive letter; path-dependent applications break for other users. Egnyte maps as a real drive letter." },
+      { q: "How do your field teams or remote offices access large CAD or project files — do they experience any slowness when bandwidth is limited?", why: "SharePoint/OneDrive is cloud-only with no hybrid edge caching. Large files over poor connections are a persistent pain point." },
+      { q: "If ransomware hit a SharePoint library today, how quickly could you restore to a specific point in time — say, four hours before the attack started?", why: "SharePoint versioning is not a ransomware recovery solution. Point-in-time repository restoration doesn't exist without third-party tools." },
+      { q: "What happens to your data governance when employees simultaneously store files in SharePoint, OneDrive, AND a network file server?", why: "Highlights Egnyte's unique multi-repository governance across SharePoint, on-prem, and other clouds from a single console." },
     ],
     objections: [
-      { q: "We already have it with M365 — it's essentially free.", a: "SharePoint comes with M365, but governing it doesn't. Most clients with SharePoint still email files and save to desktops because SharePoint is too complex to use consistently. Egnyte sits alongside M365 — your Office co-authoring keeps working, but now you have a governed file platform people actually use." },
-      { q: "Microsoft Purview handles our compliance.", a: "Purview is a separate purchase that requires a dedicated compliance engineer to implement and operate. It's built for Fortune 500 compliance teams, not your typical MSP client. Egnyte delivers governance that actually works without a specialist." },
-      { q: "We're standardized on Microsoft — we don't want another vendor.", a: "Egnyte integrates natively with M365 co-editing and Teams. Think of it as the file governance layer that makes your Microsoft investment more defensible — especially when an auditor or cyber insurer starts asking questions." },
+      { q: "We already have it with M365 — it's essentially free.", a: "SharePoint comes with M365, but governing it doesn't. Egnyte's governance layer manages data across SharePoint, on-prem file servers, and other repositories from a single pane of glass — without requiring Microsoft Purview, which is a separate, expensive purchase requiring dedicated expertise." },
+      { q: "Microsoft Purview handles our compliance.", a: "Purview is built for Fortune 500 compliance teams, not day-to-day MSP clients. It requires custom policy creation for PII detection, excludes Gmail and many non-Microsoft sources, and has no self-service ransomware repository restoration. Egnyte's governance is ready to use on day one." },
+      { q: "Our team is standardized on Microsoft — we don't want another vendor.", a: "Egnyte integrates natively with M365 co-editing. Think of it as the governed file foundation that makes your Microsoft investment defensible — especially when auditors, cyber insurers, or regulators start asking questions Microsoft's tools can't answer." },
     ],
     whyEgnyte: [
       "Purpose-built for file management — not retrofitted from a productivity suite.",
-      "Single, consistent permission model that maps to org structure — no site collections, no broken inheritance.",
-      "Hybrid edge caching (SmartCache, Turbo) delivers LAN-speed access for field teams with large files.",
-      "Built-in ransomware detection and point-in-time snapshot recovery — not an add-on.",
-      "MSP multi-tenant management without deep Microsoft expertise required.",
+      "True drive-letter desktop app — path-dependent applications (Excel macros, CAD cross-references) work for every user.",
+      "Single centralized shared link management dashboard — audit and revoke all links from one place.",
+      "Multi-repository governance across SharePoint, on-prem, Box, and others — from one console.",
+      "Self-service snapshot-based ransomware recovery — no support ticket, no weeks of waiting.",
+      "Hybrid Smart Cache for field teams and low-bandwidth environments — no cloud-only limitation.",
     ],
-    relatedUseCases: ["sharepoint", "file_server", "remote_jobsite"],
+    relatedUseCases: ["sharepoint", "file_server", "remote_jobsite", "sensitive_data"],
   },
   {
     id: "dropbox",
@@ -1350,31 +1487,39 @@ const BATTLECARDS = [
     bg: "rgba(0,97,255,0.08)",
     border: "rgba(0,97,255,0.25)",
     tagline: "Simple and familiar — everyone knows how to use it.",
+    stats: "700M+ registered users · SMB-dominant",
     mostCommonIn: ["SMB", "Creative agencies", "Teams moving off consumer tools"],
     theirPitch: [
-      "Dead simple to use — no training required, high adoption.",
+      "Dead simple to use — high adoption with zero training.",
       "Business plans include admin controls, team folders, and audit logs.",
       "Dropbox Rewind can restore files and folders after ransomware or accidental deletion.",
+      "Strong integration with creative and productivity apps.",
+    ],
+    whereTheyWin: [
+      "Lower entry price point and simpler day-one experience for very small teams.",
+      "Strong creative app integrations (Adobe, Figma, Slack).",
+      "Dropbox Paper for lightweight document collaboration.",
+      "High brand familiarity — especially with freelancers and creative agencies.",
     ],
     trapQuestions: [
       { q: "What happens when a team member uses their personal Dropbox account instead of the business account — can you detect and govern that?", why: "Shadow Dropbox usage is endemic. Business admins have no visibility or control over personal account activity." },
-      { q: "If you needed to demonstrate HIPAA or SOC 2 compliance to an auditor today, what does Dropbox give you as evidence?", why: "Dropbox's compliance story is thin. HIPAA BAA requires Business+ or higher. Audit logs are limited." },
-      { q: "Has your cyber insurance provider asked specifically about ransomware detection capabilities — not just recovery?", why: "Insurers increasingly differentiate between detection and recovery. Dropbox Rewind is recovery-only." },
-      { q: "When a key employee leaves, what's your process to ensure their Dropbox files are transferred without any gaps or personal-account leakage?", why: "Offboarding with Dropbox is a governance gap that creates real data loss risk." },
+      { q: "How do your admins currently manage all shared links — can they see every active external link from a single dashboard?", why: "Dropbox has no centralized shared link management. Links are created per-file and there's no admin-level audit dashboard." },
+      { q: "If you needed to demonstrate HIPAA or SOC 2 compliance to an auditor today, what specific evidence does Dropbox give you?", why: "Dropbox's compliance story is thin. HIPAA BAA requires Business+ or higher. Audit logs are limited and PII detection doesn't exist." },
+      { q: "Does your cyber insurance provider view your Dropbox setup as ransomware detection or only recovery?", why: "Insurers increasingly require behavioral detection. Dropbox Rewind is recovery-only with no detection capability." },
     ],
     objections: [
-      { q: "Our team already uses Dropbox — switching would be disruptive.", a: "That's exactly when to make the move — before a compliance audit or ransomware event reveals the gaps. Migration from Dropbox to Egnyte is straightforward, and Egnyte's familiar folder experience means adoption isn't a major hurdle." },
-      { q: "Dropbox Business has the admin controls we need.", a: "Dropbox's admin controls were built after the consumer product. Egnyte's were built from day one for IT-managed environments. The difference shows up the moment you need granular folder permissions, role-based administration, or compliance-grade audit trails." },
-      { q: "Dropbox Rewind covers ransomware recovery.", a: "Rewind restores files — but it doesn't tell you when the ransomware started, which backup is clean, or what was actually encrypted. Egnyte detects ransomware while it's happening using behavioral signals, so you catch it before it spreads." },
+      { q: "Our team already uses Dropbox — switching would be disruptive.", a: "That's exactly when to make the move — before a compliance audit or ransomware event reveals the gaps. Egnyte's familiar folder experience means adoption isn't a major hurdle, and migration from Dropbox is straightforward." },
+      { q: "Dropbox Business has the admin controls we need.", a: "Dropbox's admin controls were built after a consumer product. Egnyte's were built from day one for IT-managed environments — granular subfolder permissions, role-based administration, compliance-grade audit trails, and centralized link management that Dropbox simply can't replicate." },
+      { q: "Dropbox Rewind covers ransomware recovery.", a: "Rewind restores files but doesn't tell you when the ransomware started, which backup is clean, or what was actually encrypted. Egnyte detects ransomware behaviorally while it's happening — so you catch it before it spreads, then restore a targeted set of files rather than hoping your Rewind point isn't also compromised." },
     ],
     whyEgnyte: [
-      "Governance built-in from the ground up, not bolted on after a consumer product.",
-      "Compliance-grade audit trails, role-based admin, and HIPAA/FINRA/SOC2 certifications.",
-      "Ransomware detection (artifact + behavioral) — not just recovery.",
-      "MSP-grade multi-tenant admin without the shadow IT risk.",
-      "NTFS-like folder permissions that Dropbox's flat structure can't replicate.",
+      "Governance and compliance built from the ground up — not bolted onto a consumer product.",
+      "Centralized shared link management — audit and revoke all external links from one dashboard.",
+      "Ransomware detection (artifact + behavioral) in addition to recovery.",
+      "HIPAA, FINRA, SOC2, ISO 27001 certifications — ready to use, not custom-built.",
+      "Granular subfolder permissions that Dropbox's flat structure cannot replicate.",
     ],
-    relatedUseCases: ["external_sharing", "data_loss", "ransomware"],
+    relatedUseCases: ["external_sharing", "data_loss", "ransomware", "sensitive_data"],
   },
   {
     id: "box",
@@ -1384,32 +1529,133 @@ const BATTLECARDS = [
     color: "#0061D5",
     bg: "rgba(0,97,213,0.08)",
     border: "rgba(0,97,213,0.25)",
-    tagline: "Enterprise content management with compliance built in.",
-    mostCommonIn: ["Mid-market to enterprise", "Legal & financial services", "Regulated industries"],
+    tagline: "Enterprise content cloud — 69% of the Fortune 500 are customers.",
+    stats: "$1.04B revenue (FY2024) · 69% of Fortune 500 · 2.8% file sharing market share",
+    mostCommonIn: ["Mid-market to Enterprise", "Legal & Financial Services", "Regulated industries"],
     theirPitch: [
-      "Enterprise-grade security, compliance certifications, and extensive admin controls.",
-      "Box Shield provides threat detection and smart access controls.",
-      "Deep integrations with Salesforce, Microsoft 365, and 1,500+ apps.",
+      "Enterprise-grade security and compliance with 1,500+ pre-built integrations.",
+      "Box Shield provides AI-powered threat detection and smart access controls.",
+      "Land-and-expand model — suites represent 72% of deals over $100K.",
+      "Strong SI/reseller partnerships (IBM, CDW, SHI) and FedRAMP Moderate authorization.",
+      "Box AI, Canvas, Notes, and Hubs deliver productivity beyond just file storage.",
+    ],
+    whereTheyWin: [
+      "1,500+ pre-built integrations vs. Egnyte's 150+ — significantly broader ecosystem.",
+      "Box Relay enables sophisticated event-triggered workflow automation Egnyte lacks.",
+      "Unlimited storage on all major plans — no per-user storage constraints.",
+      "Box Canvas (whiteboard), Box Notes, and Box Hubs are native productivity apps Egnyte doesn't have.",
+      "FedRAMP Moderate authorized — required for certain US federal opportunities.",
+      "Native Apple iWork support (Keynote, Pages, Numbers).",
     ],
     trapQuestions: [
-      { q: "What's your total per-user cost for Box at scale, including Shield, governance, and any add-ons for the capabilities you actually use?", why: "Box's base pricing looks competitive until you add Shield, Relay, Governance, and other modules. Total cost is often 2–3x the headline number." },
-      { q: "How long did the Box implementation take, and was professional services involved?", why: "Box implementations are notoriously complex. Professional services cost and timeline are real objections from Box customers." },
-      { q: "How do your remote workers or field teams access large project files with Box — do they work offline or have any connectivity issues?", why: "Box has no hybrid edge caching. This is a hard gap for AEC, manufacturing, or any field-heavy customer." },
-      { q: "How does your IT team manage permissions across multiple Box instances for different clients?", why: "Box is not architected for MSP multi-tenancy. Each client is a separate Box tenant with separate management overhead." },
+      { q: "When a ransomware attack hits, how quickly can your team restore your entire repository to a specific date — without calling Box support and waiting weeks?", why: "Box cannot rewind a repository to a specific date. Recovery may take weeks and requires support engagement — a critical differentiator." },
+      { q: "How do your admins manage and audit all shared links across the organization — is there a single dashboard showing every active external link?", why: "Box lacks centralized shared link management. This is a governance gap that surfaces in security audits." },
+      { q: "When your engineers work with Excel files that reference other files by path, do those macros work for every user — or only for the creator?", why: "Box doesn't expose a drive letter; it connects as a catalog under the local user account, breaking path-dependent applications." },
+      { q: "How does Box govern data that lives outside of Box — in SharePoint, on-premises file servers, or other cloud storage?", why: "Box can only govern content inside Box. Egnyte's multi-repository governance is a unique differentiator." },
+      { q: "What's your total per-user cost including Box Shield, Governance, Relay, and Box Sign — not just the base license?", why: "Box's headline price inflates significantly with add-on modules. TCO is often 2–3x the base per-user rate." },
     ],
     objections: [
-      { q: "Box has enterprise compliance features we need.", a: "Box does have strong compliance features — but at a price point that often doesn't fit MSP clients. Egnyte delivers comparable governance, HIPAA/FINRA/SOC2 compliance, and lifecycle management at MSP pricing that makes it deployable across your entire client base." },
-      { q: "Box integrates with everything we use.", a: "Egnyte integrates with M365, Google Workspace, Salesforce, and 150+ industry applications — including AEC tools like Autodesk and Procore that Box doesn't prioritize. And Egnyte's MSP multi-tenant model means you manage all clients from one pane of glass." },
-      { q: "We've already invested in Box.", a: "That investment makes the conversation worth having — the question is whether Box is delivering on the compliance and governance promise without requiring a dedicated admin. For many MSP clients, the answer is that the complexity outweighs the capability." },
+      { q: "Box has enterprise compliance features we need.", a: "Box does — but at a price point that often doesn't fit MSP clients without add-on modules (Shield, Governance, Relay). Egnyte delivers comparable governance, HIPAA/FINRA/SOC2 compliance, and lifecycle management natively, at MSP pricing, without requiring a dedicated Box administrator." },
+      { q: "Box integrates with everything we use.", a: "Box's 1,500 integrations are impressive — but Egnyte integrates with M365, Google Workspace, Salesforce, and 150+ industry applications including AEC-specific tools like Autodesk, Procore, and Bluebeam that Box doesn't prioritize. And Egnyte's multi-tenant MSP model lets you manage all clients from one pane of glass." },
+      { q: "Box is FedRAMP authorized — we need that for federal work.", a: "If FedRAMP Moderate is a hard requirement, Box wins that point. Where Egnyte wins is the governance layer — multi-repository oversight, self-service ransomware recovery, and native PII detection that Box requires third-party CASBs to deliver." },
     ],
     whyEgnyte: [
-      "Comparable enterprise governance at MSP-friendly pricing — deployable across your full client base.",
-      "Hybrid edge caching for remote workers and field teams — Box has no equivalent.",
-      "Ransomware detection built in, not an add-on (Box Shield is an additional cost).",
-      "Purpose-built MSP multi-tenant management vs. managing separate Box tenants per client.",
-      "Simpler implementation — no professional services dependency.",
+      "Self-service snapshot-based repository recovery — no support ticket, no weeks of waiting.",
+      "True drive-letter desktop app — path-dependent applications work for every user.",
+      "Multi-repository governance across Box, SharePoint, on-prem, and others from one console.",
+      "Centralized shared link management — audit and revoke all links from one dashboard.",
+      "Native PII/PHI detection without requiring a third-party CASB.",
+      "Hybrid Smart Cache for field teams — Box is cloud-only.",
     ],
-    relatedUseCases: ["sensitive_data", "document_room", "lifecycle"],
+    relatedUseCases: ["sensitive_data", "document_room", "lifecycle", "single_source"],
+  },
+  {
+    id: "google_drive",
+    name: "Google Drive",
+    vendor: "Google (Alphabet)",
+    icon: "🔺",
+    color: "#EA4335",
+    bg: "rgba(234,67,53,0.08)",
+    border: "rgba(234,67,53,0.25)",
+    tagline: "1 billion users already know how to use it.",
+    stats: "$282.8B Alphabet revenue · 1B+ users · Dominant in SMB & education",
+    mostCommonIn: ["SMB", "Education", "Teams with Google Workspace", "Creative / media"],
+    theirPitch: [
+      "1B+ users know it from personal use — zero adoption friction.",
+      "Bundled with Google Workspace; 14-day free trial with deep SMB penetration.",
+      "Robust DLP/PII controls, YouTube video player, Google Forms/Drawings ecosystem.",
+      "Native real-time co-editing for Docs, Sheets, Slides.",
+    ],
+    whereTheyWin: [
+      "Native Google Forms, Surveys, and Drawings — Egnyte has no equivalent.",
+      "YouTube-integrated video playback with full controls — superior for media-heavy teams.",
+      "Jamboard and Draw.io integration for whiteboarding.",
+      "Device controls very robust, especially for Chromebook-heavy environments.",
+      "Brand familiarity drives consumer-to-enterprise adoption with minimal IT effort.",
+    ],
+    trapQuestions: [
+      { q: "When a regulator asks you to produce a Subject Access Request report for all personal data stored across your organization, how long does that take with Google Drive?", why: "Google's DLP and governance is limited to Drive and Chat — Gmail and non-Google repositories are excluded. SAR processing is not native." },
+      { q: "How does your team handle PII detection for files stored in Google Drive — is classification automatic, or does someone have to write custom DLP policies?", why: "Google requires manual policy creation for PII detection; there's no automatic classification engine." },
+      { q: "When employees simultaneously store files in Google Drive AND your on-premises file server AND a SharePoint site, which tool governs all of it?", why: "Google can only govern content inside Google. Multi-repository governance is a unique Egnyte differentiator." },
+      { q: "How do your remote teams access large CAD or project files through Google Drive when bandwidth is limited — do they have to download the full file first?", why: "Google Drive is cloud-only with no edge caching. Large file workflows for AEC and similar verticals are painful." },
+    ],
+    objections: [
+      { q: "Our team already uses Google Workspace — Drive is included.", a: "Google Drive handles everyday collaboration well, but governance, compliance, and security for regulated environments require capabilities Google doesn't provide natively. Egnyte adds the governed file layer that makes your Google investment audit-ready." },
+      { q: "Google has strong DLP and security controls.", a: "Google's DLP is strong within its ecosystem — Drive and Chat. But it excludes Gmail, can't govern on-prem repositories, and requires custom policy creation for PII detection. Egnyte's classification engine works across Google, SharePoint, on-prem, and other sources automatically." },
+      { q: "Google is cheaper.", a: "Google's bundled pricing is attractive. But the moment you need compliance reporting, SAR processing, ransomware recovery, or governance beyond the Google ecosystem, you're paying for third-party add-ons that close the gap. Egnyte eliminates those point solutions." },
+    ],
+    whyEgnyte: [
+      "Multi-repository governance — manages Google Drive, SharePoint, on-prem, and others from one console.",
+      "Automatic PII/PHI classification — no manual policy writing required.",
+      "Native SAR processing for GDPR, CCPA, and HIPAA compliance.",
+      "Hybrid Smart Cache for field teams with large files and limited bandwidth.",
+      "Self-service ransomware recovery — not available in Google Drive.",
+      "Centralized shared link management across all repositories.",
+    ],
+    relatedUseCases: ["sensitive_data", "consolidation", "single_source", "inventory_sensitive"],
+  },
+  {
+    id: "sharefile",
+    name: "ShareFile",
+    vendor: "Citrix / Cloud Software Group",
+    icon: "📁",
+    color: "#0072C6",
+    bg: "rgba(0,114,198,0.08)",
+    border: "rgba(0,114,198,0.25)",
+    tagline: "B2B file sharing built for client-facing financial and professional services.",
+    stats: "Strong FSI presence · Slowed by Citrix spin-out / acquisition history",
+    mostCommonIn: ["Financial Services", "Accounting firms", "Legal", "Client-heavy B2B"],
+    theirPitch: [
+      "Unlimited external/client user accounts — no cap on sharing with clients.",
+      "Native accounting integrations (QuickBooks, FreshBooks, Xero).",
+      "Established eSignature via RightSignature — built in, not an add-on.",
+      "Strong in financial services with FINRA and HIPAA compliance history.",
+    ],
+    whereTheyWin: [
+      "Unlimited external/client users — attractive for FSI firms with large client bases.",
+      "Accounting system integrations (QuickBooks, FreshBooks, Xero) that Egnyte lacks.",
+      "File upload via email — useful for physical scanners, printers, and non-technical users.",
+      "Established RightSignature eSignature integration.",
+    ],
+    trapQuestions: [
+      { q: "When a client asks whether your ShareFile platform can detect PII in files and classify sensitive documents automatically, what does ShareFile tell you?", why: "ShareFile cannot detect PII in files and does not integrate with Microsoft Purview — a direct capability gap vs. Egnyte." },
+      { q: "How are your admins managing and auditing all shared links with external clients — is there a centralized dashboard, or is it file by file?", why: "ShareFile lacks centralized shared link management — a governance gap for client-facing firms." },
+      { q: "If a ransomware event encrypted your client files, how quickly can your team restore ShareFile to a specific point in time without engaging support?", why: "ShareFile lacks self-service snapshot-based repository restoration." },
+      { q: "As Citrix has gone through multiple spin-outs and ownership changes, how confident are you in ShareFile's development roadmap for the next 3 years?", why: "ShareFile's acquisition history has demonstrably slowed product development — a legitimate strategic risk." },
+    ],
+    objections: [
+      { q: "ShareFile lets us give unlimited client access — Egnyte charges for external users.", a: "Egnyte's external user model is purpose-built for governed collaboration — full audit trails, policy controls, and admin visibility on every external account. Unlimited unmanaged access sounds appealing until an auditor asks who has access to what." },
+      { q: "ShareFile integrates with QuickBooks and our accounting tools.", a: "That's a genuine strength for accounting-led firms. The question is whether your governance, compliance, and security requirements have grown beyond what ShareFile's roadmap — which has been hampered by ownership transitions — can deliver." },
+      { q: "We've been on ShareFile for years — switching is a big change.", a: "ShareFile's compliance capabilities were strong when it was built, but the platform hasn't kept pace. Egnyte delivers PII detection, SAR processing, ransomware recovery, and multi-repository governance that ShareFile simply can't match today." },
+    ],
+    whyEgnyte: [
+      "Native PII detection and SAR processing — ShareFile cannot detect sensitive content in files.",
+      "Self-service snapshot-based ransomware recovery — ShareFile has no equivalent.",
+      "Centralized shared link management for client-facing firms.",
+      "Egnyte Copilot AI for document Q&A across all client files — ShareFile has only basic single-file Q&A.",
+      "Stronger long-term roadmap and product investment vs. ShareFile's acquisition-slowed development.",
+    ],
+    relatedUseCases: ["external_sharing", "document_room", "sensitive_data", "inventory_sensitive"],
   },
   {
     id: "filecloud",
@@ -1420,28 +1666,35 @@ const BATTLECARDS = [
     bg: "rgba(0,163,224,0.08)",
     border: "rgba(0,163,224,0.25)",
     tagline: "On-prem or private cloud file sharing — MSP and data sovereignty focused.",
+    stats: "MSP-targeted · Lower per-user price point",
     mostCommonIn: ["MSPs", "Data sovereignty concerns", "Budget-sensitive mid-market"],
     theirPitch: [
       "On-premises or private cloud deployment — full data sovereignty and control.",
-      "MSP-friendly licensing model with multi-tenant management.",
+      "MSP-friendly licensing with multi-tenant management.",
       "Lower per-user price point than Egnyte.",
+      "Compliance Center for policy management.",
+    ],
+    whereTheyWin: [
+      "True on-premises option for clients with strict data residency requirements.",
+      "Lower headline per-user cost for basic file sharing use cases.",
+      "FileCloud Compliance Center for basic policy management.",
     ],
     trapQuestions: [
-      { q: "With FileCloud on-premises, who manages the server infrastructure — and what's your plan when there's a hardware failure or security patch needed?", why: "On-prem means the MSP owns the infrastructure burden. This erodes the margin advantage of the lower per-user price." },
-      { q: "When a client asks for AI-powered search or document Q&A across their files, what does FileCloud offer today?", why: "FileCloud has limited or no native AI capabilities. This is a growing client expectation that FileCloud can't meet." },
-      { q: "If a client needed to demonstrate ransomware detection capability to their cyber insurance provider, what does FileCloud provide?", why: "FileCloud has no behavioral ransomware detection. This is a direct gap vs Egnyte IFS and above." },
-      { q: "What does FileCloud provide for content lifecycle management — automated retention, archiving, and deletion policies?", why: "FileCloud's governance and lifecycle features are limited compared to Egnyte Elite/Ultimate." },
+      { q: "With FileCloud on-premises, who owns the server infrastructure — and what's your plan when there's a hardware failure or a critical security patch that needs applying at 2am?", why: "On-prem means the MSP absorbs infrastructure costs and operational burden, eroding the margin advantage of lower per-user pricing." },
+      { q: "When a client asks about AI-powered search or document Q&A across their files, what does FileCloud offer today?", why: "FileCloud has limited or no native AI capabilities — a growing gap as clients expect AI features." },
+      { q: "If a client needed to demonstrate ransomware behavioral detection capability to their cyber insurance provider, what does FileCloud provide?", why: "FileCloud has no behavioral ransomware detection — a direct gap vs. Egnyte IFS and above." },
+      { q: "What does FileCloud provide for automated content lifecycle management — retention schedules, archiving, and defensible deletion policies?", why: "FileCloud's governance and lifecycle features are limited compared to Egnyte Elite and Ultimate." },
     ],
     objections: [
-      { q: "FileCloud is cheaper.", a: "The per-user price is lower — but that's before you factor in the infrastructure costs your team absorbs for on-prem deployments. Egnyte is fully cloud-native, so there's no hardware to manage, patch, or replace. And when clients start asking about AI features or ransomware detection, you won't be going back to FileCloud for answers." },
-      { q: "FileCloud gives clients data sovereignty.", a: "Data residency is important, and Egnyte supports regional cloud storage options (US, EU, and others) for clients that need it — without requiring on-prem infrastructure. You get sovereignty without the operational burden." },
-      { q: "Our clients are comfortable with FileCloud.", a: "Comfort comes from familiarity. What changes that conversation is when a client has a ransomware incident, fails a compliance audit, or asks why their AI features aren't working. Egnyte gives you the answer to those questions before they're asked." },
+      { q: "FileCloud is cheaper.", a: "The per-user price is lower — but that's before you factor in the infrastructure your team absorbs for on-prem deployments. Egnyte is fully cloud-native with no hardware to manage, patch, or replace. And when clients ask for AI features or ransomware detection, FileCloud's roadmap can't answer." },
+      { q: "FileCloud gives clients data sovereignty.", a: "Egnyte supports regional cloud storage options (US, EU, and others) for clients that need data residency — without on-prem infrastructure burden. You get sovereignty without the operational overhead." },
+      { q: "Our clients are comfortable with FileCloud.", a: "Comfort comes from familiarity. What changes that conversation is a ransomware event, a failed compliance audit, or a client who asks why their AI features aren't available. Egnyte lets you answer those questions before they're asked." },
     ],
     whyEgnyte: [
       "Cloud-native with no infrastructure burden — better margin for MSPs.",
       "AI features built in across IFS, Elite, and Ultimate — FileCloud has no equivalent.",
-      "Behavioral ransomware detection built in — not available in FileCloud.",
-      "Stronger governance, lifecycle, and compliance monitoring at higher tiers.",
+      "Behavioral ransomware detection — not available in FileCloud.",
+      "Content lifecycle management (retain, archive, delete) at Elite and Ultimate.",
       "Egnyte's MSP Partner Program is significantly more mature and resourced.",
     ],
     relatedUseCases: ["file_server", "sensitive_data", "ransomware"],
@@ -1454,31 +1707,175 @@ const BATTLECARDS = [
     color: "#059669",
     bg: "rgba(5,150,105,0.08)",
     border: "rgba(5,150,105,0.25)",
-    tagline: "Enterprise cloud file gateway with LAN-speed performance at edge locations.",
-    mostCommonIn: ["AEC / Construction", "Manufacturing", "Multi-site with large files"],
+    tagline: "Enterprise cloud file gateway — LAN-speed access across all edge locations.",
+    stats: "Panzura: ~$184M revenue · ~2M users · AEC/enterprise focus",
+    mostCommonIn: ["AEC / Construction", "Manufacturing", "Multi-site large file workflows"],
     theirPitch: [
       "Enterprise-grade hybrid cloud file storage with LAN-speed access at every edge location.",
-      "Global file locking and a single namespace across all sites.",
-      "Purpose-built for large file workflows — CAD, BIM, media.",
+      "Global file locking and a single namespace across all sites — critical for multi-site Revit workflows.",
+      "Panzura CloudFS with Symphony for management; FIPS 140-3 certified.",
+      "Native SMB protocol — connects as a true network share without a separate desktop app.",
+    ],
+    whereTheyWin: [
+      "Multi-site Revit co-editing — Panzura natively supports this; Egnyte does not yet.",
+      "Snapshot granularity — greater control over snapshot frequency and preservation periods.",
+      "FIPS 140-3 certification — required for certain government/defense contracts.",
+      "Native SMB protocol — connects as a true SMB share without a separate Egnyte desktop app.",
+      "Persistent caching architecture preferred by some infrastructure teams.",
     ],
     trapQuestions: [
-      { q: "What's your current fully-loaded cost per user for Nasuni or Panzura, including infrastructure, licensing, and implementation?", why: "Enterprise file gateway pricing is significant. Total cost often exceeds $50–100/user when infrastructure is included — vs Egnyte IFS at $26/user MSP." },
-      { q: "Beyond file performance, what does your current solution provide for ransomware detection, governance, or compliance monitoring?", why: "Nasuni and Panzura are storage/performance platforms — not governance platforms. This gap is significant for regulated or security-conscious clients." },
-      { q: "How long did the implementation take, and was there a professional services engagement involved?", why: "Implementation complexity and cost is a known weakness. This surfaces total-cost-of-ownership concerns." },
-      { q: "When your clients start asking about AI search or document Q&A across their project files, what's your roadmap for that?", why: "Neither Nasuni nor Panzura have meaningful AI features. This is a growing expectation in AEC and other verticals." },
+      { q: "What's your fully-loaded cost per user for Nasuni or Panzura, including infrastructure, licensing, and implementation — not just the per-seat headline price?", why: "Enterprise file gateway pricing is significant. Total cost often exceeds $50–100/user when infrastructure is included vs. Egnyte IFS at MSP pricing." },
+      { q: "Beyond file performance, what does your current solution provide for ransomware detection, governance, compliance monitoring, or data lifecycle management?", why: "Nasuni and Panzura are storage and performance platforms — not governance platforms. This gap grows as clients face audits and cyber insurance requirements." },
+      { q: "When your AEC clients start asking about AI search or document Q&A across their project files, what's your roadmap for that?", why: "Neither Nasuni nor Panzura have meaningful AI features — a growing expectation in AEC and engineering verticals." },
+      { q: "How long did the implementation take, and was professional services involved — and what happens when you need to onboard a new client site?", why: "Implementation complexity is a known weakness. This surfaces total-cost-of-ownership concerns for MSPs managing multiple clients." },
     ],
     objections: [
-      { q: "Our clients need enterprise-grade edge performance that Egnyte can't match.", a: "Egnyte's SmartCache and Turbo appliances deliver the same LAN-speed edge caching for large file workflows — CAD, BIM, media. The difference is that Egnyte combines that performance with governance, ransomware detection, and AI features on the same platform at a price point that works for mid-market clients." },
-      { q: "We've standardized our AEC clients on Nasuni.", a: "That makes the conversation worth having — because the next question from those clients will be about ransomware recovery, compliance, or AI capabilities. Egnyte lets you answer all three without swapping out the edge performance story." },
+      { q: "Our AEC clients need multi-site Revit co-editing — Egnyte doesn't support that.", a: "That's a genuine gap we have to be honest about — Panzura wins on native multi-site Revit co-editing today. Where Egnyte wins is everything around the file platform: governance, ransomware detection, AI features, and compliance reporting on the same platform at a price point that works for mid-market AEC firms." },
+      { q: "We need FIPS 140-3 for a government contract.", a: "If FIPS 140-3 is a hard requirement, Panzura wins that point. The question is whether your client needs the broader governance, AI, and compliance capabilities that Panzura can't deliver — and whether the infrastructure overhead justifies the cost." },
+      { q: "Our clients are standardized on Nasuni.", a: "That makes the conversation worth having — because the next question from those clients will be about ransomware recovery, compliance, or AI capabilities. Egnyte lets you answer all three without swapping the edge performance story." },
     ],
     whyEgnyte: [
-      "Comparable edge caching (SmartCache, Turbo) at a fraction of the enterprise gateway cost.",
+      "Comparable edge caching (SmartCache, Turbo) for large file workflows at MSP-friendly pricing.",
       "Governance, ransomware detection, and lifecycle management built on the same platform.",
-      "AI features for knowledge worker productivity alongside the file performance story.",
-      "MSP pricing and multi-tenant management — not enterprise-only licensing.",
+      "AI Copilot for knowledge worker productivity alongside the file performance story.",
+      "Multi-tenant MSP management — not enterprise-only licensing per client.",
       "Simpler implementation with less professional services dependency.",
     ],
-    relatedUseCases: ["remote_jobsite", "file_server"],
+    relatedUseCases: ["remote_jobsite", "file_server", "consolidation"],
+  },
+  {
+    id: "lucidlink",
+    name: "LucidLink",
+    vendor: "LucidLink",
+    icon: "🎬",
+    color: "#F97316",
+    bg: "rgba(249,115,22,0.08)",
+    border: "rgba(249,115,22,0.25)",
+    tagline: "Real-time file streaming for large file workflows — no download required.",
+    stats: "~$36M revenue · Founded 2016 · Media & Entertainment and AEC focus",
+    mostCommonIn: ["Media & Entertainment", "AEC", "Large file / video production workflows"],
+    theirPitch: [
+      "Streaming architecture — open files without full download, even for 100GB+ media files.",
+      "Native support for non-linear video editing workflows (Premiere Pro, DaVinci Resolve).",
+      "Available as a panel directly within Adobe Premiere Pro.",
+      "Attractive entry price point for streaming-focused use cases.",
+    ],
+    whereTheyWin: [
+      "Streaming large files without full download — critical differentiator for M&E video editing.",
+      "Non-linear editing support is native — not a workaround.",
+      "Adobe panel integration within Premiere Pro.",
+      "Lower price point for teams whose only need is large file streaming.",
+      "Designed specifically for M&E workflows that Egnyte doesn't prioritize.",
+    ],
+    trapQuestions: [
+      { q: "When your clients need to share files externally with clients, partners, or reviewers, how does LucidLink handle that — and how much admin overhead is involved?", why: "LucidLink requires PostLab or third-party tools for external sharing. Native external collaboration is a weakness." },
+      { q: "If a regulator asks your client to produce a Subject Access Request report, or prove where all their PII is stored, what does LucidLink provide?", why: "LucidLink has no native data classification, no data lifecycle management, and no threat detection. Governance is completely absent." },
+      { q: "When a ransomware event hits and your client's files are encrypted, what does LucidLink's recovery story look like?", why: "LucidLink has no ransomware detection and limited recovery capabilities compared to Egnyte's snapshot-based recovery." },
+      { q: "As your M&E clients start asking for AI-powered search or document Q&A across their archives, what's LucidLink's roadmap for that?", why: "LucidLink has no native AI features — a growing gap as content teams want intelligent search." },
+    ],
+    objections: [
+      { q: "LucidLink is purpose-built for our video workflows — Egnyte can't match that.", a: "LucidLink wins on raw streaming performance for non-linear editing — that's a genuine strength for pure M&E shops. The question is whether your clients only need file streaming, or whether they also need external collaboration, data governance, compliance reporting, and AI search on the same platform. Egnyte delivers all of that without requiring PostLab for external sharing or third-party tools for governance." },
+      { q: "LucidLink is cheaper for our use case.", a: "LucidLink's entry price is lower for streaming-only workflows. But once you factor in PostLab for external sharing, third-party governance tools, and separate backup solutions, Egnyte's unified platform often costs less total while delivering significantly more capability." },
+    ],
+    whyEgnyte: [
+      "Native external collaboration — no PostLab or third-party sharing workaround required.",
+      "Data governance, PII detection, and lifecycle management — LucidLink has none.",
+      "Ransomware detection and snapshot-based recovery.",
+      "Egnyte Copilot AI for intelligent search across archives — LucidLink has no AI.",
+      "Unified platform replacing multiple point solutions at lower total cost.",
+    ],
+    relatedUseCases: ["external_sharing", "sensitive_data", "single_source"],
+  },
+  {
+    id: "autodesk_abc",
+    name: "Autodesk BIM Collaborate Pro",
+    vendor: "Autodesk",
+    icon: "🏛",
+    color: "#EF4444",
+    bg: "rgba(239,68,68,0.08)",
+    border: "rgba(239,68,68,0.25)",
+    tagline: "BIM coordination and AEC project management — clash detection built in.",
+    stats: "$5.5B Autodesk revenue (2024) · AEC project management leader",
+    mostCommonIn: ["AEC / Construction", "BIM-heavy projects", "Large GC and design firms"],
+    theirPitch: [
+      "Automated clash detection for multi-disciplinary BIM models.",
+      "Native RFI creation, routing, and audit trail management.",
+      "Multi-disciplinary model merging and coordination.",
+      "Meeting agendas, action item tracking, and issue lists built in.",
+    ],
+    whereTheyWin: [
+      "Clash detection — automated clash detection for BIM models; Egnyte has no equivalent.",
+      "RFI and submittal management — native AEC project workflow capabilities.",
+      "Model coordination — multi-disciplinary model merging built in.",
+      "AEC-specific project workflows that Egnyte doesn't replicate.",
+      "Deep Autodesk ecosystem lock-in (Revit, Civil 3D, AutoCAD).",
+    ],
+    trapQuestions: [
+      { q: "When a project closes, how does BIM Collaborate Pro handle long-term document archival and retention — does it automatically enforce retention policies, or is that a manual process?", why: "ABC Pro has no data lifecycle management. Post-project archiving and defensible deletion are gaps." },
+      { q: "How does your team share documents and large files with external partners, subcontractors, and clients — and does that require admin involvement each time?", why: "ABC Pro's external provisioning is complex. Egnyte's external sharing is self-service with full audit trails." },
+      { q: "What's your data governance story for files that exist outside of BIM Collaborate Pro — in email, shared drives, and on-prem storage?", why: "ABC Pro only governs content inside ABC Pro. Multi-repository governance is a unique Egnyte advantage." },
+      { q: "How much time does your IT team spend managing BIM Collaborate Pro licenses, access provisioning, and admin overhead across multiple active projects?", why: "Surfaces the IT burden of Autodesk's complex admin model vs. Egnyte's simpler governance." },
+    ],
+    objections: [
+      { q: "We use BIM Collaborate Pro for project coordination — Egnyte can't replace that.", a: "Egnyte doesn't replace ABC Pro — it complements it. ABC Pro handles clash detection, RFIs, and model coordination. Egnyte handles the governed file platform underneath: external sharing, document archival, lifecycle management, compliance reporting, and AI search across project files — capabilities ABC Pro doesn't provide." },
+      { q: "We're deep in the Autodesk ecosystem.", a: "Egnyte integrates with Autodesk and is designed to sit alongside AEC tools as the governed file foundation. Many Egnyte AEC customers run both — ABC Pro for coordination workflows, Egnyte for file governance, external collaboration, and long-term archival." },
+    ],
+    whyEgnyte: [
+      "External collaboration — simple, governed sharing with clients and subcontractors without admin overhead.",
+      "Content lifecycle management — automated retention, archiving, and defensible deletion post-project.",
+      "Multi-repository governance across ABC Pro, SharePoint, on-prem, and others.",
+      "Ransomware detection and recovery for project file archives.",
+      "Egnyte Copilot AI for searching across past project documentation and specifications.",
+    ],
+    relatedUseCases: ["external_sharing", "lifecycle", "archive", "remote_jobsite"],
+  },
+  {
+    id: "projectwise",
+    name: "Bentley ProjectWise",
+    vendor: "Bentley Systems",
+    icon: "🏗",
+    color: "#1E40AF",
+    bg: "rgba(30,64,175,0.08)",
+    border: "rgba(30,64,175,0.25)",
+    tagline: "The legacy AEC document management standard — deeply entrenched in civil engineering.",
+    stats: "~$184M revenue · ~2,257 companies · ~2M users · Civil/infrastructure focus",
+    mostCommonIn: ["Civil / Infrastructure Engineering", "Government", "Utilities", "Heavy AEC"],
+    theirPitch: [
+      "State-based document workflows — formal document lifecycle states and publishing.",
+      "Deep metadata management with field enforcement and prominent metadata views.",
+      "Built-in issue tracking database integrated with document workflows.",
+      "Persistent caching architecture familiar to infrastructure teams.",
+      "Entrenched in civil engineering and infrastructure firms globally.",
+    ],
+    whereTheyWin: [
+      "State-based document workflows — formal lifecycle states that Egnyte's workflow model doesn't replicate.",
+      "Metadata field enforcement — mandatory metadata on document creation.",
+      "Built-in issue tracking integrated with document workflows.",
+      "Deep entrenchment in civil engineering — switching costs are very high.",
+      "Engineering-specific metadata management that AEC teams have relied on for decades.",
+    ],
+    trapQuestions: [
+      { q: "How are your remote and mobile workers accessing large CAD files today — and how long does it take to open a file before they can start working?", why: "ProjectWise's limited mobile capabilities and legacy desktop dependency (ProjectWise Explorer) are well-known pain points." },
+      { q: "How much IT overhead is required to maintain ProjectWise today — server infrastructure, licensing, upgrades, and new office provisioning?", why: "ProjectWise's on-premises infrastructure adds significant IT overhead and cost that surfaces in TCO conversations." },
+      { q: "When a new engineer joins and needs access to project files on day one, how long does it take to provision them in ProjectWise?", why: "ProjectWise's complex provisioning model is a productivity drain compared to Egnyte's self-service admin." },
+      { q: "If you could eliminate the manual check-out/check-in process for your engineers and let the system handle file locking automatically, how much time would that save per week?", why: "Positions Egnyte's automatic global file locking vs. ProjectWise's manual check-out/check-in workflow." },
+      { q: "What happens when a project stakeholder outside your organization — a client, a subconsultant — needs access to project documents?", why: "ProjectWise's external provisioning is complex and often requires IT involvement. Egnyte's external sharing is self-service." },
+    ],
+    objections: [
+      { q: "We've been on ProjectWise for 20 years — our workflows are built around it.", a: "That longevity is exactly what creates the opportunity. ProjectWise was built for a world before cloud, mobile, and AI. The engineers who've relied on it are now asking why they can't access files from their phones, why external sharing requires IT tickets, and why the interface still looks like 2005. Brown & Caldwell made the switch and realized significant cost savings while improving collaboration across their distributed teams." },
+      { q: "ProjectWise's state-based workflows are critical to our document control process.", a: "Egnyte supports structured approval workflows and document lifecycle policies — not identical to ProjectWise's state model, but serving the same compliance and auditability goals in a modern UX. The question is whether ProjectWise's specific state model is worth the infrastructure overhead, provisioning complexity, and mobile limitations your team lives with every day." },
+      { q: "Switching from ProjectWise would be a massive migration project.", a: "Egnyte has a proven migration path from ProjectWise, including tools and professional services experience. Brown & Caldwell and other civil engineering firms have made this transition successfully. The migration is a project — staying on ProjectWise is an ongoing tax." },
+    ],
+    whyEgnyte: [
+      "Modern UX — intuitive interface requiring minimal training vs. ProjectWise Explorer's steep learning curve.",
+      "Automatic global file locking — eliminates manual check-out/check-in process.",
+      "Simple, governed external sharing — no admin ticket required for clients or subconsultants.",
+      "Cloud-native with no on-premises infrastructure burden — no server to manage, patch, or upgrade.",
+      "Mobile access for field teams without VPN or complex remote setup.",
+      "Egnyte Copilot AI for searching across project archives — ProjectWise has no AI.",
+      "Win story: Brown & Caldwell migrated from ProjectWise to Egnyte, realizing significant cost savings.",
+    ],
+    relatedUseCases: ["file_server", "external_sharing", "consolidation", "remote_jobsite"],
   },
   {
     id: "veeam",
@@ -1489,33 +1886,41 @@ const BATTLECARDS = [
     bg: "rgba(124,58,237,0.08)",
     border: "rgba(124,58,237,0.25)",
     tagline: "Comprehensive backup and recovery protects your data from ransomware.",
-    mostCommonIn: ["Any client with a 'we have backup' mindset", "Post-ransomware conversations"],
+    stats: "Most common objection: 'We have backup — we're covered.'",
+    mostCommonIn: ["Any client with a 'we have backup' mindset", "Post-ransomware conversations", "Cyber insurance reviews"],
     theirPitch: [
       "Comprehensive backup protects all data from ransomware, hardware failure, and accidental deletion.",
-      "Recovery point objectives and recovery time objectives are clearly defined.",
+      "Recovery point objectives (RPO) and recovery time objectives (RTO) are clearly defined.",
       "Immutable backups prevent ransomware from encrypting backup data.",
     ],
+    whereTheyWin: [
+      "Full volume backup and restore across all data — broader than Egnyte's file-focused snapshot.",
+      "Immutable backup copies are fully protected even if production files are encrypted.",
+      "Established, trusted category — clients understand backup as a concept.",
+      "Lower cost than adding a full content governance platform for clients who only need backup.",
+    ],
     trapQuestions: [
-      { q: "After a ransomware event, how long would it take to recover from your last clean backup — and how much data would you lose in that window?", why: "Recovery from backup after ransomware typically takes 24–72 hours or more. The data loss window (RPO) is often 24 hours. That's a devastating conversation to have after the fact." },
-      { q: "How does your backup solution tell you WHEN the ransomware started encrypting files — so you know which backup is actually clean?", why: "Backup doesn't detect ransomware. Without detection, you don't know when to restore TO. You might restore to an already-infected backup." },
-      { q: "Does your cyber insurance provider see your backup solution as ransomware DETECTION or only RECOVERY?", why: "Insurers increasingly require behavioral detection capabilities, not just backup. This distinction is worth surfacing explicitly." },
-      { q: "If ransomware encrypted 10,000 files across 50 shared folders, would you restore the entire server or individual files — and how long does each approach take?", why: "Full volume restore vs. granular file recovery is a major pain point. Backup vendors typically do volume-level restore, not file-granular." },
+      { q: "After a ransomware event, how long would recovery from your last clean backup take — and how much data would you lose in that window?", why: "Recovery from backup after ransomware typically takes 24–72 hours. The data loss window (RPO) is often 24 hours — devastating in practice." },
+      { q: "How does your backup solution tell you WHEN the ransomware started encrypting files — so you know which backup is actually clean to restore to?", why: "Without detection, you don't know when to restore to. You may restore to an already-infected state." },
+      { q: "Does your cyber insurance provider view your backup as ransomware DETECTION or only RECOVERY — and are they asking for behavioral detection capabilities?", why: "Insurers increasingly require behavioral detection, not just backup. This distinction directly affects premiums and coverage." },
+      { q: "If ransomware encrypted 10,000 files across 50 shared folders, would you restore the entire server volume, or is granular file-level recovery available — and how long does each approach take?", why: "Full volume restore vs. granular file recovery is a major pain point. Backup vendors typically do volume-level restore only." },
     ],
     objections: [
-      { q: "We have immutable backup — ransomware can't touch it.", a: "Immutable backup protects the backup copy — but the production files are still encrypted. Recovery still takes days. Egnyte detects ransomware while it's encrypting files using behavioral signals, so you catch it before it spreads — then restore a small number of files from snapshot rather than waiting for a full backup restore." },
-      { q: "Backup is our ransomware strategy.", a: "Backup is your last line of defense. It's like having fire insurance but no smoke detectors. Egnyte adds the smoke detector — behavioral detection that catches ransomware in the act, so you restore 500 files in an hour instead of rebuilding the entire server from a 48-hour-old backup." },
-      { q: "We already pay for Veeam — we're not adding another product cost.", a: "Egnyte isn't replacing Veeam — it's adding detection to the recovery you already have. And for clients who don't have a governed cloud file platform yet, Egnyte delivers the storage, collaboration, governance, AND ransomware detection in one solution at MSP pricing." },
+      { q: "We have immutable backup — ransomware can't touch it.", a: "Immutable backup protects the backup copy — but the production files are still encrypted. Recovery still takes days. Egnyte detects ransomware while it's encrypting files using behavioral signals, so you catch it before it spreads. Then you restore a targeted set of files from snapshot in hours — not rebuild the entire server from a 48-hour-old backup." },
+      { q: "Backup is our ransomware strategy.", a: "Backup is your last line of defense — it's like having fire insurance but no smoke detectors. Egnyte adds the smoke detector: behavioral detection that catches ransomware in the act. You end up restoring 500 files in an hour instead of waiting three days for a full volume restore from backup." },
+      { q: "We already pay for Veeam — we're not adding another product.", a: "Egnyte isn't replacing Veeam — it's adding detection to the recovery you already have. And for clients who don't yet have a governed cloud file platform, Egnyte delivers storage, collaboration, governance, AND ransomware detection in one solution. The backup you have becomes the true last resort instead of the first call." },
     ],
     whyEgnyte: [
-      "Detects ransomware WHILE it's happening — artifact and behavioral signals — before it spreads.",
+      "Detects ransomware WHILE it's happening — artifact and behavioral signals before it spreads.",
       "Point-in-time snapshot recovery at file granularity — not full volume restore.",
-      "Knowing exactly when encryption started means you restore to a confirmed clean point.",
-      "Complements backup — dramatically reduces blast radius so backup is the last resort, not the first call.",
-      "Cyber insurance increasingly requires detection capability, not just recovery.",
+      "Knowing exactly when encryption started means restoring to a confirmed clean point.",
+      "Cyber insurance providers increasingly require behavioral detection, not just recovery.",
+      "Complements backup — dramatically reduces blast radius so backup is the last resort.",
     ],
     relatedUseCases: ["ransomware", "data_loss"],
   },
 ];
+
 
 const PLAN_COLORS = {
   starter: { color:"#76A2BC", bg:"rgba(118,162,188,0.15)", border:"rgba(118,162,188,0.3)" },
@@ -1564,6 +1969,20 @@ function pushUrl(mode, bc = null, builderStep = null, builderIsResult = false) {
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function EgnytePlanMatrix() {
+  // ── Auth gate ──
+  const [authed, setAuthed] = useState(() => {
+    // No password configured → open access (development mode)
+    if (!import.meta.env.VITE_COMPASS_PASSWORD) return true;
+    return sessionStorage.getItem("compass_authed") === "1";
+  });
+
+  const handleAuth = () => {
+    sessionStorage.setItem("compass_authed", "1");
+    setAuthed(true);
+  };
+
+  if (!authed) return <PasswordGate onSuccess={handleAuth} />;
+
   // Initialise from URL so there's no flash of wrong state on load
   const [fromPlan, setFromPlan] = useState("afs");
   const [toPlan,   setToPlan]   = useState("ifs");
@@ -3141,6 +3560,39 @@ export default function EgnytePlanMatrix() {
                 {!bc ? (
                   // ── GRID VIEW ──
                   <div>
+                    {/* Win Themes — collapsible */}
+                    {(() => {
+                      const themes = [
+                        { icon:"🔗", label:"One Platform. No Compromises.", desc:"Egnyte is the only platform that unifies content collaboration, data governance, security, and AI — without requiring a patchwork of third-party add-ons.", against:"Box (requires CASBs), Google Drive (requires SAR tools), LucidLink (requires PostLab for sharing)" },
+                        { icon:"🔐", label:"Security You Can Prove. Compliance You Can Demonstrate.", desc:"When your auditors ask for proof, Egnyte gives you the reports, trails, and controls — natively, without custom development.", against:"All competitors — pre-configured compliance policies, ransomware detection, SAR processing, and legal holds are native." },
+                        { icon:"🏭", label:"Built for Your Industry, Not Retrofitted.", desc:"Egnyte doesn't just store your files — it understands your industry's workflows, compliance requirements, and data types.", against:"Box, Google Drive, ShareFile, LucidLink — none have dedicated LS, AEC, or FSI vertical solutions." },
+                        { icon:"🚨", label:"Ransomware Doesn't Have to Be a Disaster.", desc:"With Egnyte's snapshot-based recovery, your team restores to any point in time — without calling support, without waiting weeks.", against:"Box, Google Drive, ShareFile, LucidLink — none offer self-service, date-based repository restoration." },
+                        { icon:"⚡", label:"Modern Cloud. Familiar Experience. Zero Disruption.", desc:"Egnyte works the way your team already works — drive letters, MS Office co-editing, familiar folder structures — with enterprise security.", against:"ProjectWise (legacy desktop, steep learning curve), ABC Pro (complex admin), Box (no drive letter)." },
+                      ];
+                      const [open, setOpen] = React.useState(false);
+                      return (
+                        <div style={{ background:E.navyCard, border:`1px solid rgba(245,158,11,0.2)`, borderRadius:12, marginBottom:20, overflow:"hidden" }}>
+                          <button onClick={() => setOpen(o => !o)}
+                            style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"14px 18px", background:"transparent", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", textAlign:"left" }}>
+                            <span style={{ fontSize:13, fontWeight:700, color:amber }}>🎯 5 Core Win Themes</span>
+                            <span style={{ fontSize:11, color:E.textMut }}>— universal messaging for every competitive conversation</span>
+                            <span style={{ marginLeft:"auto", fontSize:11, color:E.textMut }}>{open ? "▲" : "▼"}</span>
+                          </button>
+                          {open && (
+                            <div style={{ padding:"4px 18px 16px", display:"flex", flexDirection:"column", gap:10 }}>
+                              {themes.map((t,i) => (
+                                <div key={i} style={{ background:E.navySurf, borderRadius:9, padding:"12px 14px", borderLeft:`3px solid ${amber}` }}>
+                                  <div style={{ fontSize:12, fontWeight:700, color:E.text, marginBottom:4 }}>{t.icon} {t.label}</div>
+                                  <div style={{ fontSize:12, color:E.textSub, lineHeight:1.55, marginBottom:6 }}>{t.desc}</div>
+                                  <div style={{ fontSize:11, color:E.textMut }}><span style={{ color:amber, fontWeight:600 }}>Use against: </span>{t.against}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+
                     {/* Search */}
                     <div style={{ position:"relative", maxWidth:420, marginBottom:24 }}>
                       <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:14, pointerEvents:"none" }}>🔍</span>
@@ -3149,31 +3601,33 @@ export default function EgnytePlanMatrix() {
                         style={{ width:"100%", boxSizing:"border-box", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:9, padding:"10px 12px 10px 36px", color:E.text, fontSize:13, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
                     </div>
 
-                    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(340px, 1fr))", gap:14 }}>
+                    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))", gap:12 }}>
                       {filtered.map(b => (
                         <button key={b.id} onClick={() => setBcSelected(b.id)}
-                          style={{ textAlign:"left", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"20px 22px", cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s", display:"block", width:"100%" }}
+                          style={{ textAlign:"left", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"18px 20px", cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s", display:"block", width:"100%" }}
                           onMouseEnter={e => { e.currentTarget.style.borderColor = b.border; e.currentTarget.style.transform = "translateY(-1px)"; }}
                           onMouseLeave={e => { e.currentTarget.style.borderColor = E.border; e.currentTarget.style.transform = "none"; }}>
 
-                          <div style={{ display:"flex", alignItems:"flex-start", gap:14, marginBottom:14 }}>
-                            <div style={{ width:44, height:44, borderRadius:10, background:b.bg, border:`1px solid ${b.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{b.icon}</div>
+                          <div style={{ display:"flex", alignItems:"flex-start", gap:12, marginBottom:10 }}>
+                            <div style={{ width:40, height:40, borderRadius:9, background:b.bg, border:`1px solid ${b.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{b.icon}</div>
                             <div>
-                              <div style={{ fontSize:15, fontWeight:800, color:E.text, marginBottom:3 }}>{b.name}</div>
-                              <div style={{ fontSize:11, color:E.textMut }}>{b.vendor}</div>
+                              <div style={{ fontSize:14, fontWeight:800, color:E.text, marginBottom:2, lineHeight:1.2 }}>{b.name}</div>
+                              <div style={{ fontSize:10, color:E.textMut }}>{b.vendor}</div>
                             </div>
                           </div>
 
-                          <div style={{ fontSize:12, color:E.textSub, lineHeight:1.5, marginBottom:14, fontStyle:"italic" }}>"{b.tagline}"</div>
+                          {b.stats && <div style={{ fontSize:10, color:E.textMut, marginBottom:8, lineHeight:1.4 }}>{b.stats}</div>}
 
-                          <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:14 }}>
+                          <div style={{ fontSize:11, color:E.textSub, lineHeight:1.5, marginBottom:10, fontStyle:"italic" }}>"{b.tagline}"</div>
+
+                          <div style={{ display:"flex", flexWrap:"wrap", gap:4, marginBottom:12 }}>
                             {b.mostCommonIn.map((t,i) => (
-                              <span key={i} style={{ fontSize:10, fontWeight:600, color:E.textMut, background:E.navySurf, borderRadius:4, padding:"2px 8px" }}>{t}</span>
+                              <span key={i} style={{ fontSize:9, fontWeight:600, color:E.textMut, background:E.navySurf, borderRadius:4, padding:"2px 7px" }}>{t}</span>
                             ))}
                           </div>
 
-                          <div style={{ display:"flex", alignItems:"center", gap:6, color:amber, fontSize:12, fontWeight:700 }}>
-                            <span>View Battlecard</span>
+                          <div style={{ display:"flex", alignItems:"center", gap:5, color:amber, fontSize:11, fontWeight:700 }}>
+                            <span>Open Battlecard</span>
                             <span>→</span>
                           </div>
                         </button>
@@ -3191,10 +3645,11 @@ export default function EgnytePlanMatrix() {
 
                     {/* Competitor header */}
                     <div style={{ background:bc.bg, border:`1px solid ${bc.border}`, borderRadius:14, padding:"24px 28px", marginBottom:20, display:"flex", alignItems:"center", gap:20, flexWrap:"wrap" }}>
-                      <div style={{ width:56, height:56, borderRadius:12, background:`rgba(${bc.color === '#0078D4' ? '0,120,212' : bc.color === '#0061FF' ? '0,97,255' : bc.color === '#0061D5' ? '0,97,213' : bc.color === '#00A3E0' ? '0,163,224' : bc.color === '#059669' ? '5,150,105' : '124,58,237'},0.2)`, border:`1.5px solid ${bc.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28 }}>{bc.icon}</div>
+                      <div style={{ width:56, height:56, borderRadius:12, background:bc.bg, border:`1.5px solid ${bc.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28 }}>{bc.icon}</div>
                       <div style={{ flex:1, minWidth:200 }}>
-                        <div style={{ fontSize:22, fontWeight:900, color:E.text, marginBottom:4 }}>{bc.name}</div>
-                        <div style={{ fontSize:13, color:E.textSub, fontStyle:"italic" }}>"{bc.tagline}"</div>
+                        <div style={{ fontSize:22, fontWeight:900, color:E.text, marginBottom:2 }}>{bc.name}</div>
+                        {bc.stats && <div style={{ fontSize:11, color:E.textMut, marginBottom:4 }}>{bc.stats}</div>}
+                        <div style={{ fontSize:12, color:E.textSub, fontStyle:"italic" }}>"{bc.tagline}"</div>
                       </div>
                       <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
                         {bc.mostCommonIn.map((t,i) => (
@@ -3218,10 +3673,24 @@ export default function EgnytePlanMatrix() {
                         </div>
                       </div>
 
-                      {/* Why Egnyte Wins */}
-                      <div style={{ background:E.navyCard, border:`1px solid rgba(11,197,186,0.2)`, borderRadius:12, padding:"18px 20px" }}>
-                        <div style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>🏆 Why Egnyte Wins</div>
+                      {/* Where They Win — honest prep */}
+                      <div style={{ background:E.navyCard, border:`1px solid rgba(251,191,36,0.2)`, borderRadius:12, padding:"18px 20px" }}>
+                        <div style={{ fontSize:9, fontWeight:700, color:"#FBBF24", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:4 }}>⚠ Where They Win</div>
+                        <div style={{ fontSize:10, color:E.textMut, marginBottom:10 }}>Know this before the call — be ready to handle it.</div>
                         <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                          {(bc.whereTheyWin || []).map((w,i) => (
+                            <div key={i} style={{ display:"flex", gap:8, alignItems:"flex-start" }}>
+                              <span style={{ color:"#FBBF24", fontSize:11, marginTop:1, flexShrink:0 }}>▲</span>
+                              <span style={{ fontSize:12, color:E.textSub, lineHeight:1.55 }}>{w}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Why Egnyte Wins */}
+                      <div style={{ background:E.navyCard, border:`1px solid rgba(11,197,186,0.2)`, borderRadius:12, padding:"18px 20px", gridColumn:"1 / -1" }}>
+                        <div style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:12 }}>🏆 Why Egnyte Wins</div>
+                        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px 24px" }}>
                           {bc.whyEgnyte.map((w,i) => (
                             <div key={i} style={{ display:"flex", gap:8, alignItems:"flex-start" }}>
                               <span style={{ color:E.teal, fontSize:11, marginTop:1, flexShrink:0 }}>✓</span>
