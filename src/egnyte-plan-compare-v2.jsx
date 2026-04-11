@@ -3525,8 +3525,13 @@ export default function EgnytePlanMatrix() {
           {/* ── BATTLECARDS ── */}
           {mode==="battlecards" && (() => {
             const amber = "#F59E0B";
-            const amberDark = "#D97706";
-            const bc = bcSelected ? BATTLECARDS.find(b => b.id === bcSelected) : null;
+            const bc = bcSelected ? (BATTLECARDS.find(b => b.id === bcSelected) || null) : null;
+
+            // If bcSelected has a stale/invalid value, clear it
+            if (bcSelected && !bc) {
+              setBcSelected(null);
+              return null;
+            }
 
             // Search filter across all cards when no competitor selected
             const filtered = BATTLECARDS.filter(b => {
