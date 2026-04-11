@@ -1967,7 +1967,41 @@ function pushUrl(mode, bc = null, builderStep = null, builderIsResult = false) {
   }
 }
 
-// ─── MAIN ─────────────────────────────────────────────────────────────────────
+// ─── WIN THEMES PANEL ─────────────────────────────────────────────────────────
+const WIN_THEMES = [
+  { icon:"🔗", label:"One Platform. No Compromises.", desc:"Egnyte is the only platform that unifies content collaboration, data governance, security, and AI — without requiring a patchwork of third-party add-ons.", against:"Box (requires CASBs), Google Drive (requires SAR tools), LucidLink (requires PostLab for sharing)" },
+  { icon:"🔐", label:"Security You Can Prove. Compliance You Can Demonstrate.", desc:"When your auditors ask for proof, Egnyte gives you the reports, trails, and controls — natively, without custom development.", against:"All competitors — pre-configured compliance policies, ransomware detection, SAR processing, and legal holds are native." },
+  { icon:"🏭", label:"Built for Your Industry, Not Retrofitted.", desc:"Egnyte doesn't just store your files — it understands your industry's workflows, compliance requirements, and data types.", against:"Box, Google Drive, ShareFile, LucidLink — none have dedicated LS, AEC, or FSI vertical solutions." },
+  { icon:"🚨", label:"Ransomware Doesn't Have to Be a Disaster.", desc:"With Egnyte's snapshot-based recovery, your team restores to any point in time — without calling support, without waiting weeks.", against:"Box, Google Drive, ShareFile, LucidLink — none offer self-service, date-based repository restoration." },
+  { icon:"⚡", label:"Modern Cloud. Familiar Experience. Zero Disruption.", desc:"Egnyte works the way your team already works — drive letters, MS Office co-editing, familiar folder structures — with enterprise security.", against:"ProjectWise (legacy desktop, steep learning curve), ABC Pro (complex admin), Box (no drive letter)." },
+];
+
+function WinThemesPanel({ amber, E }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ background:E.navyCard, border:`1px solid rgba(245,158,11,0.2)`, borderRadius:12, marginBottom:20, overflow:"hidden" }}>
+      <button onClick={() => setOpen(o => !o)}
+        style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"14px 18px", background:"transparent", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", textAlign:"left" }}>
+        <span style={{ fontSize:13, fontWeight:700, color:amber }}>🎯 5 Core Win Themes</span>
+        <span style={{ fontSize:11, color:E.textMut }}>— universal messaging for every competitive conversation</span>
+        <span style={{ marginLeft:"auto", fontSize:11, color:E.textMut }}>{open ? "▲" : "▼"}</span>
+      </button>
+      {open && (
+        <div style={{ padding:"4px 18px 16px", display:"flex", flexDirection:"column", gap:10 }}>
+          {WIN_THEMES.map((t,i) => (
+            <div key={i} style={{ background:E.navySurf, borderRadius:9, padding:"12px 14px", borderLeft:`3px solid ${amber}` }}>
+              <div style={{ fontSize:12, fontWeight:700, color:E.text, marginBottom:4 }}>{t.icon} {t.label}</div>
+              <div style={{ fontSize:12, color:E.textSub, lineHeight:1.55, marginBottom:6 }}>{t.desc}</div>
+              <div style={{ fontSize:11, color:E.textMut }}><span style={{ color:amber, fontWeight:600 }}>Use against: </span>{t.against}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 export default function EgnytePlanMatrix() {
   // ── Auth gate ──
   const [authed, setAuthed] = useState(() => {
@@ -3560,38 +3594,8 @@ export default function EgnytePlanMatrix() {
                 {!bc ? (
                   // ── GRID VIEW ──
                   <div>
-                    {/* Win Themes — collapsible */}
-                    {(() => {
-                      const themes = [
-                        { icon:"🔗", label:"One Platform. No Compromises.", desc:"Egnyte is the only platform that unifies content collaboration, data governance, security, and AI — without requiring a patchwork of third-party add-ons.", against:"Box (requires CASBs), Google Drive (requires SAR tools), LucidLink (requires PostLab for sharing)" },
-                        { icon:"🔐", label:"Security You Can Prove. Compliance You Can Demonstrate.", desc:"When your auditors ask for proof, Egnyte gives you the reports, trails, and controls — natively, without custom development.", against:"All competitors — pre-configured compliance policies, ransomware detection, SAR processing, and legal holds are native." },
-                        { icon:"🏭", label:"Built for Your Industry, Not Retrofitted.", desc:"Egnyte doesn't just store your files — it understands your industry's workflows, compliance requirements, and data types.", against:"Box, Google Drive, ShareFile, LucidLink — none have dedicated LS, AEC, or FSI vertical solutions." },
-                        { icon:"🚨", label:"Ransomware Doesn't Have to Be a Disaster.", desc:"With Egnyte's snapshot-based recovery, your team restores to any point in time — without calling support, without waiting weeks.", against:"Box, Google Drive, ShareFile, LucidLink — none offer self-service, date-based repository restoration." },
-                        { icon:"⚡", label:"Modern Cloud. Familiar Experience. Zero Disruption.", desc:"Egnyte works the way your team already works — drive letters, MS Office co-editing, familiar folder structures — with enterprise security.", against:"ProjectWise (legacy desktop, steep learning curve), ABC Pro (complex admin), Box (no drive letter)." },
-                      ];
-                      const [open, setOpen] = React.useState(false);
-                      return (
-                        <div style={{ background:E.navyCard, border:`1px solid rgba(245,158,11,0.2)`, borderRadius:12, marginBottom:20, overflow:"hidden" }}>
-                          <button onClick={() => setOpen(o => !o)}
-                            style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"14px 18px", background:"transparent", border:"none", cursor:"pointer", fontFamily:"'Inter',sans-serif", textAlign:"left" }}>
-                            <span style={{ fontSize:13, fontWeight:700, color:amber }}>🎯 5 Core Win Themes</span>
-                            <span style={{ fontSize:11, color:E.textMut }}>— universal messaging for every competitive conversation</span>
-                            <span style={{ marginLeft:"auto", fontSize:11, color:E.textMut }}>{open ? "▲" : "▼"}</span>
-                          </button>
-                          {open && (
-                            <div style={{ padding:"4px 18px 16px", display:"flex", flexDirection:"column", gap:10 }}>
-                              {themes.map((t,i) => (
-                                <div key={i} style={{ background:E.navySurf, borderRadius:9, padding:"12px 14px", borderLeft:`3px solid ${amber}` }}>
-                                  <div style={{ fontSize:12, fontWeight:700, color:E.text, marginBottom:4 }}>{t.icon} {t.label}</div>
-                                  <div style={{ fontSize:12, color:E.textSub, lineHeight:1.55, marginBottom:6 }}>{t.desc}</div>
-                                  <div style={{ fontSize:11, color:E.textMut }}><span style={{ color:amber, fontWeight:600 }}>Use against: </span>{t.against}</div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
+                    {/* Win Themes — collapsible panel (proper component, no hooks in IIFE) */}
+                    <WinThemesPanel amber={amber} E={E} />
 
                     {/* Search */}
                     <div style={{ position:"relative", maxWidth:420, marginBottom:24 }}>
