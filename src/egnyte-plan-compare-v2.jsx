@@ -1435,6 +1435,7 @@ const CUSTOMER_STORIES = [
 const BATTLECARDS = [
   {
     id: "sharepoint",
+    featured: true,
     name: "SharePoint / OneDrive",
     vendor: "Microsoft",
     icon: "🪟",
@@ -1480,6 +1481,7 @@ const BATTLECARDS = [
   },
   {
     id: "dropbox",
+    featured: true,
     name: "Dropbox",
     vendor: "Dropbox",
     icon: "📦",
@@ -1523,6 +1525,7 @@ const BATTLECARDS = [
   },
   {
     id: "box",
+    featured: true,
     name: "Box",
     vendor: "Box",
     icon: "📋",
@@ -1701,6 +1704,7 @@ const BATTLECARDS = [
   },
   {
     id: "nasuni_panzura",
+    featured: true,
     name: "Nasuni / Panzura",
     vendor: "Nasuni · Panzura",
     icon: "🏗",
@@ -3605,37 +3609,87 @@ export default function EgnytePlanMatrix() {
                         style={{ width:"100%", boxSizing:"border-box", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:9, padding:"10px 12px 10px 36px", color:E.text, fontSize:13, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
                     </div>
 
-                    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(300px, 1fr))", gap:12 }}>
-                      {filtered.map(b => (
-                        <button key={b.id} onClick={() => setBcSelected(b.id)}
-                          style={{ textAlign:"left", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"18px 20px", cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s", display:"block", width:"100%" }}
-                          onMouseEnter={e => { e.currentTarget.style.borderColor = b.border; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                          onMouseLeave={e => { e.currentTarget.style.borderColor = E.border; e.currentTarget.style.transform = "none"; }}>
+                    <div style={{ marginBottom:28 }}>
+                      {/* Most Common label */}
+                      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
+                        <span style={{ fontSize:9, fontWeight:700, color:amber, letterSpacing:"0.12em", textTransform:"uppercase" }}>🔥 Most Common in the Field</span>
+                        <div style={{ flex:1, height:1, background:`rgba(245,158,11,0.2)` }}/>
+                      </div>
 
-                          <div style={{ display:"flex", alignItems:"flex-start", gap:12, marginBottom:10 }}>
-                            <div style={{ width:40, height:40, borderRadius:9, background:b.bg, border:`1px solid ${b.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{b.icon}</div>
-                            <div>
-                              <div style={{ fontSize:14, fontWeight:800, color:E.text, marginBottom:2, lineHeight:1.2 }}>{b.name}</div>
-                              <div style={{ fontSize:10, color:E.textMut }}>{b.vendor}</div>
+                      {/* Featured cards — wider, more prominent */}
+                      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(340px, 1fr))", gap:12, marginBottom:28 }}>
+                        {filtered.filter(b => b.featured).map(b => (
+                          <button key={b.id} onClick={() => setBcSelected(b.id)}
+                            style={{ textAlign:"left", background:E.navyCard, border:`1px solid ${b.border}`, borderRadius:12, padding:"18px 20px", cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s", display:"block", width:"100%", position:"relative", boxShadow:`0 4px 20px rgba(0,0,0,0.2)` }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = b.color; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 28px rgba(0,0,0,0.3), 0 0 0 1px ${b.border}`; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = b.border; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.2)"; }}>
+
+                            {/* Hot badge */}
+                            <div style={{ position:"absolute", top:12, right:14, fontSize:9, fontWeight:700, color:amber, background:"rgba(245,158,11,0.12)", border:"1px solid rgba(245,158,11,0.3)", borderRadius:4, padding:"2px 7px", letterSpacing:"0.08em", textTransform:"uppercase" }}>Most Common</div>
+
+                            <div style={{ display:"flex", alignItems:"flex-start", gap:12, marginBottom:10 }}>
+                              <div style={{ width:42, height:42, borderRadius:9, background:b.bg, border:`1px solid ${b.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{b.icon}</div>
+                              <div>
+                                <div style={{ fontSize:15, fontWeight:800, color:E.text, marginBottom:2, lineHeight:1.2 }}>{b.name}</div>
+                                <div style={{ fontSize:10, color:E.textMut }}>{b.vendor}</div>
+                              </div>
                             </div>
-                          </div>
 
-                          {b.stats && <div style={{ fontSize:10, color:E.textMut, marginBottom:8, lineHeight:1.4 }}>{b.stats}</div>}
+                            <div style={{ fontSize:11, color:E.textSub, lineHeight:1.5, marginBottom:10, fontStyle:"italic" }}>"{b.tagline}"</div>
 
-                          <div style={{ fontSize:11, color:E.textSub, lineHeight:1.5, marginBottom:10, fontStyle:"italic" }}>"{b.tagline}"</div>
+                            <div style={{ display:"flex", flexWrap:"wrap", gap:4, marginBottom:12 }}>
+                              {b.mostCommonIn.map((t,i) => (
+                                <span key={i} style={{ fontSize:9, fontWeight:600, color:E.textMut, background:E.navySurf, borderRadius:4, padding:"2px 7px" }}>{t}</span>
+                              ))}
+                            </div>
 
-                          <div style={{ display:"flex", flexWrap:"wrap", gap:4, marginBottom:12 }}>
-                            {b.mostCommonIn.map((t,i) => (
-                              <span key={i} style={{ fontSize:9, fontWeight:600, color:E.textMut, background:E.navySurf, borderRadius:4, padding:"2px 7px" }}>{t}</span>
-                            ))}
-                          </div>
+                            <div style={{ display:"flex", alignItems:"center", gap:5, color:amber, fontSize:11, fontWeight:700 }}>
+                              <span>Open Battlecard</span>
+                              <span>→</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
 
-                          <div style={{ display:"flex", alignItems:"center", gap:5, color:amber, fontSize:11, fontWeight:700 }}>
-                            <span>Open Battlecard</span>
-                            <span>→</span>
-                          </div>
-                        </button>
-                      ))}
+                      {/* Other competitors label */}
+                      {filtered.filter(b => !b.featured).length > 0 && (<>
+                        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
+                          <span style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase" }}>Other Competitors</span>
+                          <div style={{ flex:1, height:1, background:E.borderSub }}/>
+                        </div>
+
+                        {/* Standard cards */}
+                        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))", gap:10 }}>
+                          {filtered.filter(b => !b.featured).map(b => (
+                            <button key={b.id} onClick={() => setBcSelected(b.id)}
+                              style={{ textAlign:"left", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:12, padding:"16px 18px", cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s", display:"block", width:"100%" }}
+                              onMouseEnter={e => { e.currentTarget.style.borderColor = b.border; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                              onMouseLeave={e => { e.currentTarget.style.borderColor = E.border; e.currentTarget.style.transform = "none"; }}>
+
+                              <div style={{ display:"flex", alignItems:"flex-start", gap:10, marginBottom:8 }}>
+                                <div style={{ width:36, height:36, borderRadius:8, background:b.bg, border:`1px solid ${b.border}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>{b.icon}</div>
+                                <div>
+                                  <div style={{ fontSize:13, fontWeight:800, color:E.text, marginBottom:2, lineHeight:1.2 }}>{b.name}</div>
+                                  <div style={{ fontSize:10, color:E.textMut }}>{b.vendor}</div>
+                                </div>
+                              </div>
+
+                              <div style={{ fontSize:11, color:E.textSub, lineHeight:1.5, marginBottom:10, fontStyle:"italic" }}>"{b.tagline}"</div>
+
+                              <div style={{ display:"flex", flexWrap:"wrap", gap:4, marginBottom:10 }}>
+                                {b.mostCommonIn.slice(0,2).map((t,i) => (
+                                  <span key={i} style={{ fontSize:9, fontWeight:600, color:E.textMut, background:E.navySurf, borderRadius:4, padding:"2px 7px" }}>{t}</span>
+                                ))}
+                              </div>
+
+                              <div style={{ display:"flex", alignItems:"center", gap:5, color:E.teal, fontSize:11, fontWeight:700 }}>
+                                <span>Open Battlecard</span>
+                                <span>→</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </>)}
                     </div>
                   </div>
                 ) : (
