@@ -743,7 +743,8 @@ function PasswordGate({ onSuccess }) {
   const attempt = () => {
     const correct = import.meta.env.VITE_COMPASS_PASSWORD;
     if (!correct || value === correct) {
-      onSuccess();
+      // Defer to next tick so React can finish this render before unmounting the gate
+      setTimeout(() => onSuccess(), 0);
     } else {
       setError(true);
       setShaking(true);
@@ -1748,6 +1749,57 @@ const BATTLECARDS = [
     relatedUseCases: ["remote_jobsite", "file_server", "consolidation"],
   },
   {
+    id: "onprem",
+    featured: true,
+    name: "On-Premises File Servers / NAS",
+    vendor: "Windows Server · Synology · QNAP · NetApp · Dell EMC",
+    icon: "🖥",
+    color: "#64748B",
+    bg: "rgba(100,116,139,0.08)",
+    border: "rgba(100,116,139,0.3)",
+    tagline: "We already have a file server — it works fine.",
+    stats: "Most common status-quo objection across all verticals",
+    mostCommonIn: ["SMB", "AEC / Construction", "Financial Services", "Any non-cloud-first org"],
+    theirPitch: [
+      "Already paid for — hardware is depreciated and we know how it works.",
+      "Files stay on-site, so we control our data completely.",
+      "We've had the same setup for years with no major issues.",
+      "Our IT team manages it and we don't need another vendor.",
+    ],
+    whereTheyWin: [
+      "Zero incremental cost perception — hardware is already owned.",
+      "True data sovereignty — files never leave the building.",
+      "Familiar drive-letter and NTFS permissions that users already know.",
+      "No internet dependency for local file access — works even when connectivity is down.",
+      "Some regulated industries have genuine air-gap requirements on-prem can meet.",
+    ],
+    trapQuestions: [
+      { q: "When an employee works from home or a job site, how do they access files on the server — are they using a VPN, and how reliable is that experience?", why: "VPN friction is the #1 daily complaint from on-prem users. Remote access pain is the most common trigger for evaluating alternatives." },
+      { q: "If ransomware encrypted your file server tomorrow, how long would recovery take — and how much data from the last 24 hours would you lose?", why: "On-prem servers with standard backup have 24-hour RPO gaps. Recovery from tape or backup server takes days, not hours. This is a visceral question that surfaces real risk." },
+      { q: "What's your plan when that server reaches end-of-life or needs a hardware refresh — and what's the capital cost to replace it?", why: "Windows Server 2016 and many NAS devices are approaching end-of-life. Hardware refresh is a $15–50K+ capital event that can be reframed as an Egnyte subscription." },
+      { q: "How does your IT team handle access for an employee who leaves — can they guarantee within the hour that all their access is revoked, including any files they may have synced locally?", why: "Offboarding on-prem is a manual, error-prone process. This surfaces governance gaps that create real data security risk." },
+      { q: "When a client, subcontractor, or auditor needs access to specific project files, what's your current process — and how long does it take to set that up?", why: "External sharing from on-prem requires VPN provisioning, FTP, or emailed zip files — all of which are painful and insecure." },
+      { q: "How much of your IT team's time each month goes to managing the file server — patches, backups, permissions, disk space, and user issues?", why: "Surfaces the hidden labor cost that makes 'already paid for' inaccurate when total cost of ownership is calculated." },
+    ],
+    objections: [
+      { q: "We already own the hardware — switching to Egnyte means a new ongoing cost.", a: "The hardware is paid for, but the operating cost isn't zero — IT labor for patches, backups, hardware support contracts, and eventual refresh all add up. Egnyte's ROI study found customers save an average of 4.3 hours per user per week, and one customer reduced IT maintenance time by 25%. The recurring cost is often less than the true TCO of running on-prem when you factor in labor, hardware refresh cycles, and backup infrastructure." },
+      { q: "Our data stays on-site — we're not comfortable putting files in the cloud.", a: "That concern is completely valid for some use cases, which is why Egnyte's hybrid architecture lets you keep a local copy on-site via SmartCache while the cloud copy gives you remote access, ransomware recovery, and governance. You get the control of on-prem with the resilience and accessibility of cloud. And for clients with true air-gap requirements, we can discuss what those actually cover." },
+      { q: "Our IT team handles the file server — it's not broken, so why fix it?", a: "The question isn't whether it's broken today — it's whether it can answer tomorrow's questions. When your cyber insurer asks for ransomware detection capability, when an auditor asks for a PII inventory, or when a key employee quits and you need to prove their access was revoked within the hour, the file server can't answer those questions. Egnyte can." },
+      { q: "We've been on this setup for 10 years without a major incident.", a: "Ten years without an incident is good fortune — but it's also 10 years of unpatched attack surface, 10 years of accumulated permissions nobody has audited, and 10 years of backup tapes nobody has tested restoring. The question isn't whether something will happen, it's whether you'll be able to recover when it does." },
+    ],
+    whyEgnyte: [
+      "Familiar drive-letter experience preserved — users see the same folders, same access, zero retraining.",
+      "Remote access without VPN — any device, any location, full file access.",
+      "Ransomware detection AND recovery — behavioral signals catch it live, snapshots restore clean.",
+      "Self-service external sharing — clients and partners get governed access without IT tickets.",
+      "Governance built-in — PII detection, audit trails, SAR processing, legal holds, automated retention.",
+      "Hybrid SmartCache — local LAN-speed copy on-site for performance, cloud for resilience.",
+      "Hardware refresh reframed — swap capital expense for predictable monthly operating cost.",
+      "Win story: Southstar Bank eliminated 20,000 improperly stored sensitive files within days of migrating from on-prem.",
+    ],
+    relatedUseCases: ["file_server", "ransomware", "sensitive_data", "consolidation", "remote_jobsite"],
+  },
+  {
     id: "lucidlink",
     name: "LucidLink",
     vendor: "LucidLink",
@@ -2008,14 +2060,26 @@ function WinThemesPanel({ amber, E }) {
 
 export default function EgnytePlanMatrix() {
   // ── Auth gate ──
+  const AUTH_KEY = "compass_authed_until";
+  const AUTH_HOURS = 8; // stays logged in for 8 hours across tab closes
+
+  const isAuthed = () => {
+    const until = localStorage.getItem(AUTH_KEY);
+    return until && Date.now() < parseInt(until, 10);
+  };
+
   const [authed, setAuthed] = useState(() => {
-    // No password configured → open access (development mode)
+    // No password configured → open access (dev mode)
     if (!import.meta.env.VITE_COMPASS_PASSWORD) return true;
-    return sessionStorage.getItem("compass_authed") === "1";
+    return isAuthed();
   });
 
   const handleAuth = () => {
-    sessionStorage.setItem("compass_authed", "1");
+    // Store expiry timestamp
+    const until = Date.now() + AUTH_HOURS * 60 * 60 * 1000;
+    localStorage.setItem(AUTH_KEY, String(until));
+    // Push clean hash before unmounting gate so first render has a valid URL
+    history.replaceState({}, "", "#compare");
     setAuthed(true);
   };
 
