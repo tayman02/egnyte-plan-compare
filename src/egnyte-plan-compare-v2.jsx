@@ -743,8 +743,7 @@ function PasswordGate({ onSuccess }) {
   const attempt = () => {
     const correct = import.meta.env.VITE_COMPASS_PASSWORD;
     if (!correct || value === correct) {
-      // Defer to next tick so React can finish this render before unmounting the gate
-      setTimeout(() => onSuccess(), 0);
+      onSuccess();
     } else {
       setError(true);
       setShaking(true);
@@ -2059,9 +2058,8 @@ function WinThemesPanel({ amber, E }) {
 
 
 export default function EgnytePlanMatrix() {
-  // ── Auth gate ──
   const AUTH_KEY = "compass_authed_until";
-  const AUTH_HOURS = 8; // stays logged in for 8 hours across tab closes
+  const AUTH_HOURS = 8;
 
   const isAuthed = () => {
     const until = localStorage.getItem(AUTH_KEY);
@@ -2069,22 +2067,24 @@ export default function EgnytePlanMatrix() {
   };
 
   const [authed, setAuthed] = useState(() => {
-    // No password configured → open access (dev mode)
     if (!import.meta.env.VITE_COMPASS_PASSWORD) return true;
     return isAuthed();
   });
 
   const handleAuth = () => {
-    // Store expiry timestamp
     const until = Date.now() + AUTH_HOURS * 60 * 60 * 1000;
     localStorage.setItem(AUTH_KEY, String(until));
-    // Push clean hash before unmounting gate so first render has a valid URL
     history.replaceState({}, "", "#compare");
     setAuthed(true);
   };
 
+  // Auth gate renders a completely separate component tree — no hook count mismatch
   if (!authed) return <PasswordGate onSuccess={handleAuth} />;
+  return <CompassApp />;
+}
 
+// ─── COMPASS APP (all hooks live here — always mounted when authed) ────────────
+function CompassApp() {
   // Initialise from URL so there's no flash of wrong state on load
   const [fromPlan, setFromPlan] = useState("afs");
   const [toPlan,   setToPlan]   = useState("ifs");
