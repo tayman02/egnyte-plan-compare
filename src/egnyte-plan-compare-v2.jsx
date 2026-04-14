@@ -738,182 +738,270 @@ const HexBg = () => (
 const TOUR_SLIDES = [
   {
     id: "welcome",
+    targetText: null,
     badge: null,
-    badgeColor: null,
-    icon: (
-      <svg width="52" height="52" viewBox="0 0 34 34" fill="none">
-        <circle cx="17" cy="17" r="15.5" stroke="#0BC5BA" strokeWidth="1.25" strokeOpacity="0.6"/>
-        <circle cx="17" cy="17" r="10" stroke="#0BC5BA" strokeWidth="0.5" strokeOpacity="0.2"/>
-        <line x1="17" y1="2.5" x2="17" y2="5.5" stroke="#0BC5BA" strokeWidth="1.5" strokeLinecap="round"/>
-        <line x1="17" y1="28.5" x2="17" y2="31.5" stroke="#0BC5BA" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
-        <line x1="28.5" y1="17" x2="31.5" y2="17" stroke="#0BC5BA" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
-        <line x1="2.5" y1="17" x2="5.5" y2="17" stroke="#0BC5BA" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
-        <path d="M17 6 L20 17 L17 14.5 L14 17 Z" fill="#0BC5BA"/>
-        <path d="M17 28 L20 17 L17 19.5 L14 17 Z" fill="#0BC5BA" fillOpacity="0.28"/>
-        <circle cx="17" cy="17" r="2.2" fill="#0BC5BA"/>
-        <circle cx="17" cy="17" r="1" fill="#0C2340"/>
-      </svg>
-    ),
+    icon: null,
     heading: "Welcome to Compass",
     sub: "MSP Partner Tool · Powered by Egnyte",
-    body: "Compass is a sales enablement tool built for Egnyte partner managers and partners. It gives you everything you need to qualify opportunities, size deals, handle objections, and win competitive conversations — all in one place.",
+    body: "Compass is a sales enablement tool built for Egnyte partner managers and partners. It gives you everything you need to qualify opportunities, size deals, handle objections, and win competitive conversations — all in one place. Let's take a quick look at each section.",
     accent: "#0BC5BA",
+    badgeColor: "#0BC5BA",
+    badgeBg: "rgba(11,197,186,0.12)",
   },
   {
     id: "compare",
+    targetText: "Compare Plans",
     badge: "Compare Plans",
-    badgeColor: "#0BC5BA",
-    badgeBg: "rgba(11,197,186,0.12)",
-    icon: <span style={{fontSize:36}}>📊</span>,
+    icon: "📊",
     heading: "Plan Upgrade Comparison",
     sub: "Start here when a customer is on a Legacy or Gen 3 plan",
-    body: "Select the customer's current and proposed plan to instantly see net-new features, price uplift, and deal revenue impact. Enter user count to get monthly and annual numbers. Then use the AI Value Summary to generate a tailored upgrade narrative for any vertical.",
+    body: "Select the customer's current and proposed plan to instantly see net-new features, price uplift, and deal revenue impact. Enter user count to calculate monthly and annual numbers. Then generate an AI Value Summary — a tailored upgrade narrative for any vertical or customer context.",
     accent: "#0BC5BA",
+    badgeColor: "#0BC5BA",
+    badgeBg: "rgba(11,197,186,0.12)",
   },
   {
     id: "builder",
+    targetText: "Plan Builder",
     badge: "Plan Builder",
+    icon: "✦",
+    heading: "Find the Right Plan",
+    sub: "Start here when you don't know which plan fits yet",
+    body: "Answer 6 quick questions about the customer's environment, scale, security needs, and budget. Compass scores all four Gen 4 plans and recommends the best fit — with a rationale you can share. Toggle to see the Gen 3 equivalent if they're not ready to move to Gen 4.",
+    accent: "#6E49FF",
     badgeColor: "#A78BFA",
     badgeBg: "rgba(110,73,255,0.12)",
-    icon: <span style={{fontSize:36}}>✦</span>,
-    heading: "Find the Right Plan",
-    sub: "Start here when you don't know which plan fits",
-    body: "Answer 6 quick questions about the customer's environment, scale, security needs, and budget. Compass scores all four Gen 4 plans and recommends the best fit — with a rationale and a Gen 3 equivalent toggle. No Egnyte expertise required.",
-    accent: "#6E49FF",
   },
   {
     id: "usecases",
+    targetText: "Use Cases",
     badge: "Use Cases",
-    badgeColor: "#3D71EA",
-    badgeBg: "rgba(61,113,234,0.12)",
-    icon: <span style={{fontSize:36}}>🎯</span>,
+    icon: "🎯",
     heading: "Use Case Library",
     sub: "Start from the customer's problem, not the plan",
-    body: "Browse 15 mapped use cases — each with discovery triggers, recommended plans, key capabilities, competitors to position against, and real customer stories. Search by keyword or filter by plan. Expand any card to get everything you need before or during a call.",
+    body: "Browse 15 mapped use cases — each with discovery triggers, recommended plans, key capabilities, competitor context, and real customer stories. Search by keyword or filter by plan tier. Expand any card to get a full picture before or during a conversation.",
     accent: "#3D71EA",
+    badgeColor: "#3D71EA",
+    badgeBg: "rgba(61,113,234,0.12)",
   },
   {
     id: "battlecards",
+    targetText: "Battlecards",
     badge: "⚔ Battlecards",
-    badgeColor: "#F59E0B",
-    badgeBg: "rgba(245,158,11,0.12)",
-    icon: <span style={{fontSize:36}}>⚔</span>,
+    icon: "⚔",
     heading: "Win the Competitive Deal",
     sub: "Start here when you know who you're up against",
-    body: "12 competitor battlecards — each with their pitch, where they genuinely win, trap-setting discovery questions written as you'd say them on a call, objection responses, and Egnyte's win themes. Most common competitors are highlighted so you can move fast mid-call.",
+    body: "12 competitor battlecards covering SharePoint, Dropbox, Box, on-prem file servers, and more. Each card has their pitch, where they genuinely win, trap-setting discovery questions written as you'd say them on a call, objection responses, and Egnyte's win themes. Most common competitors are featured at the top.",
     accent: "#F59E0B",
+    badgeColor: "#F59E0B",
+    badgeBg: "rgba(245,158,11,0.12)",
   },
 ];
 
 function OnboardingModal({ onDone }) {
   const [slide, setSlide] = useState(0);
+  const [spotlightRect, setSpotlightRect] = useState(null);
   const total = TOUR_SLIDES.length;
   const s = TOUR_SLIDES[slide];
   const isLast = slide === total - 1;
+  const PAD = 10;
 
+  // Measure target tab button whenever slide changes
+  useEffect(() => {
+    if (!s.targetText) { setSpotlightRect(null); return; }
+    const measure = () => {
+      const btn = [...document.querySelectorAll("button.mode-btn")]
+        .find(b => b.textContent.trim().includes(s.targetText));
+      if (btn) {
+        const r = btn.getBoundingClientRect();
+        setSpotlightRect({ x: r.left, y: r.top, w: r.width, h: r.height });
+      } else {
+        setSpotlightRect(null);
+      }
+    };
+    const t = setTimeout(measure, 40);
+    return () => clearTimeout(t);
+  }, [slide]);
+
+  // Keyboard nav
   useEffect(() => {
     const handleKey = (e) => {
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") setSlide(i => Math.min(i + 1, total - 1));
-      if (e.key === "ArrowLeft" || e.key === "ArrowUp") setSlide(i => Math.max(i - 1, 0));
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") setSlide(i => Math.min(i+1, total-1));
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") setSlide(i => Math.max(i-1, 0));
       if (e.key === "Escape") onDone();
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
+  const hasSpot = !!spotlightRect;
+  // Modal sits just below the header when spotlighting a tab, centered when welcome
+  const spotBottom = hasSpot ? spotlightRect.y + spotlightRect.h + PAD : 0;
+  const calloutTop = hasSpot ? spotBottom + 6 : 0;
+  const calloutLeft = hasSpot ? spotlightRect.x + spotlightRect.w / 2 : 0;
+  const modalTop = hasSpot ? spotBottom + 52 : null;
+
   return (
-    <div style={{
-      position:"fixed", inset:0, zIndex:10000,
-      background:"rgba(8,15,30,0.85)",
-      backdropFilter:"blur(6px)",
-      display:"flex", alignItems:"center", justifyContent:"center",
-      padding:24, animation:"fadeUp 0.25s ease both",
-    }}>
+    <div style={{ position:"fixed", inset:0, zIndex:10000, fontFamily:"'Inter',sans-serif" }}>
+
+      {/* ── SVG OVERLAY with spotlight cutout ── */}
+      <svg style={{ position:"absolute", inset:0, width:"100%", height:"100%", pointerEvents:"none" }}>
+        <defs>
+          <mask id="tour-mask">
+            <rect width="100%" height="100%" fill="white"/>
+            {hasSpot && (
+              <rect x={spotlightRect.x - PAD} y={spotlightRect.y - PAD}
+                width={spotlightRect.w + PAD*2} height={spotlightRect.h + PAD*2}
+                rx={9} fill="black"/>
+            )}
+          </mask>
+        </defs>
+        {/* Dark overlay with cutout */}
+        <rect width="100%" height="100%" fill="rgba(8,15,30,0.84)" mask="url(#tour-mask)"/>
+        {/* Inner glow ring */}
+        {hasSpot && (
+          <rect x={spotlightRect.x - PAD} y={spotlightRect.y - PAD}
+            width={spotlightRect.w + PAD*2} height={spotlightRect.h + PAD*2}
+            rx={9} fill="none" stroke={s.accent} strokeWidth="2"/>
+        )}
+        {/* Outer soft halo */}
+        {hasSpot && (
+          <rect x={spotlightRect.x - PAD - 5} y={spotlightRect.y - PAD - 5}
+            width={spotlightRect.w + PAD*2 + 10} height={spotlightRect.h + PAD*2 + 10}
+            rx={13} fill="none" stroke={s.accent} strokeWidth="1" strokeOpacity="0.25"/>
+        )}
+      </svg>
+
+      {/* ── CALLOUT ARROW below the spotlighted tab ── */}
+      {hasSpot && (
+        <div style={{
+          position:"absolute",
+          left: calloutLeft,
+          top: calloutTop,
+          transform:"translateX(-50%)",
+          display:"flex", flexDirection:"column", alignItems:"center", gap:3,
+          pointerEvents:"none",
+          animation:"tourBounce 1.1s ease-in-out infinite",
+          zIndex:10001,
+        }}>
+          {/* Upward triangle */}
+          <div style={{
+            width:0, height:0,
+            borderLeft:"7px solid transparent",
+            borderRight:"7px solid transparent",
+            borderBottom:`9px solid ${s.accent}`,
+          }}/>
+          {/* Label chip */}
+          <div style={{
+            background:s.accent, color:"#0C2340",
+            fontSize:10, fontWeight:800, letterSpacing:"0.05em",
+            padding:"3px 11px", borderRadius:5, whiteSpace:"nowrap",
+            boxShadow:`0 2px 12px ${s.accent}55`,
+          }}>
+            {s.badge}
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL CARD ── */}
       <div style={{
-        width:"100%", maxWidth:560,
+        position:"absolute",
+        ...(hasSpot
+          ? { top: modalTop, left:"50%", transform:"translateX(-50%)" }
+          : { top:"50%", left:"50%", transform:"translate(-50%,-50%)" }
+        ),
+        width:540, maxWidth:"calc(100vw - 32px)",
         background:"#0F1E38",
-        border:`1px solid ${s.accent}33`,
-        borderRadius:20,
-        boxShadow:`0 32px 64px rgba(0,0,0,0.6), 0 0 0 1px ${s.accent}22`,
+        border:`1px solid ${s.accent}44`,
+        borderRadius:18,
+        boxShadow:`0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px ${s.accent}18`,
         overflow:"hidden",
-        animation:"fadeUp 0.3s ease both",
-        fontFamily:"'Inter',sans-serif",
+        transition:"top 0.35s cubic-bezier(0.34,1.4,0.64,1), border-color 0.3s",
+        zIndex:10001,
       }}>
+        {/* Accent bar */}
+        <div style={{ height:3, background:`linear-gradient(90deg,${s.accent},${s.accent}55)`, transition:"background 0.3s" }}/>
 
-        {/* Accent top bar */}
-        <div style={{ height:3, background:`linear-gradient(90deg, ${s.accent}, ${s.accent}55)`, transition:"background 0.4s" }}/>
+        <div style={{ padding:"26px 36px 18px" }}>
 
-        {/* Body */}
-        <div style={{ padding:"36px 40px 28px" }}>
-
-          {/* Badge */}
-          {s.badge ? (
-            <div style={{ display:"inline-flex", alignItems:"center", gap:7, background:s.badgeBg, border:`1px solid ${s.badgeColor}44`, borderRadius:999, padding:"4px 13px", marginBottom:22 }}>
-              <span style={{ fontSize:10, fontWeight:700, color:s.badgeColor, letterSpacing:"0.1em", textTransform:"uppercase" }}>{s.badge}</span>
-            </div>
-          ) : (
-            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:22 }}>
-              {s.icon}
-              <div>
-                <div style={{ fontSize:11, fontWeight:700, color:"#0BC5BA", letterSpacing:"0.12em", textTransform:"uppercase" }}>Egnyte Partner Program</div>
-              </div>
+          {/* Slide 1: Compass logo + title */}
+          {!s.badge && (
+            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
+              <svg width="38" height="38" viewBox="0 0 34 34" fill="none">
+                <circle cx="17" cy="17" r="15.5" stroke="#0BC5BA" strokeWidth="1.25" strokeOpacity="0.6"/>
+                <circle cx="17" cy="17" r="10" stroke="#0BC5BA" strokeWidth="0.5" strokeOpacity="0.2"/>
+                <line x1="17" y1="2.5" x2="17" y2="5.5" stroke="#0BC5BA" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="17" y1="28.5" x2="17" y2="31.5" stroke="#0BC5BA" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
+                <line x1="28.5" y1="17" x2="31.5" y2="17" stroke="#0BC5BA" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
+                <line x1="2.5" y1="17" x2="5.5" y2="17" stroke="#0BC5BA" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
+                <path d="M17 6 L20 17 L17 14.5 L14 17 Z" fill="#0BC5BA"/>
+                <path d="M17 28 L20 17 L17 19.5 L14 17 Z" fill="#0BC5BA" fillOpacity="0.28"/>
+                <circle cx="17" cy="17" r="2.2" fill="#0BC5BA"/>
+                <circle cx="17" cy="17" r="1" fill="#0C2340"/>
+              </svg>
+              <div style={{ fontSize:11, fontWeight:700, color:"#0BC5BA", letterSpacing:"0.12em", textTransform:"uppercase" }}>Egnyte Partner Program</div>
             </div>
           )}
 
-          {/* Icon for tab slides */}
+          {/* Slides 2–5: tab badge + icon */}
           {s.badge && (
-            <div style={{ fontSize:38, marginBottom:16, lineHeight:1 }}>{s.icon}</div>
+            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16 }}>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:7, background:s.badgeBg, border:`1px solid ${s.badgeColor}44`, borderRadius:999, padding:"4px 13px" }}>
+                <span style={{ fontSize:10, fontWeight:700, color:s.badgeColor, letterSpacing:"0.1em", textTransform:"uppercase" }}>{s.badge}</span>
+              </div>
+              <span style={{ fontSize:26, lineHeight:1 }}>{s.icon}</span>
+            </div>
           )}
 
-          <h2 style={{ fontSize:24, fontWeight:900, color:"#F7F9FC", letterSpacing:"-0.02em", marginBottom:8, lineHeight:1.15 }}>
+          <h2 style={{ fontSize:21, fontWeight:900, color:"#F7F9FC", letterSpacing:"-0.02em", marginBottom:5, lineHeight:1.2 }}>
             {s.heading}
           </h2>
-          <div style={{ fontSize:12, fontWeight:600, color: s.accent, marginBottom:16, letterSpacing:"0.01em" }}>
+          <div style={{ fontSize:12, fontWeight:600, color:s.accent, marginBottom:13 }}>
             {s.sub}
           </div>
-          <p style={{ fontSize:14, color:"#76A2BC", lineHeight:1.7, margin:0 }}>
+          <p style={{ fontSize:13, color:"#76A2BC", lineHeight:1.72, margin:0 }}>
             {s.body}
           </p>
         </div>
 
-        {/* Progress dots + nav */}
-        <div style={{ padding:"0 40px 32px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-
+        {/* Nav row */}
+        <div style={{ padding:"0 36px 22px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           {/* Dots */}
-          <div style={{ display:"flex", gap:6, alignItems:"center" }}>
-            {TOUR_SLIDES.map((_, i) => (
+          <div style={{ display:"flex", gap:5, alignItems:"center" }}>
+            {TOUR_SLIDES.map((_,i) => (
               <button key={i} onClick={() => setSlide(i)} style={{
-                width: i === slide ? 20 : 6,
-                height:6, borderRadius:3,
-                background: i === slide ? s.accent : "rgba(255,255,255,0.15)",
+                width: i===slide ? 18 : 5, height:5, borderRadius:3,
+                background: i===slide ? s.accent : "rgba(255,255,255,0.15)",
                 border:"none", cursor:"pointer", padding:0,
                 transition:"all 0.25s ease",
               }}/>
             ))}
           </div>
-
           {/* Buttons */}
-          <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+          <div style={{ display:"flex", gap:7, alignItems:"center" }}>
             {slide > 0 && (
-              <button onClick={() => setSlide(i => i - 1)} style={{
-                padding:"9px 18px", borderRadius:8, fontSize:13, fontWeight:600,
-                background:"transparent", border:"1px solid rgba(255,255,255,0.12)",
+              <button onClick={() => setSlide(i => i-1)} style={{
+                padding:"8px 16px", borderRadius:7, fontSize:12, fontWeight:600,
+                background:"transparent", border:"1px solid rgba(255,255,255,0.1)",
                 color:"#76A2BC", cursor:"pointer", fontFamily:"'Inter',sans-serif",
               }}>← Back</button>
             )}
-            {!isLast && slide === 0 && (
+            {slide === 0 && (
               <button onClick={onDone} style={{
-                padding:"9px 18px", borderRadius:8, fontSize:13, fontWeight:600,
-                background:"transparent", border:"none",
-                color:"#3A5A7A", cursor:"pointer", fontFamily:"'Inter',sans-serif",
-              }}>Skip</button>
+                padding:"8px 14px", borderRadius:7, fontSize:12, fontWeight:600,
+                background:"transparent", border:"none", color:"#3A5A7A",
+                cursor:"pointer", fontFamily:"'Inter',sans-serif",
+              }}>Skip tour</button>
             )}
-            <button onClick={() => isLast ? onDone() : setSlide(i => i + 1)} style={{
-              padding:"9px 22px", borderRadius:8, fontSize:13, fontWeight:700,
-              background: isLast ? `linear-gradient(135deg,#0BC5BA,#0099A8)` : `linear-gradient(135deg,${s.accent},${s.accent}BB)`,
-              border:"none", color: isLast ? "#0C2340" : "#fff",
+            <button onClick={() => isLast ? onDone() : setSlide(i => i+1)} style={{
+              padding:"8px 20px", borderRadius:7, fontSize:13, fontWeight:700,
+              background: isLast
+                ? "linear-gradient(135deg,#0BC5BA,#0099A8)"
+                : `linear-gradient(135deg,${s.accent},${s.accent}CC)`,
+              border:"none",
+              color: isLast ? "#0C2340" : "#fff",
               cursor:"pointer", fontFamily:"'Inter',sans-serif",
-              boxShadow:`0 4px 16px ${s.accent}44`,
+              boxShadow:`0 3px 14px ${s.accent}44`,
               transition:"all 0.2s",
             }}>
               {isLast ? "Let's Go →" : "Next →"}
@@ -921,11 +1009,18 @@ function OnboardingModal({ onDone }) {
           </div>
         </div>
 
-        {/* Slide counter */}
-        <div style={{ textAlign:"center", paddingBottom:16, fontSize:11, color:"#3A5A7A" }}>
-          {slide + 1} of {total}
+        {/* Counter */}
+        <div style={{ textAlign:"center", paddingBottom:14, fontSize:10, color:"#3A5A7A" }}>
+          {slide+1} of {total}
         </div>
       </div>
+
+      <style>{`
+        @keyframes tourBounce {
+          0%,100% { transform: translateX(-50%) translateY(0); }
+          50%      { transform: translateX(-50%) translateY(-5px); }
+        }
+      `}</style>
     </div>
   );
 }
