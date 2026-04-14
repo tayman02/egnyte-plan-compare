@@ -734,6 +734,202 @@ const HexBg = () => (
 );
 
 // ─── PLAN CARD ────────────────────────────────────────────────────────────────
+// ─── ONBOARDING MODAL ─────────────────────────────────────────────────────────
+const TOUR_SLIDES = [
+  {
+    id: "welcome",
+    badge: null,
+    badgeColor: null,
+    icon: (
+      <svg width="52" height="52" viewBox="0 0 34 34" fill="none">
+        <circle cx="17" cy="17" r="15.5" stroke="#0BC5BA" strokeWidth="1.25" strokeOpacity="0.6"/>
+        <circle cx="17" cy="17" r="10" stroke="#0BC5BA" strokeWidth="0.5" strokeOpacity="0.2"/>
+        <line x1="17" y1="2.5" x2="17" y2="5.5" stroke="#0BC5BA" strokeWidth="1.5" strokeLinecap="round"/>
+        <line x1="17" y1="28.5" x2="17" y2="31.5" stroke="#0BC5BA" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4"/>
+        <line x1="28.5" y1="17" x2="31.5" y2="17" stroke="#0BC5BA" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
+        <line x1="2.5" y1="17" x2="5.5" y2="17" stroke="#0BC5BA" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
+        <path d="M17 6 L20 17 L17 14.5 L14 17 Z" fill="#0BC5BA"/>
+        <path d="M17 28 L20 17 L17 19.5 L14 17 Z" fill="#0BC5BA" fillOpacity="0.28"/>
+        <circle cx="17" cy="17" r="2.2" fill="#0BC5BA"/>
+        <circle cx="17" cy="17" r="1" fill="#0C2340"/>
+      </svg>
+    ),
+    heading: "Welcome to Compass",
+    sub: "MSP Partner Tool · Powered by Egnyte",
+    body: "Compass is a sales enablement tool built for Egnyte partner managers and partners. It gives you everything you need to qualify opportunities, size deals, handle objections, and win competitive conversations — all in one place.",
+    accent: "#0BC5BA",
+  },
+  {
+    id: "compare",
+    badge: "Compare Plans",
+    badgeColor: "#0BC5BA",
+    badgeBg: "rgba(11,197,186,0.12)",
+    icon: <span style={{fontSize:36}}>📊</span>,
+    heading: "Plan Upgrade Comparison",
+    sub: "Start here when a customer is on a Legacy or Gen 3 plan",
+    body: "Select the customer's current and proposed plan to instantly see net-new features, price uplift, and deal revenue impact. Enter user count to get monthly and annual numbers. Then use the AI Value Summary to generate a tailored upgrade narrative for any vertical.",
+    accent: "#0BC5BA",
+  },
+  {
+    id: "builder",
+    badge: "Plan Builder",
+    badgeColor: "#A78BFA",
+    badgeBg: "rgba(110,73,255,0.12)",
+    icon: <span style={{fontSize:36}}>✦</span>,
+    heading: "Find the Right Plan",
+    sub: "Start here when you don't know which plan fits",
+    body: "Answer 6 quick questions about the customer's environment, scale, security needs, and budget. Compass scores all four Gen 4 plans and recommends the best fit — with a rationale and a Gen 3 equivalent toggle. No Egnyte expertise required.",
+    accent: "#6E49FF",
+  },
+  {
+    id: "usecases",
+    badge: "Use Cases",
+    badgeColor: "#3D71EA",
+    badgeBg: "rgba(61,113,234,0.12)",
+    icon: <span style={{fontSize:36}}>🎯</span>,
+    heading: "Use Case Library",
+    sub: "Start from the customer's problem, not the plan",
+    body: "Browse 15 mapped use cases — each with discovery triggers, recommended plans, key capabilities, competitors to position against, and real customer stories. Search by keyword or filter by plan. Expand any card to get everything you need before or during a call.",
+    accent: "#3D71EA",
+  },
+  {
+    id: "battlecards",
+    badge: "⚔ Battlecards",
+    badgeColor: "#F59E0B",
+    badgeBg: "rgba(245,158,11,0.12)",
+    icon: <span style={{fontSize:36}}>⚔</span>,
+    heading: "Win the Competitive Deal",
+    sub: "Start here when you know who you're up against",
+    body: "12 competitor battlecards — each with their pitch, where they genuinely win, trap-setting discovery questions written as you'd say them on a call, objection responses, and Egnyte's win themes. Most common competitors are highlighted so you can move fast mid-call.",
+    accent: "#F59E0B",
+  },
+];
+
+function OnboardingModal({ onDone }) {
+  const [slide, setSlide] = useState(0);
+  const total = TOUR_SLIDES.length;
+  const s = TOUR_SLIDES[slide];
+  const isLast = slide === total - 1;
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") setSlide(i => Math.min(i + 1, total - 1));
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") setSlide(i => Math.max(i - 1, 0));
+      if (e.key === "Escape") onDone();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
+  return (
+    <div style={{
+      position:"fixed", inset:0, zIndex:10000,
+      background:"rgba(8,15,30,0.85)",
+      backdropFilter:"blur(6px)",
+      display:"flex", alignItems:"center", justifyContent:"center",
+      padding:24, animation:"fadeUp 0.25s ease both",
+    }}>
+      <div style={{
+        width:"100%", maxWidth:560,
+        background:"#0F1E38",
+        border:`1px solid ${s.accent}33`,
+        borderRadius:20,
+        boxShadow:`0 32px 64px rgba(0,0,0,0.6), 0 0 0 1px ${s.accent}22`,
+        overflow:"hidden",
+        animation:"fadeUp 0.3s ease both",
+        fontFamily:"'Inter',sans-serif",
+      }}>
+
+        {/* Accent top bar */}
+        <div style={{ height:3, background:`linear-gradient(90deg, ${s.accent}, ${s.accent}55)`, transition:"background 0.4s" }}/>
+
+        {/* Body */}
+        <div style={{ padding:"36px 40px 28px" }}>
+
+          {/* Badge */}
+          {s.badge ? (
+            <div style={{ display:"inline-flex", alignItems:"center", gap:7, background:s.badgeBg, border:`1px solid ${s.badgeColor}44`, borderRadius:999, padding:"4px 13px", marginBottom:22 }}>
+              <span style={{ fontSize:10, fontWeight:700, color:s.badgeColor, letterSpacing:"0.1em", textTransform:"uppercase" }}>{s.badge}</span>
+            </div>
+          ) : (
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:22 }}>
+              {s.icon}
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:"#0BC5BA", letterSpacing:"0.12em", textTransform:"uppercase" }}>Egnyte Partner Program</div>
+              </div>
+            </div>
+          )}
+
+          {/* Icon for tab slides */}
+          {s.badge && (
+            <div style={{ fontSize:38, marginBottom:16, lineHeight:1 }}>{s.icon}</div>
+          )}
+
+          <h2 style={{ fontSize:24, fontWeight:900, color:"#F7F9FC", letterSpacing:"-0.02em", marginBottom:8, lineHeight:1.15 }}>
+            {s.heading}
+          </h2>
+          <div style={{ fontSize:12, fontWeight:600, color: s.accent, marginBottom:16, letterSpacing:"0.01em" }}>
+            {s.sub}
+          </div>
+          <p style={{ fontSize:14, color:"#76A2BC", lineHeight:1.7, margin:0 }}>
+            {s.body}
+          </p>
+        </div>
+
+        {/* Progress dots + nav */}
+        <div style={{ padding:"0 40px 32px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+
+          {/* Dots */}
+          <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+            {TOUR_SLIDES.map((_, i) => (
+              <button key={i} onClick={() => setSlide(i)} style={{
+                width: i === slide ? 20 : 6,
+                height:6, borderRadius:3,
+                background: i === slide ? s.accent : "rgba(255,255,255,0.15)",
+                border:"none", cursor:"pointer", padding:0,
+                transition:"all 0.25s ease",
+              }}/>
+            ))}
+          </div>
+
+          {/* Buttons */}
+          <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+            {slide > 0 && (
+              <button onClick={() => setSlide(i => i - 1)} style={{
+                padding:"9px 18px", borderRadius:8, fontSize:13, fontWeight:600,
+                background:"transparent", border:"1px solid rgba(255,255,255,0.12)",
+                color:"#76A2BC", cursor:"pointer", fontFamily:"'Inter',sans-serif",
+              }}>← Back</button>
+            )}
+            {!isLast && slide === 0 && (
+              <button onClick={onDone} style={{
+                padding:"9px 18px", borderRadius:8, fontSize:13, fontWeight:600,
+                background:"transparent", border:"none",
+                color:"#3A5A7A", cursor:"pointer", fontFamily:"'Inter',sans-serif",
+              }}>Skip</button>
+            )}
+            <button onClick={() => isLast ? onDone() : setSlide(i => i + 1)} style={{
+              padding:"9px 22px", borderRadius:8, fontSize:13, fontWeight:700,
+              background: isLast ? `linear-gradient(135deg,#0BC5BA,#0099A8)` : `linear-gradient(135deg,${s.accent},${s.accent}BB)`,
+              border:"none", color: isLast ? "#0C2340" : "#fff",
+              cursor:"pointer", fontFamily:"'Inter',sans-serif",
+              boxShadow:`0 4px 16px ${s.accent}44`,
+              transition:"all 0.2s",
+            }}>
+              {isLast ? "Let's Go →" : "Next →"}
+            </button>
+          </div>
+        </div>
+
+        {/* Slide counter */}
+        <div style={{ textAlign:"center", paddingBottom:16, fontSize:11, color:"#3A5A7A" }}>
+          {slide + 1} of {total}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── PASSWORD GATE ────────────────────────────────────────────────────────────
 function PasswordGate({ onSuccess }) {
   const [value, setValue] = useState("");
@@ -2110,6 +2306,13 @@ function CompassApp() {
   const [bcSelected, setBcSelected] = useState(() => parseUrl().bc);
   const [bcSearch, setBcSearch] = useState("");
 
+  // Onboarding tour — show once per browser, dismissable
+  const [showTour, setShowTour] = useState(() => !localStorage.getItem("compass_tour_done"));
+  const dismissTour = () => {
+    localStorage.setItem("compass_tour_done", "1");
+    setShowTour(false);
+  };
+
   // ── URL routing: push state when tab, competitor, or builder step changes ──
   useEffect(() => {
     pushUrl(mode, bcSelected, builderStep, !!builderResult);
@@ -2383,6 +2586,9 @@ function CompassApp() {
 
       <div style={{ minHeight:"100vh", background:`linear-gradient(150deg,#0C2340 0%,#121F37 100%)`, color:E.text }}>
 
+        {/* ONBOARDING TOUR */}
+        {showTour && <OnboardingModal onDone={dismissTour} />}
+
         {/* TOAST */}
         {toast && (
           <div style={{
@@ -2446,8 +2652,15 @@ function CompassApp() {
 
             </div>
 
-            {/* Right — tabs */}
-            <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:5 }}>
+            {/* Right — tabs + tour button */}
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              {/* Tour replay */}
+              <button onClick={() => setShowTour(true)} title="How to use Compass"
+                style={{ width:28, height:28, borderRadius:"50%", background:"transparent", border:`1px solid ${E.borderSub}`, color:E.textMut, fontSize:13, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Inter',sans-serif", flexShrink:0, transition:"all 0.15s" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = E.teal; e.currentTarget.style.color = E.teal; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = E.borderSub; e.currentTarget.style.color = E.textMut; }}>
+                ?
+              </button>
               <div style={{ display:"flex", gap:2, background:E.navySurf, borderRadius:9, padding:3, border:`1px solid ${E.border}` }}>
                 {[
                   {id:"compare",  label:"Compare Plans"},
