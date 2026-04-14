@@ -810,13 +810,19 @@ const TOUR_SLIDES = [
   },
 ];
 
-function OnboardingModal({ onDone }) {
+function OnboardingModal({ onDone, setMode }) {
   const [slide, setSlide] = useState(0);
   const [spotlightRect, setSpotlightRect] = useState(null);
   const total = TOUR_SLIDES.length;
   const s = TOUR_SLIDES[slide];
   const isLast = slide === total - 1;
   const PAD = 10;
+
+  // Sync the app's active tab to match whichever slide we're on
+  // so the spotlighted tab shows its selected/active visual state
+  useEffect(() => {
+    if (s.id !== "welcome") setMode(s.id);
+  }, [slide]);
 
   // Measure target tab button whenever slide changes
   useEffect(() => {
@@ -2694,7 +2700,7 @@ function CompassApp() {
       <div style={{ minHeight:"100vh", background:`linear-gradient(150deg,#0C2340 0%,#121F37 100%)`, color:E.text }}>
 
         {/* ONBOARDING TOUR */}
-        {showTour && <OnboardingModal onDone={dismissTour} />}
+        {showTour && <OnboardingModal onDone={dismissTour} setMode={setMode} />}
 
         {/* TOAST */}
         {toast && (
