@@ -767,7 +767,7 @@ const TOUR_SLIDES = [
     icon: "📋",
     heading: "Full Feature Matrix",
     sub: "Every plan, every feature, side by side",
-    body: "A complete side-by-side comparison of all 11 plans — Legacy, Gen 3 MSP, and Gen 4 MSP — across every feature category. Use this when a customer wants a detailed breakdown of exactly what's included at each tier, or when you need to answer a specific 'does it have X?' question quickly.",
+    body: "A complete side-by-side comparison across all plans — Legacy, Gen 3 MSP, and Gen 4 MSP — across every feature category. Use this when a customer wants a detailed breakdown of exactly what's included at each tier, or when you need to answer a specific 'does it have X?' question quickly.",
     accent: "#0BC5BA",
     badgeColor: "#0BC5BA",
     badgeBg: "rgba(11,197,186,0.12)",
@@ -779,7 +779,7 @@ const TOUR_SLIDES = [
     icon: "✦",
     heading: "Find the Right Plan",
     sub: "Start here when you don't know which plan fits yet",
-    body: "Answer 6 quick questions about the customer's environment, scale, security needs, and budget. Compass scores all four Gen 4 plans and recommends the best fit — with a rationale you can share. Toggle to see the Gen 3 equivalent if they're not ready to move to Gen 4.",
+    body: "Answer a few quick questions about the customer's environment, scale, security needs, and budget. Compass scores all Gen 4 plans and recommends the best fit — with a rationale you can share. Toggle to see the Gen 3 equivalent if they're not ready to move to Gen 4.",
     accent: "#6E49FF",
     badgeColor: "#A78BFA",
     badgeBg: "rgba(110,73,255,0.12)",
@@ -791,7 +791,7 @@ const TOUR_SLIDES = [
     icon: "🎯",
     heading: "Use Case Library",
     sub: "Start from the customer's problem, not the plan",
-    body: "Browse 15 mapped use cases — each with discovery triggers, recommended plans, key capabilities, competitor context, and real customer stories. Search by keyword or filter by plan tier. Expand any card to get a full picture before or during a conversation.",
+    body: "Browse mapped use cases — each with discovery triggers, recommended plans, key capabilities, competitor context, and real customer stories. Search by keyword or filter by plan tier. Expand any card to get a full picture before or during a conversation.",
     accent: "#3D71EA",
     badgeColor: "#3D71EA",
     badgeBg: "rgba(61,113,234,0.12)",
@@ -803,7 +803,7 @@ const TOUR_SLIDES = [
     icon: "⚔",
     heading: "Win the Competitive Deal",
     sub: "Start here when you know who you're up against",
-    body: "12 competitor battlecards covering SharePoint, Dropbox, Box, on-prem file servers, and more. Each card has their pitch, where they genuinely win, trap-setting discovery questions written as you'd say them on a call, objection responses, and Egnyte's win themes. Most common competitors are featured at the top.",
+    body: "Competitor battlecards covering SharePoint, Dropbox, Box, on-prem file servers, and more. Each card has their pitch, where they genuinely win, trap-setting discovery questions written as you'd say them on a call, objection responses, and Egnyte's win themes. Most common competitors are featured at the top.",
     accent: "#F59E0B",
     badgeColor: "#F59E0B",
     badgeBg: "rgba(245,158,11,0.12)",
@@ -2423,6 +2423,7 @@ function CompassApp() {
   const [showTour, setShowTour] = useState(() => !localStorage.getItem("compass_tour_done"));
   const dismissTour = () => {
     localStorage.setItem("compass_tour_done", "1");
+    setMode("compare");
     setShowTour(false);
   };
 
