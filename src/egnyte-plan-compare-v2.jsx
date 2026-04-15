@@ -2644,7 +2644,20 @@ function CompassApp() {
         messages: [{ role: "user", content: prompt }]
       })
     })
-    .then(r => r.json())
+    .then(r => {
+      if (!r.ok) {
+        // Capture status for diagnosis
+        if (r.status === 529 || r.status === 503 || r.status === 502) {
+          throw new Error("overloaded");
+        } else if (r.status === 401 || r.status === 403) {
+          throw new Error("auth");
+        } else if (r.status >= 500) {
+          throw new Error("server");
+        }
+        throw new Error("unknown");
+      }
+      return r.json();
+    })
     .then(data => {
       try {
         const text = data.content.filter(b => b.type === "text").map(b => b.text).join("");
@@ -2653,9 +2666,24 @@ function CompassApp() {
         valueCache.current[valueKey] = parsed;
         setValuePillars(parsed.pillars);
         setObjections(parsed.objections);
-      } catch(e) { setValueError("Could not parse response. Try again."); }
+      } catch(e) {
+        throw new Error("parse");
+      }
     })
-    .catch(() => setValueError("Request failed. Check your API key in Vercel environment variables."))
+    .catch(e => {
+      const msg = e.message;
+      if (msg === "overloaded") {
+        setValueError("overloaded");
+      } else if (msg === "auth") {
+        setValueError("auth");
+      } else if (msg === "parse") {
+        setValueError("parse");
+      } else if (!navigator.onLine) {
+        setValueError("offline");
+      } else {
+        setValueError("server");
+      }
+    })
     .finally(() => setValueLoading(false));
   };
 
@@ -3058,9 +3086,72 @@ function CompassApp() {
 
                   </div>{/* end steps */}
 
-                  {valueError && (
-                    <div style={{ margin:"0 24px 20px", padding:"10px 14px", background:"rgba(255,202,41,0.08)", border:`1px solid rgba(255,202,41,0.2)`, borderRadius:8, fontSize:12, color:E.yellow }}>⚠ {valueError}</div>
-                  )}
+                  {valueError && (() => {
+                    const errors = {
+                      overloaded: {
+                        icon: "🔄",
+                        title: "AI service is busy",
+                        body: "The AI API endpoint is currently overloaded or experiencing an outage. This is temporary — wait a moment and try again.",
+                        action: "Try Again",
+                        color: "rgba(245,158,11,0.15)",
+                        border: "rgba(245,158,11,0.35)",
+                        textColor: "#F59E0B",
+                      },
+                      server: {
+                        icon: "⚡",
+                        title: "AI service unavailable",
+                        body: "The AI summary service returned an error. This may be a temporary outage — wait a moment and try again.",
+                        action: "Try Again",
+                        color: "rgba(245,158,11,0.15)",
+                        border: "rgba(245,158,11,0.35)",
+                        textColor: "#F59E0B",
+                      },
+                      auth: {
+                        icon: "🔑",
+                        title: "Configuration issue",
+                        body: "The AI service couldn't be reached due to a configuration error. Contact your administrator to verify the setup.",
+                        action: "Try Again",
+                        color: "rgba(239,68,68,0.1)",
+                        border: "rgba(239,68,68,0.3)",
+                        textColor: "#EF4444",
+                      },
+                      offline: {
+                        icon: "📡",
+                        title: "No internet connection",
+                        body: "Check your connection and try again.",
+                        action: "Try Again",
+                        color: "rgba(239,68,68,0.1)",
+                        border: "rgba(239,68,68,0.3)",
+                        textColor: "#EF4444",
+                      },
+                      parse: {
+                        icon: "⚠",
+                        title: "Unexpected response",
+                        body: "The AI returned an unexpected format. This is usually transient — try again.",
+                        action: "Try Again",
+                        color: "rgba(245,158,11,0.1)",
+                        border: "rgba(245,158,11,0.25)",
+                        textColor: "#F59E0B",
+                      },
+                    };
+                    const e = errors[valueError] || errors.server;
+                    return (
+                      <div style={{ margin:"0 24px 20px", padding:"14px 16px", background:e.color, border:`1px solid ${e.border}`, borderRadius:10 }}>
+                        <div style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
+                          <span style={{ fontSize:18, flexShrink:0, lineHeight:1.3 }}>{e.icon}</span>
+                          <div style={{ flex:1 }}>
+                            <div style={{ fontSize:13, fontWeight:700, color:e.textColor, marginBottom:4 }}>{e.title}</div>
+                            <div style={{ fontSize:12, color:E.textSub, lineHeight:1.6, marginBottom:10 }}>{e.body}</div>
+                            <button onClick={generateValueSummary} style={{
+                              padding:"6px 14px", borderRadius:6, border:`1px solid ${e.border}`,
+                              background:"transparent", color:e.textColor, fontSize:12, fontWeight:600,
+                              cursor:"pointer", fontFamily:"'Inter',sans-serif",
+                            }}>{e.action}</button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Loading shimmer */}
                   {valueLoading && (
