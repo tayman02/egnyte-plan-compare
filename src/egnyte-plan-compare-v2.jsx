@@ -2470,10 +2470,20 @@ function CompassApp() {
   const [toPrice,    setToPrice]    = useState(null);
   const [showDiffOnly, setShowDiffOnly] = useState(false);
 
-  // Sync prices when plans change
+  // Text representations for the price inputs (type="text" so we control trailing zeros)
+  const [fromPriceText, setFromPriceText] = useState("");
+  const [toPriceText,   setToPriceText]   = useState("");
+
+  // Sync prices AND their display text when plans change
   React.useEffect(() => {
-    setFromPrice(fp?.pricing?.msp ?? fp?.pricing?.msrp ?? null);
-    setToPrice(tp?.pricing?.msp   ?? tp?.pricing?.msrp ?? null);
+    const fp2 = PLANS.find(p => p.id === fromPlan);
+    const tp2 = PLANS.find(p => p.id === toPlan);
+    const fv = fp2?.pricing?.msp ?? fp2?.pricing?.msrp ?? null;
+    const tv = tp2?.pricing?.msp ?? tp2?.pricing?.msrp ?? null;
+    setFromPrice(fv);
+    setToPrice(tv);
+    setFromPriceText(fv != null ? fv.toFixed(2) : "");
+    setToPriceText(tv != null ? tv.toFixed(2) : "");
   }, [fromPlan, toPlan]);
 
   const calcFromPrice = fromPrice ?? (fp?.pricing?.msp ?? fp?.pricing?.msrp ?? 0);
@@ -2547,6 +2557,40 @@ function CompassApp() {
   const copyEmailSummary = () => {
     if (!fp || !tp) return;
     const date = new Date().toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+
+    // Build diff sections — only features that changed between the two plans
+    const fmtVal = v => {
+      if (v === true) return "✓ Included";
+      if (v === "addon-included") return "✓ Bundled";
+      if (v === "optional") return "Available as add-on";
+      if (typeof v === "string" && v !== "false") return v;
+      return "—";
+    };
+
+    const diffSections = FEATURE_SECTIONS.map(sec => {
+      const changed = sec.features.filter(f => {
+        const fv = fp.features[f.id];
+        const tv = tp.features[f.id];
+        return JSON.stringify(fv) !== JSON.stringify(tv);
+      });
+      return { label: sec.label, features: changed };
+    }).filter(s => s.features.length > 0);
+
+    const colW = 32;
+    const pad = (s, w) => String(s).substring(0, w).padEnd(w);
+
+    const tableLines = diffSections.flatMap(sec => [
+      `  ── ${sec.label} ──`,
+      `  ${"Feature".padEnd(42)}  ${pad(fp.name, colW)}  ${pad(tp.name, colW)}`,
+      `  ${"".padEnd(42, "-")}  ${"".padEnd(colW, "-")}  ${"".padEnd(colW, "-")}`,
+      ...sec.features.map(f => {
+        const fv = fmtVal(fp.features[f.id]);
+        const tv = fmtVal(tp.features[f.id]);
+        return `  ${pad(f.label, 42)}  ${pad(fv, colW)}  ${pad(tv, colW)}`;
+      }),
+      ``,
+    ]);
+
     const lines = [
       `Egnyte Plan Upgrade Summary — ${date}`,
       ``,
@@ -2556,8 +2600,7 @@ function CompassApp() {
       `  Users:    ${userCount}`,
       ``,
       `PRICING IMPACT`,
-      ...(dMsp != null ? [`  MSP price uplift:  +$${dMsp.toFixed(2)}/user/month`] : []),
-      ...(dMsrp != null ? [`  MSRP price uplift: +$${dMsrp.toFixed(2)}/user/month`] : []),
+      `  MSP price uplift:     +$${(calcToPrice - calcFromPrice).toFixed(2)}/user/month`,
       `  Monthly revenue delta: +$${monthlyDelta.toFixed(2)}/month`,
       `  Annual revenue delta:  +$${annualDelta.toFixed(2)}/year`,
       ``,
@@ -2572,12 +2615,15 @@ function CompassApp() {
       ] : []),
       ...(objections ? [
         `ANTICIPATED OBJECTIONS`,
-        ...objections.map((o, i) => [
+        ...objections.map(o => [
           `  Q: ${o.q}`,
           `  A: ${o.a}`,
           ``,
         ]).flat(),
       ] : []),
+      `PLAN FEATURE DIFFERENCES`,
+      ``,
+      ...tableLines,
       `─────────────────────────────────────────`,
       `Prepared with Compass · Egnyte MSP Partner Tool · Confidential`,
     ].join("\n");
@@ -2614,6 +2660,51 @@ function CompassApp() {
         <div class="stat-label">Net-New Features</div>
       </div>` : "";
 
+    // Build feature diff sections for PDF
+    const fmtValPDF = v => {
+      if (v === true) return { text: "✓ Included", cls: "cell-yes" };
+      if (v === "addon-included") return { text: "✓ Bundled", cls: "cell-bundle" };
+      if (v === "optional") return { text: "Add-on", cls: "cell-addon" };
+      if (typeof v === "string" && v !== "false") return { text: v, cls: "cell-str" };
+      return { text: "—", cls: "cell-no" };
+    };
+
+    const diffSectionsPDF = FEATURE_SECTIONS.map(sec => {
+      const changed = sec.features.filter(f => {
+        const fv = fp.features[f.id];
+        const tv = tp.features[f.id];
+        return JSON.stringify(fv) !== JSON.stringify(tv);
+      });
+      return { label: sec.label, color: sec.color, features: changed };
+    }).filter(s => s.features.length > 0);
+
+    const diffTableHTML = diffSectionsPDF.map(sec => `
+      <div class="diff-section">
+        <div class="diff-sec-head" style="border-left-color:${sec.color}">
+          <span class="diff-sec-label">${sec.label}</span>
+        </div>
+        <table class="diff-table">
+          <thead>
+            <tr>
+              <th class="col-feat">Feature</th>
+              <th class="col-plan">${fp.name}</th>
+              <th class="col-plan col-plan-to">${tp.name}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sec.features.map(f => {
+              const fv = fmtValPDF(fp.features[f.id]);
+              const tv = fmtValPDF(tp.features[f.id]);
+              return `<tr>
+                <td class="col-feat">${f.label}</td>
+                <td class="${fv.cls}">${fv.text}</td>
+                <td class="${tv.cls} col-plan-to">${tv.text}</td>
+              </tr>`;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>`).join("");
+
     const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -2627,11 +2718,9 @@ function CompassApp() {
 
   /* Header */
   .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 3px solid #0BC5BA; margin-bottom: 28px; }
-  .header-left {}
   .compass-label { font-size: 9px; font-weight: 700; color: #0BC5BA; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
   .doc-title { font-size: 22px; font-weight: 900; color: #0C2340; letter-spacing: -0.02em; line-height: 1.1; }
   .doc-subtitle { font-size: 12px; color: #76A2BC; margin-top: 4px; }
-  .header-right { text-align: right; }
   .date-label { font-size: 10px; color: #76A2BC; margin-bottom: 2px; }
   .date-val { font-size: 12px; font-weight: 600; color: #0C2340; }
 
@@ -2678,14 +2767,34 @@ function CompassApp() {
   .obj-badge-q { background: rgba(255,202,41,0.2); color: #D97706; border: 1px solid rgba(217,119,6,0.3); }
   .obj-badge-a { background: rgba(11,197,186,0.12); color: #0BC5BA; border: 1px solid rgba(11,197,186,0.3); }
 
+  /* Feature diff table */
+  .diff-section { margin-bottom: 20px; }
+  .diff-sec-head { border-left: 3px solid #0BC5BA; padding-left: 10px; margin-bottom: 8px; }
+  .diff-sec-label { font-size: 10px; font-weight: 700; color: #0C2340; text-transform: uppercase; letter-spacing: 0.1em; }
+  .diff-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .diff-table thead tr { background: #F0F8FF; }
+  .diff-table th { padding: 7px 10px; text-align: left; font-size: 9px; font-weight: 700; color: #76A2BC; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 1px solid #DDE8F5; }
+  .diff-table td { padding: 7px 10px; border-bottom: 1px solid #EEF4FB; vertical-align: middle; }
+  .diff-table tr:last-child td { border-bottom: none; }
+  .diff-table tr:nth-child(even) { background: #FAFCFF; }
+  .col-feat { width: 55%; color: #0C2340; font-weight: 500; }
+  .col-plan { width: 22.5%; text-align: center; font-weight: 600; }
+  .col-plan-to { background: rgba(11,197,186,0.04); }
+  .cell-yes { color: #059669; }
+  .cell-bundle { color: #0BC5BA; }
+  .cell-addon { color: #D97706; }
+  .cell-no { color: #B0C4D8; }
+  .cell-str { color: #0C2340; }
+
   /* Footer */
-  .footer { border-top: 1px solid #E5EFF8; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .footer { border-top: 1px solid #E5EFF8; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; margin-top: 32px; }
   .footer-left { font-size: 10px; color: #76A2BC; }
   .footer-right { font-size: 10px; color: #B0C4D8; }
 
   @media print {
     body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .page { padding: 32px; }
+    .diff-section { page-break-inside: avoid; }
   }
 </style>
 </head>
@@ -2730,7 +2839,7 @@ function CompassApp() {
   <div class="stats-row">
     ${netNewHTML}
     ${dMsp != null ? `<div class="stat-card">
-      <div class="stat-val" style="color:#0BC5BA">+$${dMsp.toFixed(2)}</div>
+      <div class="stat-val" style="color:#0BC5BA">+$${(calcToPrice - calcFromPrice).toFixed(2)}</div>
       <div class="stat-label">MSP Uplift / User / Mo</div>
     </div>` : ""}
     <div class="stat-card">
@@ -2758,6 +2867,13 @@ function CompassApp() {
     <div class="section-title" style="color:#D97706">Anticipated Objections</div>
   </div>
   <div class="objections">${objectionsHTML}</div>` : ""}
+
+  <!-- Feature Differences -->
+  <div class="section-head" style="margin-top: 8px;">
+    <div class="section-bar" style="background:#6E49FF"></div>
+    <div class="section-title" style="color:#6E49FF">Plan Feature Differences — ${fp.name} → ${tp.name}</div>
+  </div>
+  ${diffTableHTML}
 
   <!-- Footer -->
   <div class="footer">
@@ -3185,10 +3301,20 @@ function CompassApp() {
                         <span style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase" }}>{fp?.name} $/user</span>
                         <div style={{ position:"relative" }}>
                           <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11, pointerEvents:"none" }}>$</span>
-                          <input type="number" min="0" step="0.01"
-                            value={calcFromPrice}
-                            onChange={e => setFromPrice(parseFloat(e.target.value) || 0)}
-                            onBlur={e => setFromPrice(v => parseFloat((parseFloat(v ?? calcFromPrice) || 0).toFixed(2)))}
+                          <input type="text" inputMode="decimal"
+                            value={fromPriceText}
+                            onChange={e => {
+                              const raw = e.target.value.replace(/[^0-9.]/g, "");
+                              setFromPriceText(raw);
+                              const n = parseFloat(raw);
+                              if (!isNaN(n)) setFromPrice(n);
+                            }}
+                            onBlur={() => {
+                              const n = parseFloat(fromPriceText);
+                              const val = isNaN(n) ? (calcFromPrice || 0) : n;
+                              setFromPrice(val);
+                              setFromPriceText(val.toFixed(2));
+                            }}
                             style={{ width:80, background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:7, padding:"7px 8px 7px 18px", color:E.textSub, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
                         </div>
                       </div>
@@ -3200,10 +3326,20 @@ function CompassApp() {
                         <span style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.08em", textTransform:"uppercase" }}>{tp?.name} $/user</span>
                         <div style={{ position:"relative" }}>
                           <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.teal+"88", fontSize:11, pointerEvents:"none" }}>$</span>
-                          <input type="number" min="0" step="0.01"
-                            value={calcToPrice}
-                            onChange={e => setToPrice(parseFloat(e.target.value) || 0)}
-                            onBlur={e => setToPrice(v => parseFloat((parseFloat(v ?? calcToPrice) || 0).toFixed(2)))}
+                          <input type="text" inputMode="decimal"
+                            value={toPriceText}
+                            onChange={e => {
+                              const raw = e.target.value.replace(/[^0-9.]/g, "");
+                              setToPriceText(raw);
+                              const n = parseFloat(raw);
+                              if (!isNaN(n)) setToPrice(n);
+                            }}
+                            onBlur={() => {
+                              const n = parseFloat(toPriceText);
+                              const val = isNaN(n) ? (calcToPrice || 0) : n;
+                              setToPrice(val);
+                              setToPriceText(val.toFixed(2));
+                            }}
                             style={{ width:80, background:E.navyCard, border:`1px solid ${E.teal}44`, borderRadius:7, padding:"7px 8px 7px 18px", color:E.teal, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
                         </div>
                       </div>
