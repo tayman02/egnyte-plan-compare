@@ -2553,84 +2553,195 @@ function CompassApp() {
     toastTimer.current = setTimeout(() => setToast(t => t ? {...t, visible: false} : null), 2200);
   };
 
-  // ── Email copy export ──────────────────────────────────────────────────────
+  // ── Email copy export (HTML to clipboard) ──────────────────────────────────
   const copyEmailSummary = () => {
     if (!fp || !tp) return;
     const date = new Date().toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
 
-    // Build diff sections — only features that changed between the two plans
-    const fmtVal = v => {
-      if (v === true) return "✓ Included";
-      if (v === "addon-included") return "✓ Bundled";
-      if (v === "optional") return "Available as add-on";
-      if (typeof v === "string" && v !== "false") return v;
-      return "—";
+    // Feature diff — only changed features, grouped by section
+    const fmtValEmail = v => {
+      if (v === true) return { text: "✓ Included", color: "#059669" };
+      if (v === "addon-included") return { text: "✓ Bundled", color: "#0BC5BA" };
+      if (v === "optional") return { text: "Add-on", color: "#D97706" };
+      if (typeof v === "string" && v !== "false") return { text: v, color: "#0C2340" };
+      return { text: "—", color: "#B0C4D8" };
     };
 
-    const diffSections = FEATURE_SECTIONS.map(sec => {
-      const changed = sec.features.filter(f => {
-        const fv = fp.features[f.id];
-        const tv = tp.features[f.id];
-        return JSON.stringify(fv) !== JSON.stringify(tv);
-      });
-      return { label: sec.label, features: changed };
-    }).filter(s => s.features.length > 0);
+    const diffSectionsEmail = FEATURE_SECTIONS.map(sec => ({
+      label: sec.label,
+      color: sec.color,
+      features: sec.features.filter(f =>
+        JSON.stringify(fp.features[f.id]) !== JSON.stringify(tp.features[f.id])
+      ),
+    })).filter(s => s.features.length > 0);
 
-    const colW = 32;
-    const pad = (s, w) => String(s).substring(0, w).padEnd(w);
+    // Build diff table rows
+    const diffTablesHTML = diffSectionsEmail.map(sec => `
+      <tr><td colspan="3" style="padding:14px 0 6px;">
+        <div style="border-left:3px solid ${sec.color};padding-left:10px;font-size:10px;font-weight:700;color:#0C2340;text-transform:uppercase;letter-spacing:0.1em;">${sec.label}</div>
+      </td></tr>
+      <tr style="background:#F0F8FF;">
+        <td style="padding:7px 10px;font-size:9px;font-weight:700;color:#76A2BC;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #DDE8F5;">Feature</td>
+        <td style="padding:7px 10px;font-size:9px;font-weight:700;color:#76A2BC;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #DDE8F5;text-align:center;">${fp.name}</td>
+        <td style="padding:7px 10px;font-size:9px;font-weight:700;color:#0BC5BA;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #DDE8F5;text-align:center;background:rgba(11,197,186,0.06);">${tp.name}</td>
+      </tr>
+      ${sec.features.map((f, i) => {
+        const fv = fmtValEmail(fp.features[f.id]);
+        const tv = fmtValEmail(tp.features[f.id]);
+        const bg = i % 2 === 0 ? "#FFFFFF" : "#FAFCFF";
+        return `<tr style="background:${bg};">
+          <td style="padding:7px 10px;font-size:11px;color:#0C2340;border-bottom:1px solid #EEF4FB;">${f.label}</td>
+          <td style="padding:7px 10px;font-size:11px;font-weight:600;color:${fv.color};border-bottom:1px solid #EEF4FB;text-align:center;">${fv.text}</td>
+          <td style="padding:7px 10px;font-size:11px;font-weight:600;color:${tv.color};border-bottom:1px solid #EEF4FB;text-align:center;background:rgba(11,197,186,0.04);">${tv.text}</td>
+        </tr>`;
+      }).join("")}
+    `).join("");
 
-    const tableLines = diffSections.flatMap(sec => [
-      `  ── ${sec.label} ──`,
-      `  ${"Feature".padEnd(42)}  ${pad(fp.name, colW)}  ${pad(tp.name, colW)}`,
-      `  ${"".padEnd(42, "-")}  ${"".padEnd(colW, "-")}  ${"".padEnd(colW, "-")}`,
-      ...sec.features.map(f => {
-        const fv = fmtVal(fp.features[f.id]);
-        const tv = fmtVal(tp.features[f.id]);
-        return `  ${pad(f.label, 42)}  ${pad(fv, colW)}  ${pad(tv, colW)}`;
-      }),
-      ``,
-    ]);
+    const pillarsHTML = valuePillars ? valuePillars.map(p => `
+      <tr>
+        <td style="padding:10px 12px;vertical-align:top;width:28px;font-size:18px;">${p.icon}</td>
+        <td style="padding:10px 12px 10px 0;vertical-align:top;">
+          <div style="font-size:12px;font-weight:700;color:#0C2340;margin-bottom:3px;">${p.pillar}${p.vertical_key ? ' <span style="font-size:9px;color:#0BC5BA;background:rgba(11,197,186,0.1);border:1px solid rgba(11,197,186,0.3);border-radius:3px;padding:1px 5px;">Key</span>' : ''}</div>
+          <div style="font-size:11px;color:#3A5A7A;line-height:1.6;">${p.point}</div>
+        </td>
+      </tr>`).join("") : "";
 
-    const lines = [
+    const objectionsHTML = objections ? objections.map(o => `
+      <tr>
+        <td style="padding:10px 14px;background:#FFF8E6;border-bottom:1px solid #DDE8F5;">
+          <span style="font-size:9px;font-weight:700;color:#D97706;background:rgba(255,202,41,0.2);border:1px solid rgba(217,119,6,0.3);border-radius:3px;padding:1px 5px;margin-right:8px;">Q</span>
+          <span style="font-size:11px;color:#0C2340;font-weight:500;">${o.q}</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:10px 14px;background:#F0FAF9;border-bottom:1px solid #DDE8F5;">
+          <span style="font-size:9px;font-weight:700;color:#0BC5BA;background:rgba(11,197,186,0.12);border:1px solid rgba(11,197,186,0.3);border-radius:3px;padding:1px 5px;margin-right:8px;">A</span>
+          <span style="font-size:11px;color:#3A5A7A;">${o.a}</span>
+        </td>
+      </tr>
+      <tr><td style="padding:4px 0;"></td></tr>`).join("") : "";
+
+    const uplift = (calcToPrice - calcFromPrice).toFixed(2);
+
+    const html = `
+<div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:640px;color:#0C2340;">
+
+  <!-- Header -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom:3px solid #0BC5BA;margin-bottom:24px;padding-bottom:16px;">
+    <tr>
+      <td>
+        <div style="font-size:9px;font-weight:700;color:#0BC5BA;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:4px;">Compass · Egnyte MSP Partner Tool</div>
+        <div style="font-size:22px;font-weight:900;color:#0C2340;letter-spacing:-0.02em;line-height:1.1;">Plan Upgrade Summary</div>
+        <div style="font-size:11px;color:#76A2BC;margin-top:3px;">Prepared for internal use · Confidential</div>
+      </td>
+      <td align="right" valign="top">
+        <div style="font-size:10px;color:#76A2BC;">Generated</div>
+        <div style="font-size:12px;font-weight:600;color:#0C2340;">${date}</div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Upgrade path -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0F8FF;border:1px solid #C7E4F5;border-radius:10px;margin-bottom:20px;">
+    <tr>
+      <td style="padding:16px 20px;">
+        <div style="font-size:9px;font-weight:700;color:#76A2BC;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:4px;">Current Plan</div>
+        <div style="font-size:18px;font-weight:900;color:#0C2340;">${fp.name}</div>
+        <div style="font-size:11px;color:#76A2BC;">${fp.family}</div>
+        ${fp.pricing?.msp != null ? `<div style="font-size:12px;font-weight:600;color:#037BBD;margin-top:3px;">$${fp.pricing.msp}/user/mo (MSP)</div>` : ""}
+      </td>
+      <td align="center" valign="middle" style="font-size:26px;color:#0BC5BA;font-weight:900;padding:0 10px;">→</td>
+      <td style="padding:16px 20px;">
+        <div style="font-size:9px;font-weight:700;color:#76A2BC;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:4px;">Proposed Plan</div>
+        <div style="font-size:18px;font-weight:900;color:#0C2340;">${tp.name}</div>
+        <div style="font-size:11px;color:#76A2BC;">${tp.family}</div>
+        ${tp.pricing?.msp != null ? `<div style="font-size:12px;font-weight:600;color:#037BBD;margin-top:3px;">$${tp.pricing.msp}/user/mo (MSP)</div>` : ""}
+      </td>
+      <td align="right" valign="middle" style="padding:16px 20px;">
+        <div style="font-size:24px;font-weight:900;color:#0C2340;">${userCount}</div>
+        <div style="font-size:10px;font-weight:600;color:#76A2BC;text-transform:uppercase;">Users</div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Stats -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+    <tr>
+      ${netNew > 0 ? `<td style="background:#0C2340;border-radius:10px;padding:14px 12px;text-align:center;width:33%;">
+        <div style="font-size:20px;font-weight:900;color:#0BC5BA;">${netNew}</div>
+        <div style="font-size:9px;font-weight:700;color:#76A2BC;text-transform:uppercase;letter-spacing:0.08em;margin-top:3px;">Net-New Features</div>
+      </td>
+      <td style="width:8px;"></td>` : ""}
+      <td style="background:#0C2340;border-radius:10px;padding:14px 12px;text-align:center;">
+        <div style="font-size:20px;font-weight:900;color:#0BC5BA;">+$${uplift}</div>
+        <div style="font-size:9px;font-weight:700;color:#76A2BC;text-transform:uppercase;letter-spacing:0.08em;margin-top:3px;">MSP Uplift / User / Mo</div>
+      </td>
+      <td style="width:8px;"></td>
+      <td style="background:#0C2340;border-radius:10px;padding:14px 12px;text-align:center;">
+        <div style="font-size:20px;font-weight:900;color:#3D71EA;">+$${monthlyDelta.toFixed(0)}</div>
+        <div style="font-size:9px;font-weight:700;color:#76A2BC;text-transform:uppercase;letter-spacing:0.08em;margin-top:3px;">Monthly Delta</div>
+      </td>
+      <td style="width:8px;"></td>
+      <td style="background:#0C2340;border-radius:10px;padding:14px 12px;text-align:center;">
+        <div style="font-size:20px;font-weight:900;color:#6E49FF;">+$${annualDelta.toFixed(0)}</div>
+        <div style="font-size:9px;font-weight:700;color:#76A2BC;text-transform:uppercase;letter-spacing:0.08em;margin-top:3px;">Annual Delta</div>
+      </td>
+    </tr>
+  </table>
+
+  ${valuePillars ? `
+  <!-- Value highlights -->
+  <div style="font-size:9px;font-weight:700;color:#0BC5BA;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:10px;border-left:3px solid #0BC5BA;padding-left:10px;">Value Highlights</div>
+  <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #DDE8F5;border-radius:8px;margin-bottom:20px;overflow:hidden;">
+    ${pillarsHTML}
+  </table>` : ""}
+
+  ${objections ? `
+  <!-- Objections -->
+  <div style="font-size:9px;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:10px;border-left:3px solid #FFCA29;padding-left:10px;">Anticipated Objections</div>
+  <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #DDE8F5;border-radius:8px;margin-bottom:20px;overflow:hidden;">
+    ${objectionsHTML}
+  </table>` : ""}
+
+  <!-- Feature diff -->
+  <div style="font-size:9px;font-weight:700;color:#6E49FF;text-transform:uppercase;letter-spacing:0.14em;margin-bottom:10px;border-left:3px solid #6E49FF;padding-left:10px;">Plan Feature Differences — ${fp.name} → ${tp.name}</div>
+  <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #DDE8F5;border-radius:8px;margin-bottom:24px;overflow:hidden;">
+    ${diffTablesHTML}
+  </table>
+
+  <!-- Footer -->
+  <div style="border-top:1px solid #E5EFF8;padding-top:12px;display:flex;justify-content:space-between;">
+    <span style="font-size:10px;color:#76A2BC;">Compass · Egnyte MSP Partner Tool · For internal use only</span>
+  </div>
+
+</div>`;
+
+    // Plain text fallback
+    const plain = [
       `Egnyte Plan Upgrade Summary — ${date}`,
       ``,
-      `UPGRADE PATH`,
-      `  Current:  ${fp.name} (${fp.family})`,
-      `  Proposed: ${tp.name} (${tp.family})`,
-      `  Users:    ${userCount}`,
+      `${fp.name} (${fp.family}) → ${tp.name} (${tp.family}) · ${userCount} users`,
+      `MSP uplift: +$${uplift}/user/mo · Monthly: +$${monthlyDelta.toFixed(2)} · Annual: +$${annualDelta.toFixed(2)}`,
       ``,
-      `PRICING IMPACT`,
-      `  MSP price uplift:     +$${(calcToPrice - calcFromPrice).toFixed(2)}/user/month`,
-      `  Monthly revenue delta: +$${monthlyDelta.toFixed(2)}/month`,
-      `  Annual revenue delta:  +$${annualDelta.toFixed(2)}/year`,
-      ``,
-      ...(netNew > 0 ? [`NET-NEW CAPABILITIES: ${netNew} features unlocked`, ``] : []),
-      ...(valuePillars ? [
-        `VALUE HIGHLIGHTS`,
-        ...valuePillars.map(p => [
-          `  ${p.icon}  ${p.pillar}`,
-          `  ${p.point}`,
-          ``,
-        ]).flat(),
-      ] : []),
-      ...(objections ? [
-        `ANTICIPATED OBJECTIONS`,
-        ...objections.map(o => [
-          `  Q: ${o.q}`,
-          `  A: ${o.a}`,
-          ``,
-        ]).flat(),
-      ] : []),
-      `PLAN FEATURE DIFFERENCES`,
-      ``,
-      ...tableLines,
-      `─────────────────────────────────────────`,
+      ...(valuePillars ? valuePillars.flatMap(p => [`${p.icon} ${p.pillar}`, p.point, ``]) : []),
+      ...(objections ? objections.flatMap(o => [`Q: ${o.q}`, `A: ${o.a}`, ``]) : []),
       `Prepared with Compass · Egnyte MSP Partner Tool · Confidential`,
     ].join("\n");
 
-    navigator.clipboard.writeText(lines)
-      .then(() => showToast("✓ Upgrade summary copied to clipboard"))
-      .catch(() => showToast("Copy failed — try selecting and copying manually"));
+    // Write both HTML and plain text to clipboard
+    const htmlBlob = new Blob([html], { type: "text/html" });
+    const textBlob = new Blob([plain], { type: "text/plain" });
+
+    navigator.clipboard.write([
+      new ClipboardItem({ "text/html": htmlBlob, "text/plain": textBlob })
+    ])
+      .then(() => showToast("✓ Formatted summary copied — paste directly into email"))
+      .catch(() => {
+        // Fallback for browsers that don't support ClipboardItem
+        navigator.clipboard.writeText(plain)
+          .then(() => showToast("✓ Summary copied to clipboard"))
+          .catch(() => showToast("Copy failed — try selecting and copying manually"));
+      });
   };
 
   // ── PDF popup export ───────────────────────────────────────────────────────
