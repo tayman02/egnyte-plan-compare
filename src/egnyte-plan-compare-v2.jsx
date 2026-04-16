@@ -2543,6 +2543,242 @@ function CompassApp() {
     toastTimer.current = setTimeout(() => setToast(t => t ? {...t, visible: false} : null), 2200);
   };
 
+  // ── Email copy export ──────────────────────────────────────────────────────
+  const copyEmailSummary = () => {
+    if (!fp || !tp) return;
+    const date = new Date().toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+    const lines = [
+      `Egnyte Plan Upgrade Summary — ${date}`,
+      ``,
+      `UPGRADE PATH`,
+      `  Current:  ${fp.name} (${fp.family})`,
+      `  Proposed: ${tp.name} (${tp.family})`,
+      `  Users:    ${userCount}`,
+      ``,
+      `PRICING IMPACT`,
+      ...(dMsp != null ? [`  MSP price uplift:  +$${dMsp.toFixed(2)}/user/month`] : []),
+      ...(dMsrp != null ? [`  MSRP price uplift: +$${dMsrp.toFixed(2)}/user/month`] : []),
+      `  Monthly revenue delta: +$${monthlyDelta.toFixed(2)}/month`,
+      `  Annual revenue delta:  +$${annualDelta.toFixed(2)}/year`,
+      ``,
+      ...(netNew > 0 ? [`NET-NEW CAPABILITIES: ${netNew} features unlocked`, ``] : []),
+      ...(valuePillars ? [
+        `VALUE HIGHLIGHTS`,
+        ...valuePillars.map(p => [
+          `  ${p.icon}  ${p.pillar}`,
+          `  ${p.point}`,
+          ``,
+        ]).flat(),
+      ] : []),
+      ...(objections ? [
+        `ANTICIPATED OBJECTIONS`,
+        ...objections.map((o, i) => [
+          `  Q: ${o.q}`,
+          `  A: ${o.a}`,
+          ``,
+        ]).flat(),
+      ] : []),
+      `─────────────────────────────────────────`,
+      `Prepared with Compass · Egnyte MSP Partner Tool · Confidential`,
+    ].join("\n");
+
+    navigator.clipboard.writeText(lines)
+      .then(() => showToast("✓ Upgrade summary copied to clipboard"))
+      .catch(() => showToast("Copy failed — try selecting and copying manually"));
+  };
+
+  // ── PDF popup export ───────────────────────────────────────────────────────
+  const exportPDF = () => {
+    if (!fp || !tp) return;
+    const date = new Date().toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+
+    const pillarsHTML = valuePillars ? valuePillars.map(p => `
+      <div class="pillar ${p.vertical_key ? 'pillar-key' : ''}">
+        <div class="pillar-head">
+          <span class="pillar-icon">${p.icon}</span>
+          <span class="pillar-name">${p.pillar}</span>
+          ${p.vertical_key ? '<span class="vkey-badge">Key for vertical</span>' : ''}
+        </div>
+        <div class="pillar-point">${p.point}</div>
+      </div>`).join("") : "";
+
+    const objectionsHTML = objections ? objections.map(o => `
+      <div class="obj-row">
+        <div class="obj-q"><span class="obj-badge obj-badge-q">Q</span><span>${o.q}</span></div>
+        <div class="obj-a"><span class="obj-badge obj-badge-a">A</span><span>${o.a}</span></div>
+      </div>`).join("") : "";
+
+    const netNewHTML = netNew > 0 ? `
+      <div class="stat-card">
+        <div class="stat-val" style="color:#0BC5BA">${netNew}</div>
+        <div class="stat-label">Net-New Features</div>
+      </div>` : "";
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Egnyte Upgrade Summary — ${fp.name} to ${tp.name}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; background: #fff; color: #0C2340; }
+  .page { max-width: 760px; margin: 0 auto; padding: 48px 48px 40px; }
+
+  /* Header */
+  .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 3px solid #0BC5BA; margin-bottom: 28px; }
+  .header-left {}
+  .compass-label { font-size: 9px; font-weight: 700; color: #0BC5BA; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
+  .doc-title { font-size: 22px; font-weight: 900; color: #0C2340; letter-spacing: -0.02em; line-height: 1.1; }
+  .doc-subtitle { font-size: 12px; color: #76A2BC; margin-top: 4px; }
+  .header-right { text-align: right; }
+  .date-label { font-size: 10px; color: #76A2BC; margin-bottom: 2px; }
+  .date-val { font-size: 12px; font-weight: 600; color: #0C2340; }
+
+  /* Upgrade path */
+  .upgrade-path { display: flex; align-items: center; gap: 16px; background: #F0F8FF; border: 1px solid #C7E4F5; border-radius: 10px; padding: 18px 24px; margin-bottom: 24px; }
+  .plan-block { flex: 1; }
+  .plan-role { font-size: 9px; font-weight: 700; color: #76A2BC; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
+  .plan-name { font-size: 18px; font-weight: 900; color: #0C2340; margin-bottom: 2px; }
+  .plan-family { font-size: 11px; color: #76A2BC; }
+  .plan-price { font-size: 12px; font-weight: 600; color: #037BBD; margin-top: 4px; }
+  .arrow { font-size: 28px; color: #0BC5BA; font-weight: 900; flex-shrink: 0; }
+  .users-block { text-align: right; flex-shrink: 0; }
+  .users-val { font-size: 22px; font-weight: 900; color: #0C2340; }
+  .users-label { font-size: 10px; color: #76A2BC; font-weight: 600; }
+
+  /* Stats */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: #0C2340; border-radius: 10px; padding: 16px; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+  .stat-label { font-size: 10px; font-weight: 600; color: #76A2BC; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* Section headers */
+  .section-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .section-bar { width: 3px; height: 14px; border-radius: 2px; background: #0BC5BA; flex-shrink: 0; }
+  .section-title { font-size: 9px; font-weight: 700; color: #0BC5BA; text-transform: uppercase; letter-spacing: 0.14em; }
+
+  /* Pillars */
+  .pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+  .pillar { background: #F8FBFF; border: 1px solid #DDE8F5; border-radius: 8px; padding: 13px 14px; }
+  .pillar.pillar-key { border-color: #0BC5BA; background: #F0FAF9; }
+  .pillar-head { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+  .pillar-icon { font-size: 16px; }
+  .pillar-name { font-size: 12px; font-weight: 700; color: #0C2340; }
+  .vkey-badge { font-size: 8px; font-weight: 700; color: #0BC5BA; background: rgba(11,197,186,0.12); border: 1px solid rgba(11,197,186,0.3); border-radius: 3px; padding: 1px 5px; margin-left: auto; white-space: nowrap; }
+  .pillar-point { font-size: 11px; color: #3A5A7A; line-height: 1.6; }
+
+  /* Objections */
+  .objections { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .obj-row { border: 1px solid #DDE8F5; border-radius: 8px; overflow: hidden; }
+  .obj-q, .obj-a { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; font-size: 11px; line-height: 1.6; }
+  .obj-q { background: #FFF8E6; border-bottom: 1px solid #DDE8F5; color: #0C2340; font-weight: 500; }
+  .obj-a { background: #F0FAF9; color: #3A5A7A; }
+  .obj-badge { font-size: 9px; font-weight: 700; border-radius: 3px; padding: 1px 5px; flex-shrink: 0; margin-top: 1px; }
+  .obj-badge-q { background: rgba(255,202,41,0.2); color: #D97706; border: 1px solid rgba(217,119,6,0.3); }
+  .obj-badge-a { background: rgba(11,197,186,0.12); color: #0BC5BA; border: 1px solid rgba(11,197,186,0.3); }
+
+  /* Footer */
+  .footer { border-top: 1px solid #E5EFF8; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-left { font-size: 10px; color: #76A2BC; }
+  .footer-right { font-size: 10px; color: #B0C4D8; }
+
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { padding: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="compass-label">Compass · Egnyte MSP Partner Tool</div>
+      <div class="doc-title">Plan Upgrade Summary</div>
+      <div class="doc-subtitle">Prepared for internal use · Confidential</div>
+    </div>
+    <div class="header-right">
+      <div class="date-label">Generated</div>
+      <div class="date-val">${date}</div>
+    </div>
+  </div>
+
+  <!-- Upgrade path -->
+  <div class="upgrade-path">
+    <div class="plan-block">
+      <div class="plan-role">Current Plan</div>
+      <div class="plan-name">${fp.name}</div>
+      <div class="plan-family">${fp.family}</div>
+      ${fp.pricing?.msp != null ? `<div class="plan-price">$${fp.pricing.msp}/user/mo (MSP)</div>` : ""}
+    </div>
+    <div class="arrow">→</div>
+    <div class="plan-block">
+      <div class="plan-role">Proposed Plan</div>
+      <div class="plan-name">${tp.name}</div>
+      <div class="plan-family">${tp.family}</div>
+      ${tp.pricing?.msp != null ? `<div class="plan-price">$${tp.pricing.msp}/user/mo (MSP)</div>` : ""}
+    </div>
+    <div class="users-block">
+      <div class="users-val">${userCount}</div>
+      <div class="users-label">Users</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    ${netNewHTML}
+    ${dMsp != null ? `<div class="stat-card">
+      <div class="stat-val" style="color:#0BC5BA">+$${dMsp.toFixed(2)}</div>
+      <div class="stat-label">MSP Uplift / User / Mo</div>
+    </div>` : ""}
+    <div class="stat-card">
+      <div class="stat-val" style="color:#3D71EA">+$${monthlyDelta.toFixed(0)}</div>
+      <div class="stat-label">Monthly Revenue Delta</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:#6E49FF">+$${annualDelta.toFixed(0)}</div>
+      <div class="stat-label">Annual Revenue Delta</div>
+    </div>
+  </div>
+
+  ${valuePillars ? `
+  <!-- Value Highlights -->
+  <div class="section-head">
+    <div class="section-bar"></div>
+    <div class="section-title">Value Highlights</div>
+  </div>
+  <div class="pillars">${pillarsHTML}</div>` : ""}
+
+  ${objections ? `
+  <!-- Objections -->
+  <div class="section-head">
+    <div class="section-bar" style="background:#FFCA29"></div>
+    <div class="section-title" style="color:#D97706">Anticipated Objections</div>
+  </div>
+  <div class="objections">${objectionsHTML}</div>` : ""}
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-left">Compass · Egnyte MSP Partner Tool · For internal partner use only</div>
+    <div class="footer-right">${fp.name} → ${tp.name} · ${userCount} users</div>
+  </div>
+
+</div>
+<script>window.addEventListener('load', function() { setTimeout(function() { window.print(); }, 400); });</script>
+</body>
+</html>`;
+
+    const popup = window.open("", "_blank", "width=860,height=1100,scrollbars=yes");
+    if (popup) {
+      popup.document.write(html);
+      popup.document.close();
+    } else {
+      showToast("Pop-up blocked — please allow pop-ups for this site");
+    }
+  };
+
   // Reset when plans change
   React.useEffect(() => {
     setValuePoints(null);
@@ -2906,14 +3142,14 @@ function CompassApp() {
                       <div style={{ fontSize:11, color:E.textMut, marginTop:4 }}>unlocked moving to {tp?.name}</div>
                     </div>
 
-                    {/* Per-user uplift */}
+                    {/* Per-user uplift — derived from editable calculator prices */}
                     <div style={{ borderTop:`1px solid ${E.borderSub}`, paddingTop:14 }}>
                       <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:10 }}>Price Uplift / User / Month</div>
                       <div style={{ display:"flex", gap:20, alignItems:"flex-end" }}>
                         <div>
                           <div style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.08em", marginBottom:3 }}>MSP</div>
                           <div style={{ fontSize:28, fontWeight:800, color:E.teal, letterSpacing:"-0.03em", lineHeight:1 }}>
-                            {dMsp!=null ? fmtD(dMsp) : "—"}
+                            {fmtD(calcToPrice - calcFromPrice)}
                           </div>
                         </div>
                         {dMsrp!=null && <>
@@ -2949,8 +3185,10 @@ function CompassApp() {
                         <span style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase" }}>{fp?.name} $/user</span>
                         <div style={{ position:"relative" }}>
                           <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.textMut, fontSize:11, pointerEvents:"none" }}>$</span>
-                          <input type="number" min="0" step="0.01" value={calcFromPrice}
-                            onChange={e => setFromPrice(parseFloat(e.target.value)||0)}
+                          <input type="number" min="0" step="0.01"
+                            value={calcFromPrice}
+                            onChange={e => setFromPrice(parseFloat(e.target.value) || 0)}
+                            onBlur={e => setFromPrice(v => parseFloat((parseFloat(v ?? calcFromPrice) || 0).toFixed(2)))}
                             style={{ width:80, background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:7, padding:"7px 8px 7px 18px", color:E.textSub, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
                         </div>
                       </div>
@@ -2962,8 +3200,10 @@ function CompassApp() {
                         <span style={{ fontSize:9, fontWeight:700, color:E.teal, letterSpacing:"0.08em", textTransform:"uppercase" }}>{tp?.name} $/user</span>
                         <div style={{ position:"relative" }}>
                           <span style={{ position:"absolute", left:8, top:"50%", transform:"translateY(-50%)", color:E.teal+"88", fontSize:11, pointerEvents:"none" }}>$</span>
-                          <input type="number" min="0" step="0.01" value={calcToPrice}
-                            onChange={e => setToPrice(parseFloat(e.target.value)||0)}
+                          <input type="number" min="0" step="0.01"
+                            value={calcToPrice}
+                            onChange={e => setToPrice(parseFloat(e.target.value) || 0)}
+                            onBlur={e => setToPrice(v => parseFloat((parseFloat(v ?? calcToPrice) || 0).toFixed(2)))}
                             style={{ width:80, background:E.navyCard, border:`1px solid ${E.teal}44`, borderRadius:7, padding:"7px 8px 7px 18px", color:E.teal, fontSize:14, fontWeight:600, fontFamily:"'Inter',sans-serif", outline:"none" }}/>
                         </div>
                       </div>
@@ -2974,7 +3214,7 @@ function CompassApp() {
                       <div style={{ paddingRight:16, borderRight:`1px solid ${E.borderSub}` }}>
                         <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4 }}>Monthly Δ</div>
                         <div style={{ fontSize:28, fontWeight:800, color:E.teal, letterSpacing:"-0.03em", lineHeight:1 }}>{fmtD(monthlyDelta)}</div>
-                        <div style={{ fontSize:10, color:E.textMut, marginTop:4 }}>${currentMo.toFixed(2)} → ${proposedMo.toFixed(2)}</div>
+                        <div style={{ fontSize:10, color:E.textMut, marginTop:4 }}>${calcFromPrice.toFixed(2)} → ${calcToPrice.toFixed(2)}</div>
                       </div>
                       <div style={{ paddingLeft:16 }}>
                         <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4 }}>Annual Δ</div>
@@ -3229,6 +3469,31 @@ function CompassApp() {
                     </div>
                   )}
                 </div>
+
+                {/* ── Export bar — shown whenever there's something worth exporting ── */}
+                {isUp && (
+                  <div className="no-print" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", background:E.navyCard, border:`1px solid ${E.border}`, borderRadius:10, padding:"12px 18px", marginBottom:20 }}>
+                    <span style={{ fontSize:12, color:E.textMut }}>
+                      {valuePillars ? "AI summary ready —" : "Export upgrade summary"} share with your team or save for your records.
+                    </span>
+                    <div style={{ display:"flex", gap:8 }}>
+                      <button onClick={copyEmailSummary}
+                        style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 16px", borderRadius:7, border:`1px solid ${E.border}`, background:E.navySurf, color:E.textSub, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s" }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = E.teal; e.currentTarget.style.color = E.teal; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = E.border; e.currentTarget.style.color = E.textSub; }}>
+                        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1" y="4" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M4 4V2.5A1.5 1.5 0 015.5 1H11.5A1.5 1.5 0 0113 2.5V8.5A1.5 1.5 0 0111.5 10H10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                        Copy as Email
+                      </button>
+                      <button onClick={exportPDF}
+                        style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 16px", borderRadius:7, border:`1px solid rgba(11,197,186,0.35)`, background:"rgba(11,197,186,0.08)", color:E.teal, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"'Inter',sans-serif", transition:"all 0.15s" }}
+                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(11,197,186,0.15)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "rgba(11,197,186,0.08)"; }}>
+                        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2.5 10.5V12A1.5 1.5 0 004 13.5H10A1.5 1.5 0 0011.5 12V10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><path d="M7 1.5V9.5M7 9.5L4.5 7M7 9.5L9.5 7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        Export PDF
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* ── Legend + Diff toggle + Print ── */}
                 <div style={{ display:"flex", gap:16, marginBottom:14, alignItems:"center", flexWrap:"wrap", justifyContent:"space-between" }}>
