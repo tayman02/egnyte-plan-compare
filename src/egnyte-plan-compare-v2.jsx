@@ -2567,13 +2567,24 @@ function CompassApp() {
       return { text: "—", color: "#B0C4D8" };
     };
 
-    const diffSectionsEmail = FEATURE_SECTIONS.map(sec => ({
-      label: sec.label,
-      color: sec.color,
-      features: sec.features.filter(f =>
-        JSON.stringify(fp.features[f.id]) !== JSON.stringify(tp.features[f.id])
-      ),
-    })).filter(s => s.features.length > 0);
+    // Normalize: undefined, false, "false" all mean "not available"
+    const normalize = v => (v === undefined || v === false || v === "false") ? false : v;
+
+    const diffSectionsEmail = FEATURE_SECTIONS.map(sec => {
+      const hasChange = sec.features.some(f =>
+        JSON.stringify(normalize(fp.features[f.id])) !== JSON.stringify(normalize(tp.features[f.id]))
+      );
+      if (!hasChange) return null;
+      // Include ALL features in the section — mark which ones are newly gained
+      return {
+        label: sec.label,
+        color: sec.color,
+        features: sec.features.map(f => ({
+          ...f,
+          isNew: JSON.stringify(normalize(fp.features[f.id])) !== JSON.stringify(normalize(tp.features[f.id])),
+        })),
+      };
+    }).filter(Boolean);
 
     // Build diff table rows
     const diffTablesHTML = diffSectionsEmail.map(sec => `
@@ -2588,9 +2599,13 @@ function CompassApp() {
       ${sec.features.map((f, i) => {
         const fv = fmtValEmail(fp.features[f.id]);
         const tv = fmtValEmail(tp.features[f.id]);
-        const bg = i % 2 === 0 ? "#FFFFFF" : "#FAFCFF";
+        const bg = f.isNew ? "rgba(11,197,186,0.04)" : (i % 2 === 0 ? "#FFFFFF" : "#FAFCFF");
+        const featureLabel = f.isNew
+          ? `<span style="color:#0BC5BA;font-size:9px;font-weight:700;margin-right:5px;">NEW</span>${f.label}`
+          : `<span style="color:#B0C4D8;margin-right:5px;">·</span>${f.label}`;
+        const labelColor = f.isNew ? "#0C2340" : "#76A2BC";
         return `<tr style="background:${bg};">
-          <td style="padding:7px 10px;font-size:11px;color:#0C2340;border-bottom:1px solid #EEF4FB;">${f.label}</td>
+          <td style="padding:7px 10px;font-size:11px;color:${labelColor};border-bottom:1px solid #EEF4FB;">${featureLabel}</td>
           <td style="padding:7px 10px;font-size:11px;font-weight:600;color:${fv.color};border-bottom:1px solid #EEF4FB;text-align:center;">${fv.text}</td>
           <td style="padding:7px 10px;font-size:11px;font-weight:600;color:${tv.color};border-bottom:1px solid #EEF4FB;text-align:center;background:rgba(11,197,186,0.04);">${tv.text}</td>
         </tr>`;
@@ -2780,14 +2795,23 @@ function CompassApp() {
       return { text: "—", cls: "cell-no" };
     };
 
+    // Normalize: undefined, false, "false" all mean "not available"
+    const normalizePDF = v => (v === undefined || v === false || v === "false") ? false : v;
+
     const diffSectionsPDF = FEATURE_SECTIONS.map(sec => {
-      const changed = sec.features.filter(f => {
-        const fv = fp.features[f.id];
-        const tv = tp.features[f.id];
-        return JSON.stringify(fv) !== JSON.stringify(tv);
-      });
-      return { label: sec.label, color: sec.color, features: changed };
-    }).filter(s => s.features.length > 0);
+      const hasChange = sec.features.some(f =>
+        JSON.stringify(normalizePDF(fp.features[f.id])) !== JSON.stringify(normalizePDF(tp.features[f.id]))
+      );
+      if (!hasChange) return null;
+      return {
+        label: sec.label,
+        color: sec.color,
+        features: sec.features.map(f => ({
+          ...f,
+          isNew: JSON.stringify(normalizePDF(fp.features[f.id])) !== JSON.stringify(normalizePDF(tp.features[f.id])),
+        })),
+      };
+    }).filter(Boolean);
 
     const diffTableHTML = diffSectionsPDF.map(sec => `
       <div class="diff-section">
@@ -2806,9 +2830,13 @@ function CompassApp() {
             ${sec.features.map(f => {
               const fv = fmtValPDF(fp.features[f.id]);
               const tv = fmtValPDF(tp.features[f.id]);
-              return `<tr>
-                <td class="col-feat">${f.label}</td>
-                <td class="${fv.cls}">${fv.text}</td>
+              const rowBg = f.isNew ? "background:rgba(11,197,186,0.05);" : "";
+              const labelHtml = f.isNew
+                ? `<span style="font-size:8px;font-weight:700;color:#0BC5BA;background:rgba(11,197,186,0.12);border:1px solid rgba(11,197,186,0.3);border-radius:3px;padding:1px 5px;margin-right:6px;vertical-align:middle;">NEW</span>${f.label}`
+                : `<span style="color:#B0C4D8;margin-right:6px;">·</span><span style="color:#76A2BC;">${f.label}</span>`;
+              return `<tr style="${rowBg}">
+                <td class="col-feat" style="${f.isNew ? '' : 'color:#76A2BC;'}">${labelHtml}</td>
+                <td class="${fv.cls}" style="${f.isNew ? '' : 'opacity:0.5;'}">${fv.text}</td>
                 <td class="${tv.cls} col-plan-to">${tv.text}</td>
               </tr>`;
             }).join("")}
