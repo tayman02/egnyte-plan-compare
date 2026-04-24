@@ -390,7 +390,7 @@ const PLANS = [
     pricing: { msrp: 16, msp: 12.8 },
     features: {
       // Core Platform
-      encryption: true, storage_per_user: "200 GB", upload_limit: "100 GB", domains: "1",
+      encryption: true, storage_per_user: "100 GB", upload_limit: "100 GB", domains: "1",
       max_users: "100",
       sso: false, mfa: true, external_collab: true, granular_perms: true, compliant_storage: true,
       audit: false, edge_caching: true, role_admin: false, device_controls: false,
