@@ -2494,18 +2494,39 @@ function CompassApp() {
   const proposedMo    = calcToPrice   * userCount;
   const fmtD = v => v >= 0 ? `+$${v.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}` : `-$${Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}`;
 
-  const netNew = useMemo(()=>{
+  const netNewIncluded = useMemo(()=>{
     if(!isUp) return 0;
     return FEATURE_SECTIONS.flatMap(s=>s.features).filter(f=>{
       const fv = fp?.features[f.id];
       const tv = tp?.features[f.id];
-      // From plan: not available (undefined, false, "false")
       const fromEmpty = !fv || fv === "false";
-      // To plan: included, bundled, OR newly available as add-on
-      const toHas = tv === true || tv === "addon-included" || tv === "optional";
-      return toHas && fromEmpty;
+      const toIncluded = tv === true || tv === "addon-included";
+      return toIncluded && fromEmpty;
     }).length;
   },[fromPlan,toPlan,isUp]);
+
+  // Add-ons on from-plan that become fully included on to-plan (stops costing extra)
+  const netNewPromoted = useMemo(()=>{
+    if(!isUp) return 0;
+    return FEATURE_SECTIONS.flatMap(s=>s.features).filter(f=>{
+      const fv = fp?.features[f.id];
+      const tv = tp?.features[f.id];
+      return fv === "optional" && (tv === true || tv === "addon-included");
+    }).length;
+  },[fromPlan,toPlan,isUp]);
+
+  const netNewAddons = useMemo(()=>{
+    if(!isUp) return 0;
+    return FEATURE_SECTIONS.flatMap(s=>s.features).filter(f=>{
+      const fv = fp?.features[f.id];
+      const tv = tp?.features[f.id];
+      const fromEmpty = !fv || fv === "false";
+      return tv === "optional" && fromEmpty;
+    }).length;
+  },[fromPlan,toPlan,isUp]);
+
+  // Combined count (used in AI prompt and exports)
+  const netNew = netNewIncluded + netNewPromoted + netNewAddons;
 
   const families = useMemo(()=>{
     const m={};
@@ -3393,13 +3414,36 @@ function CompassApp() {
                   <div style={{ padding:"20px 24px" }}>
                     <div style={{ fontSize:9, fontWeight:700, color:E.textMut, letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:14 }}>Upgrade Summary</div>
 
-                    {/* Net-new */}
+                    {/* Net-new — three distinct categories */}
                     <div style={{ marginBottom:20 }}>
-                      <div style={{ display:"flex", alignItems:"baseline", gap:8 }}>
-                        <span style={{ fontSize:52, fontWeight:900, color:E.purple, letterSpacing:"-0.05em", lineHeight:1 }}>{netNew}</span>
-                        <span style={{ fontSize:14, color:E.textMut, fontWeight:500 }}>net-new features</span>
+                      {/* Newly included */}
+                      <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:4 }}>
+                        <span style={{ fontSize:52, fontWeight:900, color:E.purple, letterSpacing:"-0.05em", lineHeight:1 }}>{netNewIncluded + netNewPromoted}</span>
+                        <span style={{ fontSize:14, color:E.textMut, fontWeight:500 }}>features included</span>
                       </div>
-                      <div style={{ fontSize:11, color:E.textMut, marginTop:4 }}>unlocked moving to {tp?.name}</div>
+                      <div style={{ fontSize:11, color:E.textMut, marginBottom: (netNewPromoted > 0 || netNewAddons > 0) ? 10 : 0 }}>fully unlocked moving to {tp?.name}</div>
+
+                      {/* Promoted from add-on → included */}
+                      {netNewPromoted > 0 && (
+                        <div style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(11,197,186,0.07)", border:`1px solid ${E.teal}33`, borderRadius:7, padding:"7px 10px", marginBottom: netNewAddons > 0 ? 8 : 0 }}>
+                          <span style={{ fontSize:18, fontWeight:800, color:E.teal, lineHeight:1 }}>{netNewPromoted}</span>
+                          <div>
+                            <div style={{ fontSize:11, fontWeight:600, color:E.teal, lineHeight:1.2 }}>add-ons now included</div>
+                            <div style={{ fontSize:10, color:E.textMut, marginTop:1 }}>were purchasable extras on current plan</div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Newly purchasable add-ons */}
+                      {netNewAddons > 0 && (
+                        <div style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,202,41,0.07)", border:"1px solid rgba(255,202,41,0.2)", borderRadius:7, padding:"7px 10px" }}>
+                          <span style={{ fontSize:18, fontWeight:800, color:E.yellow, lineHeight:1 }}>+{netNewAddons}</span>
+                          <div>
+                            <div style={{ fontSize:11, fontWeight:600, color:E.yellow, lineHeight:1.2 }}>add-ons unlocked</div>
+                            <div style={{ fontSize:10, color:E.textMut, marginTop:1 }}>purchasable options not on current plan</div>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Per-user uplift — derived from editable calculator prices */}
@@ -3885,8 +3929,8 @@ function CompassApp() {
                   <p style={{ fontSize:12, color:E.textSub, lineHeight:1.8 }}>
                     <span style={{ color:E.text, fontWeight:600 }}>{fp.name} → {tp.name}: </span>
                     {fp.pricing && tp.pricing
-                      ? `MSP cost increases by ${fmt(dMsp??0)}/user/mo and unlocks ${netNew} net-new capabilities.`
-                      : `Unlocks ${netNew} net-new capabilities inside Egnyte.`}
+                      ? `MSP cost increases by ${fmt(dMsp??0)}/user/mo and unlocks ${netNewIncluded + netNewPromoted} fully included features${netNewPromoted > 0 ? ` (including ${netNewPromoted} that were paid add-ons on the current plan)` : ""}${netNewAddons > 0 ? ` plus ${netNewAddons} new purchasable add-ons` : ""}.`
+                      : `Unlocks ${netNewIncluded + netNewPromoted} fully included capabilities${netNewPromoted > 0 ? ` (including ${netNewPromoted} that were paid add-ons on the current plan)` : ""}${netNewAddons > 0 ? ` plus ${netNewAddons} new purchasable add-ons` : ""} inside Egnyte.`}
                     {" "}<span style={{ color:E.yellow, fontWeight:600 }}>ADD-ON</span> = paid separately.{" "}
                     <span style={{ color:E.teal, fontWeight:600 }}>BUNDLED</span> = included at no extra charge in this plan.
                   </p>
